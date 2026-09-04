@@ -1,0 +1,25 @@
+{
+  "name": "museum",
+  "version": "1.0.0",
+  "description": "Museum of Fine Arts Houston (MFAH) Web App and Database",
+  "main": "router.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jwyoung0/museum.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jwyoung0/museum/issues"
+  },
+  "homepage": "https://github.com/jwyoung0/museum#readme",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "mssql": "^12.7.0"
+  }
+}
