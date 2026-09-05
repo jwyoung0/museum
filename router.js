@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 
 function router(req, res) {
-    if (req.url === "/" || req.url === "/index") {
+    if (req.url === "/" || req.url === "/home") {
         sendPage(res, "index.html");
     }
     else if (req.url === "/employees") {
