@@ -4,7 +4,7 @@
   "description": "Museum of Fine Arts Houston (MFAH) Web App and Database",
   "main": "router.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+
     "start": "node server.js"
   },
   "repository": {
