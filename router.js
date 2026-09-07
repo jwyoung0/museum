@@ -3,13 +3,16 @@ const path = require("path");
 
 function router(req, res) {
     if (req.url === "/" || req.url === "/home") {
-        sendPage(res, "index.html");
+        sendPage(res, "index.html", "text/html");
     }
     else if (req.url === "/employees") {
-        sendPage(res, "employees.html");
+        sendPage(res, "employees.html", "text/html");
     }
     else if (req.url === "/about") {
-        sendPage(res, "about.html");
+        sendPage(res, "about.html", "text/html");
+    }
+    else if (req.url === "/style") {
+        sendPage(res, "style.css", "text/css");
     }
     else {
         res.writeHead(404, {
@@ -20,7 +23,7 @@ function router(req, res) {
     }
 }
 
-function sendPage(res, filename) {
+function sendPage(res, filename, contentType) {
 
     const filePath = path.join(
         __dirname,
@@ -31,13 +34,16 @@ function sendPage(res, filename) {
     fs.readFile(filePath, (err, data) => {
 
         if (err) {
-            res.writeHead(500);
+            res.writeHead(500, {
+                "Content-Type": "text/plain"
+            });
+
             res.end("Server error");
             return;
         }
 
         res.writeHead(200, {
-            "Content-Type": "text/html"
+            "Content-Type": contentType
         });
 
         res.end(data);

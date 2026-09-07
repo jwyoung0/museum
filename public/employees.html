@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>Employees</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <header class="site-header">
+        <h1 class="site-title">MFAH Admin</h1>
+        <nav>
+            <a href="index.html">Home</a>
+            <a href="employees.html">Employees</a>
+            <a href="about.html">About</a>
+        </nav>
+        <hr>
+    </header>
+    <main>
+        <h2>Personel</h2>
+        <h2>Add Employee</h2> 
+        <div class="formcontainer">
+            <form id="employee-form">
+                <p>
+                    <label for="name">Employee name</label><br>
+                    <input id="name" name="name" type="text" required>
+                </p>
+                <p>
+                    <label for="position">Employee position</label><br>
+                    <select id="position" name="position" required>
+                        <option value="">Select an employee position</option>
+                        <option value="curator">Curator</option>
+                        <option value="ticket">Ticket Sales</option>
+                        <option value="security">Security</option>
+                        <option value="gift">Gift Shop</option>
+                        <option value="hr">Human Resources</option>
+                    </select>
+                </p>
+                <p>
+                    <label for="date">Starting date</label><br>
+                    <input
+                        type="text"
+                        id="date"
+                        name="date"
+                        placeholder="MM/DD/YYYY"
+                        pattern="(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/[0-9]{4}"
+                        maxlength="10"
+                        required
+                    >
+                </p>
+                <p>
+                    <label for="salary">Salary</label><br>
+                    <input 
+                        id="salary" 
+                        name="salary" 
+                        type="text" 
+                        maxlength="7"
+                        inputmode="numeric"    
+                        required
+                    >
+                </p>
+                <button type="submit">Add account</button>
+            </form>
+        </div>
+        <p id="message" role="status"></p>
+
+    </main>
+    <script src="js/employees.js"></script>
+</body>
+</html>
