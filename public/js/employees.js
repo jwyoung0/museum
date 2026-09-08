@@ -9,7 +9,7 @@ form.addEventListener('submit', async (event) => {
     const employee = {
         name: formData.get('name').trim(),
         position: formData.get('position'),
-        date: formData.get('date'),
+        startDate: formData.get('startDate'),
         salary: Number(formData.get('salary'))
     };
 
@@ -23,7 +23,7 @@ form.addEventListener('submit', async (event) => {
                 name: employee.name,
                 position: employee.position,
                 salary: employee.salary,
-                startDate: employee.date
+                startDate: employee.startDate
             })
         });
 
