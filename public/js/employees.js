@@ -2,6 +2,12 @@ const form = document.querySelector('#employee-form');
 const message = document.querySelector('#message');
 const getEmployeeForm =document.querySelector('#employee-info');
 const getMessage = document.querySelector('#get-message');
+const resultId = document.querySelector('#result-id');
+const resultName = document.querySelector('#result-name');
+const resultPosition = document.querySelector('#result-position');
+const resultSalary = document.querySelector('#result-salary');
+const resultStartDate = document.querySelector('#result-start-date');
+
 
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -44,11 +50,12 @@ form.addEventListener('submit', async (event) => {
 
 getEmployeeForm.addEventListener('submit', async (event) => {
     event.preventDefault();
-    message.textContent = '';
+    getMessage.textContent = '';
 
     const formData = new FormData(getEmployeeForm);
+
     const employee = {
-        id: Number(formData.get('id'))
+        id: formData.get('id').trim()
     };
 
     try {
@@ -60,9 +67,17 @@ getEmployeeForm.addEventListener('submit', async (event) => {
             throw new Error(result.error || 'Unable to find employee.');
         }
 
-        message.textContent = `${result.name} was found successfully.`;
-        form.reset();
+        resultId.textContent = result.id;
+        resultName.textContent = result.name;
+        resultPosition.textContent = result.position;
+        resultSalary.textContent = result.salary;
+        resultStartDate.textContent = result.start_date;
+
+        getMessage.textContent = `${result.name} was found successfully.`;
+
+        getEmployeeForm.reset();
+
     } catch (error) {
-        message.textContent = error.message;
+        getMessage.textContent = error.message;
     }
 });
