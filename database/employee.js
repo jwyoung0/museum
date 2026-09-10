@@ -39,6 +39,33 @@ async function createEmployee({ name, position, salary, startDate }) {
     return result.recordset[0];
 }
 
+async function readEmployee(id) {
+
+    if (typeof id !== "string" || !id.trim()) {
+        throw new TypeError("id is required");
+    }
+
+    const employeeId = Number(id);
+
+    if (!Number.isInteger(employeeId)) {
+        throw new TypeError("id must be a valid integer");
+    }
+
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .input("id", sql.Int, employeeId)
+        .query(`
+            SELECT id, name, position, salary, start_date
+            FROM dbo.test_employees
+            WHERE id=@id; 
+        `);
+
+    return result.recordset[0] ?? null;
+
+}
+
 module.exports = {
-    createEmployee
+    createEmployee,
+    readEmployee
 };

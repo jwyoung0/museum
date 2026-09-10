@@ -1,4 +1,4 @@
-const { createEmployee } = require("../database/employee");
+const { createEmployee, readEmployee } = require("../database/employee");
 const { readJsonBody } = require("../utils/http");
 
 async function createEmployeeHandler(req, res) {
@@ -19,6 +19,29 @@ async function createEmployeeHandler(req, res) {
 
     res.end(JSON.stringify(createdEmployee));
 }
+
+async function readEmployeeHandler(req, res, id) {
+    const employee = await readEmployee(id);
+
+    if (!employee) {
+        res.writeHead(404, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify({
+            error: "Employee not found"
+        }));
+
+        return;
+    }
+
+    res.writeHead(200, {
+        "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify(employee));
+}
+
 
 function parseUsDate(value) {
     if (typeof value !== "string") {
@@ -46,4 +69,7 @@ function parseUsDate(value) {
     return date;
 }
 
-module.exports = { createEmployeeHandler };
+module.exports = { 
+    createEmployeeHandler, 
+    readEmployeeHandler 
+};
