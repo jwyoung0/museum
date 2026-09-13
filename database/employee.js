@@ -65,7 +65,40 @@ async function readEmployee(id) {
 
 }
 
+async function updateEmployee(id, { salary }) {
+    if (typeof id !== "string" || !id.trim()) {
+        throw new TypeError("id is required");
+    }
+
+    const employeeId = Number(id);
+
+    if (!Number.isInteger(employeeId)) {
+        throw new TypeError("id must be a valid integer");
+    }
+
+    if (!Number.isSafeInteger(salary) || salary < 0) {
+        throw new TypeError("salary must be a non-negative whole number");
+    }
+
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .input("id", sql.Int, employeeId)
+        .input("salary", sql.Int, salary)
+        .query(`
+            UPDATE dbo.test_employees
+            SET salary=@salary
+            OUTPUT
+                inserted.id,
+                inserted.salary
+            WHERE id=@id;
+        `);
+
+    return result.recordset[0] ?? null;
+}
+
 module.exports = {
     createEmployee,
-    readEmployee
+    readEmployee,
+    updateEmployee
 };

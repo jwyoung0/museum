@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { createEmployeeHandler, readEmployeeHandler } = require("./handlers/employees");
+const { createEmployeeHandler, readEmployeeHandler, updateEmployeeHandler } = require("./handlers/employees");
 
 async function router(req, res) {
     try {
@@ -12,6 +12,12 @@ async function router(req, res) {
         if (req.method === "GET" && req.url.startsWith("/api/employees/")) {
             const id = req.url.split("/")[3];
             await readEmployeeHandler(req, res, id);
+            return;
+        }
+
+        if (req.method === "PUT" && req.url.startsWith("/api/employees/")) {
+            const id = req.url.split("/")[3];
+            await updateEmployeeHandler(req, res, id);
             return;
         }
 

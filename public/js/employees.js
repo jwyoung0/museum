@@ -1,4 +1,4 @@
-const form = document.querySelector('#employee-form');
+const createForm = document.querySelector('#employee-form');
 const message = document.querySelector('#message');
 const getEmployeeForm =document.querySelector('#employee-info');
 const getMessage = document.querySelector('#get-message');
@@ -8,12 +8,14 @@ const resultPosition = document.querySelector('#result-position');
 const resultSalary = document.querySelector('#result-salary');
 const resultStartDate = document.querySelector('#result-start-date');
 
+const updateEmployeeForm = document.querySelector('#update-salary-form');
+const updateMessage = document.querySelector('#update-message');
 
-form.addEventListener('submit', async (event) => {
+createForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     message.textContent = '';
 
-    const formData = new FormData(form);
+    const formData = new FormData(createForm);
     const employee = {
         name: formData.get('name').trim(),
         position: formData.get('position'),
@@ -42,7 +44,7 @@ form.addEventListener('submit', async (event) => {
         }
 
         message.textContent = `${result.name} was added successfully.`;
-        form.reset();
+        createForm.reset();
     } catch (error) {
         message.textContent = error.message;
     }
@@ -79,5 +81,40 @@ getEmployeeForm.addEventListener('submit', async (event) => {
 
     } catch (error) {
         getMessage.textContent = error.message;
+    }
+});
+
+updateEmployeeForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    updateMessage.textContent = '';
+
+    const formData = new FormData(updateEmployeeForm);
+
+    const employee = {
+        id: formData.get('update-id')?.trim(),
+        salary: Number(formData.get('update-salary'))
+    };
+
+    try {
+        const response = await fetch(`/api/employees/${employee.id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                salary: employee.salary
+            })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || 'Unable to update employee.');
+        }
+
+        updateMessage.textContent = `${result.name} was updated successfully.`;
+        updateEmployeeForm.reset();
+    } catch (error) {
+        updateMessage.textContent = error.message;
     }
 });

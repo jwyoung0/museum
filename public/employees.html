@@ -18,7 +18,7 @@
         <hr>
     </header>
     <main>
-        <h2>Personel</h2>
+        <h2>Personnel</h2>
         <h2>Add Employee</h2> 
         <div class="formcontainer">
             <form id="employee-form">
@@ -69,7 +69,7 @@
         <div class="formcontainer">
             <form id="employee-info">
                 <p>
-                    <label for="id">Employee id</label><br>
+                    <label for="id">Employee ID</label><br>
                     <input 
                         id="id" 
                         name="id" 
@@ -91,6 +91,34 @@
                 <p><strong>Salary:</strong> $<span id="result-salary"></span></p>
                 <p><strong>Start Date:</strong> <span id="result-start-date"></span></p>
         </div>
+
+        <h2>Update Salary</h2>
+        <div class="formcontainer">
+            <form id="update-salary-form">
+                <p>
+                    <label for="update-id">Employee ID</label><br>
+                    <input
+                        id="update-id"
+                        name="update-id"
+                        type="text"
+                        inputmode="numeric"
+                        required
+                    >
+                </p>
+                <p>
+                    <label for="update-salary">Employee Salary</label><br>
+                    <input
+                        id="update-salary"
+                        name="update-salary"
+                        type="text"
+                        inputmode="numeric"
+                        required
+                    >
+                </p>
+                <button type="submit">Update Salary</button>
+            </form>
+        </div>
+        <p id="update-message" role="status"></p>
 
     </main>
     <script src="js/employees.js"></script>
