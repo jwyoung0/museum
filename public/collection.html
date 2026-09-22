@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>MFAH Admin Portal</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <header class="site-header">
+        <h1 class="site-title">MFAH Admin</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/collection">Collection</a>
+            <a href="/exhibits">Exhibits</a>
+            <a href="/security">Security</a>
+            <a href="/finance">Finance</a>
+            <a href="/personnel">Personnel</a>
+            <a href="/ticketing">Employees</a>
+            <a href="/about">About</a>
+        </nav>
+        <hr>
+    </header>
+    <main>
+        <h2>Collection Management</h2>
+        <h3>Add Object</h3>
+        <div class="formcontainer">
+            <form id="add-object-form">
+                <div class="field-row">
+                    <p>
+                        <label for="title">Object Title</label><br>
+                        <input id="title" name ="title" type="text" required>
+                    </p>
+                    <p>
+                        <label for="producer">Producer</label><br>
+                        <input id="producer" name="producer" type="text" required>
+                    </p>                    
+                </div>
+                <div class="field-row">
+                    <p>
+                        <label for="placOfProduction">Place of Production</label><br>
+                        <input 
+                            id="placeOfProduction" 
+                            name="placeOfProduction"
+                            type="text"
+                            required
+                        >
+                    </p>
+                    <p>
+                        <label for="dateOfProduction">Date of Production</label><br>
+                        <input 
+                            id="dateOfProduction"
+                            name="dateOfProduction"
+                            type="text"
+                            placeholder="YYYY"
+                            pattern="[0-9]"
+                            maxlength="4"
+                        >
+                    </p>
+                </div>
+            </form>
+        </div>
+        <p id="add-object-message" role="status"></p>
+    </main>
+    <script src="js/collection.js"></script>
+</body>
+</html>

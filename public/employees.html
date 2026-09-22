@@ -11,8 +11,13 @@
     <header class="site-header">
         <h1 class="site-title">MFAH Admin</h1>
         <nav>
-            <a href="/">Home</a>
-            <a href="/employees">Employees</a>
+      <a href="/">Home</a>
+            <a href="/collection">Collection</a>
+            <a href="/exhibits">Exhibits</a>
+            <a href="/security">Security</a>
+            <a href="/finance">Finance</a>
+            <a href="/personnel">Personnel</a>
+            <a href="/ticketing">Employees</a>
             <a href="/about">About</a>
         </nav>
         <hr>
@@ -120,6 +125,17 @@
         </div>
         <p id="update-message" role="status"></p>
 
+        <h2>Delete Employee</h2>
+        <div class="formcontainer">
+            <form id="delete-employee-form">
+                <label for="delete-employee">Delete Employee</label><br>
+                <input
+                    id="delete-employee"
+                    name="delete-employee"
+                    type="text"
+                    inputmode=""
+            </form>
+        </div>
     </main>
     <script src="js/employees.js"></script>
 </body>

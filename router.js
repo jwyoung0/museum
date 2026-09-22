@@ -4,6 +4,8 @@ const { createEmployeeHandler, readEmployeeHandler, updateEmployeeHandler } = re
 
 async function router(req, res) {
     try {
+        
+        // Handler file routing starts here
         if (req.method === "POST" && req.url === "/api/employees") {
             await createEmployeeHandler(req, res);
             return;
@@ -21,8 +23,14 @@ async function router(req, res) {
             return;
         }
 
+        // HTML file routing starts here
         if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             sendPage(res, "index.html", "text/html");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/collection") {
+            sendPage(res, "collection.html", "text/html");
             return;
         }
 
@@ -38,6 +46,12 @@ async function router(req, res) {
 
         if (req.method === "GET" && req.url === "/style") {
             sendPage(res, "style.css", "text/css");
+            return;
+        }
+
+        // Client script file routing starts here
+        if (req.method === "GET" && req.url === "/js/collection.js") {
+            sendPage(res, path.join("js", "collection.js"), "application/javascript");
             return;
         }
 

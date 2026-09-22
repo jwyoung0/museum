@@ -10,16 +10,34 @@
 <body>
     <header class="site-header">
         <h1 class="site-title">MFAH Admin</h1>
-        <nav>
-            <a href="/">Home</a>
-            <a href="/employees">Employees</a>
-            <a href="/about">About</a>
-        </nav>
+ 
         <hr>
     </header>
     <main>
-        <h2>Home</h2> 
-
+        <h2>Login</h2>
+        <div class="formcontainer">
+            <form id="login-form">
+                <p>
+                    <label for="username">Username</label><br>
+                    <input 
+                        id="username"
+                        name="username"
+                        type="text"
+                        required    
+                    >
+                </p>
+                <p>
+                    <label for="password">Password</label><br>
+                    <input
+                        id="password"
+                        name="password"
+                        type="text"
+                        required
+                    >
+                </p>
+            </form>
+        </div>
     </main>
+    <script src="js/app.js"></script>
 </body>
 </html>
