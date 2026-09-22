@@ -41,4 +41,4 @@ addObjectForm.addEventListener(`submit`, async (event) => {
     } catch (error) {
         addObjectMessage.textContent = error.message;
     }
-})
+});

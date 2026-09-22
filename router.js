@@ -1,11 +1,17 @@
 const fs = require("fs");
 const path = require("path");
 const { createEmployeeHandler, readEmployeeHandler, updateEmployeeHandler } = require("./handlers/employees");
+const { loginHandler } = require("./handlers/login");
 
 async function router(req, res) {
     try {
-        
+    
         // Handler file routing starts here
+        if (req.method === "POST" && req.url === "/api/login") {
+            await loginHandler(req, res);
+            return;
+        }
+
         if (req.method === "POST" && req.url === "/api/employees") {
             await createEmployeeHandler(req, res);
             return;
@@ -26,6 +32,16 @@ async function router(req, res) {
         // HTML file routing starts here
         if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             sendPage(res, "index.html", "text/html");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/js/login.js") {
+            sendPage(res, path.join("js", "login.js"), "application/javascript");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/admin-dashboard") {
+            sendPage(res, "admin-dashboard.html", "text/html");
             return;
         }
 

@@ -72,12 +72,13 @@ main {
     justify-content: center;
     align-items: center;
     width: min(1060px, calc(100% - 48px));
-    margin: 40px auto;
+    margin: 0 auto;
 }
 
 h2 {
     margin: 32px 0 16px;
     font-size: 1.35rem;
+    text-align: center;
 }
 
 /* Form */
@@ -93,6 +94,10 @@ h2 {
     background: var(--paper);
     border: 1px solid var(--line);
     border-radius: 8px;
+
+    display: flex;
+    flex-direction: column;
+
 }
 
 .formcontainer p {
@@ -103,6 +108,13 @@ h2 {
     display: inline-block;
     margin-bottom: 5px;
     font-weight: 600;
+}
+
+
+.formcontainer form button {
+    width: 100%;
+    margin-top: 8px;
+    text-align: center;
 }
 
 .field-row {
@@ -118,7 +130,7 @@ h2 {
 form p {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 5px;
 }
 
@@ -173,6 +185,12 @@ button:focus-visible {
 #message {
     margin: 10px 0;
     color: var(--green);
+}
+
+#login-message {
+    margin: 16px 0 0;
+    color: var(--green);
+    text-align: center;
 }
 
 /* Responsive */
