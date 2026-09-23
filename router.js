@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-const { createEmployeeHandler, readEmployeeHandler, updateEmployeeHandler } = require("./handlers/employees");
 const { loginHandler } = require("./handlers/login");
 
 async function router(req, res) {
@@ -9,23 +8,6 @@ async function router(req, res) {
         // Handler file routing starts here
         if (req.method === "POST" && req.url === "/api/login") {
             await loginHandler(req, res);
-            return;
-        }
-
-        if (req.method === "POST" && req.url === "/api/employees") {
-            await createEmployeeHandler(req, res);
-            return;
-        }
-
-        if (req.method === "GET" && req.url.startsWith("/api/employees/")) {
-            const id = req.url.split("/")[3];
-            await readEmployeeHandler(req, res, id);
-            return;
-        }
-
-        if (req.method === "PUT" && req.url.startsWith("/api/employees/")) {
-            const id = req.url.split("/")[3];
-            await updateEmployeeHandler(req, res, id);
             return;
         }
 
@@ -50,11 +32,6 @@ async function router(req, res) {
             return;
         }
 
-        if (req.method === "GET" && req.url === "/employees") {
-            sendPage(res, "employees.html", "text/html");
-            return;
-        }
-
         if (req.method === "GET" && req.url === "/about") {
             sendPage(res, "about.html", "text/html");
             return;
@@ -68,11 +45,6 @@ async function router(req, res) {
         // Client script file routing starts here
         if (req.method === "GET" && req.url === "/js/collection.js") {
             sendPage(res, path.join("js", "collection.js"), "application/javascript");
-            return;
-        }
-
-        if (req.method === "GET" && req.url === "/js/employees.js") {
-            sendPage(res, path.join("js", "employees.js"), "application/javascript");
             return;
         }
 
