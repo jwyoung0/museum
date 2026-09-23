@@ -17,11 +17,6 @@ async function router(req, res) {
             return;
         }
 
-        if (req.method === "GET" && req.url === "/js/login.js") {
-            sendPage(res, path.join("js", "login.js"), "application/javascript");
-            return;
-        }
-
         if (req.method === "GET" && req.url === "/admin-dashboard") {
             sendPage(res, "admin-dashboard.html", "text/html");
             return;
@@ -43,12 +38,17 @@ async function router(req, res) {
         }
 
         // Client script file routing starts here
+        if (req.method === "GET" && req.url === "/js/login.js") {
+            sendPage(res, path.join("js", "login.js"), "application/javascript");
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/js/collection.js") {
             sendPage(res, path.join("js", "collection.js"), "application/javascript");
             return;
         }
 
-        // Images
+        // Images routing
         if (req.method === "GET" && req.url.startsWith("/images/")) {
             const filename = path.basename(req.url);
 
