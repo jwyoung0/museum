@@ -9,7 +9,3 @@ BEGIN TRANSACTION;
 
 COMMIT TRANSACTION;
 GO
-
-
-SELECT * FROM dbo.authentication;
-GO
