@@ -48,6 +48,22 @@ async function router(req, res) {
             return;
         }
 
+        // Images
+        if (req.method === "GET" && req.url.startsWith("/images/")) {
+            const filename = path.basename(req.url);
+
+            const ext = path.extname(filename).toLowerCase();
+            let contentType = "application/octet-stream";
+
+            if (ext === '.webp') contentType = 'image/webp';
+            else if (ext === '.png') contentType = 'image/png';
+            else if (ext === '.jpg' || ext === '.jpeg') contentType = 'image/jpeg';
+            else if (ext === '.gif') contentType = 'image/gif';
+            
+            sendPage(res, path.join("images", filename), contentType);
+            return;
+        }
+
         res.writeHead(404, { "Content-Type": "text/html" });
         res.end("<h1>404 - Page Not Found</h1>");
     } catch (error) {
