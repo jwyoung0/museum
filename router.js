@@ -18,9 +18,11 @@ async function router(req, res) {
         }
 
         if (req.method === "GET" && req.url === "/admin-dashboard") {
+            if (!requireAdmin(req, res)) return;
             sendPage(res, "admin-dashboard.html", "text/html");
             return;
         }
+
 
         if (req.method === "GET" && req.url === "/collection") {
             sendPage(res, "collection.html", "text/html");
@@ -93,6 +95,18 @@ function sendPage(res, filename, contentType) {
         res.writeHead(200, { "Content-Type": contentType });
         res.end(data);
     });
+}
+
+function requireAdmin(req, res) {
+    if (!req.user || req.user.role !== "admin") {
+        res.writeHead(302, {
+            "Location": "/",
+            "Content-Length": 0
+        });
+        res.end();
+        return false;
+    }
+    return true;
 }
 
 module.exports = router;
