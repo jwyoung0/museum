@@ -22,8 +22,8 @@ async function router(req, res) {
             return;
         }
 
-        if (req.method === "GET" && req.url === "/collection") {
-            sendPage(res, "collection.html", "text/html");
+        if (req.method === "GET" && req.url === "/collections") {
+            sendPage(res, "collections.html", "text/html");
             return;
         }
 
@@ -43,8 +43,8 @@ async function router(req, res) {
             return;
         }
 
-        if (req.method === "GET" && req.url === "/js/collection.js") {
-            sendPage(res, path.join("js", "collection.js"), "application/javascript");
+        if (req.method === "GET" && req.url === "/js/collections.js") {
+            sendPage(res, path.join("js", "collections.js"), "application/javascript");
             return;
         }
 
