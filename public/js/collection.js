@@ -17,7 +17,7 @@ addObjectForm.addEventListener(`submit`, async (event) => {
     };
 
     try {
-        const response = await fetch('/api/collection', {
+        const response = await fetch('/api/collections', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
