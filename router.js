@@ -22,6 +22,11 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" && req.url === "/artwork") {
+            sendPage(res, "artwork.html", "text/html");
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/collections") {
             sendPage(res, "collections.html", "text/html");
             return;

@@ -112,6 +112,8 @@ h2 {
     margin: 0 0 16px;
 }
 
+
+
 .formcontainer label {
     display: inline-block;
     margin-bottom: 1px;
@@ -149,6 +151,11 @@ form p {
 
 form h2 {
     margin: 4px 0 4px;
+
+}
+
+form h3 {
+    text-align: center;
 }
 
 input,

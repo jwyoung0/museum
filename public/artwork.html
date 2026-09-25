@@ -11,7 +11,7 @@
     <header class="site-header">
         <h1 class="site-title">MFAH System</h1>
         <nav>
-            <a href="/artworks">Artworks</a>
+            <a href="/artwork">Artwork</a>
             <a href="/collections">Collections</a>
             <a href="/exhibits">Exhibits</a>
             <a href="/personnel">Personnel</a>
@@ -21,10 +21,10 @@
         <hr>
     </header>
     <main>
-        <h2>collections Management</h2>
-        <h3>Add Object</h3>
+        <h2>Artwork</h2>
         <div class="formcontainer">
             <form id="add-object-form">
+                <h3>Add Object</h3>
                 <div class="field-row">
                     <p>
                         <label for="title">Object Title</label><br>
@@ -60,7 +60,12 @@
             </form>
         </div>
         <p id="add-object-message" role="status"></p>
+        <div class="formcontainer">
+            <form id="add-artist-form">
+                <h3>Add Artist</h3>
+            </form>
+        </div>
     </main>
-    <script src="js/collections.js"></script>
+    <script src="js/artwork.js"></script>
 </body>
 </html>
