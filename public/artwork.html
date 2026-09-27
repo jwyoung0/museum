@@ -9,62 +9,46 @@
 </head>
 <body>
     <header class="site-header">
-        <h1 class="site-title">MFAH System</h1>
+        <h1 class="site-title">MFAH</h1>
         <nav>
+            <a href="/">Home</a>
             <a href="/artwork">Artwork</a>
-            <a href="/collections">Collections</a>
-            <a href="/exhibits">Exhibits</a>
-            <a href="/personnel">Personnel</a>
-            <a href="/ticketing">Ticketing</a>
-            <a href="/logout">About</a>
+            <a href="/membership">Membership</a>
+            <a href="/events">Events</a>
+            <a href="/ticketing">Tickets</a>
+            <a href="/shop">Shop</a>
+            <a href="/login">Login</a>
         </nav>
         <hr>
     </header>
     <main>
-        <h2>Artwork</h2>
-        <div class="formcontainer">
-            <form id="add-object-form">
-                <h3>Add Object</h3>
-                <div class="field-row">
-                    <p>
-                        <label for="title">Object Title</label><br>
-                        <input id="title" name ="title" type="text" required>
-                    </p>
-                    <p>
-                        <label for="producer">Producer</label><br>
-                        <input id="producer" name="producer" type="text" required>
-                    </p>                    
-                </div>
-                <div class="field-row">
-                    <p>
-                        <label for="placeOfProduction">Place of Production</label><br>
-                        <input 
-                            id="placeOfProduction" 
-                            name="placeOfProduction"
-                            type="text"
-                            required
-                        >
-                    </p>
-                    <p>
-                        <label for="dateOfProduction">Date of Production</label><br>
-                        <input 
-                            id="dateOfProduction"
-                            name="dateOfProduction"
-                            type="text"
-                            placeholder="YYYY"
-                            pattern="[0-9]"
-                            maxlength="4"
-                        >
-                    </p>
-                </div>
-            </form>
+        <nav>
+            <a href="/search-art">Artwork</a>
+            <a href="/collections">Collections</a>
+            <a href="/exhibitions">Now on View</a>
+        </nav>
+        <h2>Search</h2>
+        <div class="field-bar">
+            <input 
+                id="search-artwork"
+                name="search-artwork"
+                type="text"
+                required           
+            >
+            <select
+                id="search-artwork-field"
+                name="search-artwork-field"
+                required
+            >
+                <option value="" disable selected>Select field...</option>
+                <option value="title">Title</option>
+                <option value="artist">Artist</option>
+                <option value="medium">Medium</option>
+                <option value="year">Year</option>
+            </select>
+            <button type="submit">Search</button>
         </div>
-        <p id="add-object-message" role="status"></p>
-        <div class="formcontainer">
-            <form id="add-artist-form">
-                <h3>Add Artist</h3>
-            </form>
-        </div>
+
     </main>
     <script src="js/artwork.js"></script>
 </body>

@@ -134,7 +134,12 @@ h2 {
     margin-bottom: 16px;
 }
 
-
+.field-bar {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    margin-bottom: 16px;
+}
 
 .field-row input {
     width: 100%;

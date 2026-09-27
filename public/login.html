@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>MFAH Portal</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body class="login-page">
+    <header class="site-header">
+        <h1 class="site-title">MFAH</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/artwork">Artwork</a>
+            <a href="/membership">Membership</a>
+            <a href="/events">Events</a>
+            <a href="/ticketing">Tickets</a>
+            <a href="/shop">Shop</a>
+            <a href="/login">Login</a>
+        </nav>
+        <hr>
+    </header>
+    <main> 
+        <div class="formcontainer">            
+            <form id="login-form">
+                <h2>Login</h2>
+                <div class="field-row">
+                    <label for="username">Username</label>
+                    <input 
+                        id="username"
+                        name="username"
+                        type="text"
+                        placeholder="Enter username"
+                        required    
+                    >
+                </div>
+                <div class="field-row">
+                    <label for="password">Password</label>
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        placeholder="Enter password"
+                        required
+                    >
+                </div>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+        <p id="login-message" role="status"></p>
+    </main>
+    <script src="js/login.js"></script>
+</body>
+</html>
