@@ -54,16 +54,19 @@ async function router(req, res) {
         }
 
         if (req.method === "GET" && req.url === "/curator/artwork") {
+            if (!requireCurator(req, res)) return;
             sendPage(res, "curator-artwork.html", "text/html");
             return;
         }
 
         if (req.method === "GET" && req.url === "/curator/collections") {
+            if (!requireCurator(req, res)) return;
             sendPage(res, "curator-collections.html", "text/html");
             return;
         }
 
         if (req.method === "GET" && req.url === "/curator/exhibitions") {
+            if (!requireCurator(req, res)) return;
             sendPage(res, "curator-exhibitions.html", "text/html");
             return;
         }
@@ -128,6 +131,18 @@ function sendPage(res, filename, contentType) {
 
 function requireAdmin(req, res) {
     if (!req.user || req.user.role !== "admin") {
+        res.writeHead(302, {
+            "Location": "/",
+            "Content-Length": 0
+        });
+        res.end();
+        return false;
+    }
+    return true;
+}
+
+function requireCurator(req, res) {
+    if (!req.user || req.user.role !== "curator") {
         res.writeHead(302, {
             "Location": "/",
             "Content-Length": 0
