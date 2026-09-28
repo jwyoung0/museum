@@ -9,20 +9,23 @@
 </head>
 <body>
     <header class="site-header">
-        <h1 class="site-title">MFAH System</h1>
-        <nav>
-            <a href="/artwork">Artwork</a>
-            <a href="/collections">Collections</a>
-            <a href="/exhibits">Exhibits</a>
-            <a href="/personnel">Personnel</a>
-            <a href="/ticketing">Ticketing</a>
-            <a href="/logout">About</a>
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="/artwork" aria-current="page">Artwork</a>
+            <a href="/membership">Membership</a>
+            <a href="/events">Events</a>
+            <a href="/ticketing">Tickets</a>
+            <a href="/shop">Shop</a>
         </nav>
-        <hr>
+        <a class="header-auth" href="/login">Login</a>  
     </header>
     <main>
-        <h2>Collections Management</h2>
-        <h3>Add Collection</h3>
+        <nav aria-label="Artwork navigation">
+            <a href="/artwork">Search</a>
+            <a href="/collections" aria-current="page">Collections</a>
+            <a href="/exhibitions">Now on View</a>
+        </nav>
+        <h2>Collections</h2>
 
     </main>
     <script src="js/collections.js"></script>

@@ -32,6 +32,11 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" && req.url === "/exhibitions") {
+            sendPage(res, "exhibitions.html", "text/html");
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/about") {
             sendPage(res, "about.html", "text/html");
             return;
@@ -47,6 +52,20 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" && req.url === "/curator/artwork") {
+            sendPage(res, "curator-artwork.html", "text/html");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/curator/collections") {
+            sendPage(res, "curator-collections.html", "text/html");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/curator/exhibitions") {
+            sendPage(res, "curator-exhibitions.html", "text/html");
+            return;
+        }
 
         // Client script file routing starts here
         if (req.method === "GET" && req.url === "/js/login.js") {

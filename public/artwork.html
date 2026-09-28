@@ -9,25 +9,23 @@
 </head>
 <body>
     <header class="site-header">
-        <h1 class="site-title">MFAH</h1>
-        <nav>
-            <a href="/">Home</a>
-            <a href="/artwork">Artwork</a>
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="/artwork" aria-current="page">Artwork</a>
             <a href="/membership">Membership</a>
             <a href="/events">Events</a>
             <a href="/ticketing">Tickets</a>
             <a href="/shop">Shop</a>
-            <a href="/login">Login</a>
         </nav>
-        <hr>
+        <a class="header-auth" href="/login">Login</a>        
     </header>
     <main>
-        <nav>
-            <a href="/search-art">Artwork</a>
+        <nav aria-label="Artwork navigation">
+            <a href="/artwork" aria-current="page">Search</a>
             <a href="/collections">Collections</a>
             <a href="/exhibitions">Now on View</a>
         </nav>
-        <h2>Search</h2>
+        <h2>Search Artwork</h2>
         <div class="field-bar">
             <input 
                 id="search-artwork"
