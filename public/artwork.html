@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>MFAH Portal</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <header class="site-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="/artwork" aria-current="page">Artwork</a>
+            <a href="/membership">Membership</a>
+            <a href="/events">Events</a>
+            <a href="/ticketing">Tickets</a>
+            <a href="/shop">Shop</a>
+        </nav>
+        <a class="header-auth" href="/login">Login</a>        
+    </header>
+    <main>
+        <nav aria-label="Artwork navigation">
+            <a href="/artwork" aria-current="page">Search</a>
+            <a href="/collections">Collections</a>
+            <a href="/exhibitions">Now on View</a>
+        </nav>
+        <h2>Search Artwork</h2>
+        <div class="field-bar">
+            <input 
+                id="search-artwork"
+                name="search-artwork"
+                type="text"
+                required           
+            >
+            <select
+                id="search-artwork-field"
+                name="search-artwork-field"
+                required
+            >
+                <option value="" disable selected>Select field...</option>
+                <option value="title">Title</option>
+                <option value="artist">Artist</option>
+                <option value="medium">Medium</option>
+                <option value="year">Year</option>
+            </select>
+            <button type="submit">Search</button>
+        </div>
+
+    </main>
+    <script src="js/artwork.js"></script>
+</body>
+</html>

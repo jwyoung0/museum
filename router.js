@@ -5,13 +5,13 @@ const { loginHandler } = require("./handlers/login");
 async function router(req, res) {
     try {
     
-        // Handler file routing starts here
+        // POST routing starts here
         if (req.method === "POST" && req.url === "/api/login") {
             await loginHandler(req, res);
             return;
         }
 
-        // HTML file routing starts here
+        // GET - HTML file routing starts here
         if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             sendPage(res, "index.html", "text/html");
             return;
@@ -23,9 +23,18 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" && req.url === "/artwork") {
+            sendPage(res, "artwork.html", "text/html");
+            return;
+        }
 
         if (req.method === "GET" && req.url === "/collections") {
             sendPage(res, "collections.html", "text/html");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/exhibitions") {
+            sendPage(res, "exhibitions.html", "text/html");
             return;
         }
 
@@ -34,8 +43,28 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" && req.url === "/login") {
+            sendPage(res, "login.html", "text/html");
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/style") {
             sendPage(res, "style.css", "text/css");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/curator/artwork") {
+            sendPage(res, "curator-artwork.html", "text/html");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/curator/collections") {
+            sendPage(res, "curator-collections.html", "text/html");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/curator/exhibitions") {
+            sendPage(res, "curator-exhibitions.html", "text/html");
             return;
         }
 

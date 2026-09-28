@@ -11,18 +11,24 @@
     <header class="site-header">
         <h1 class="site-title"><a href="/">MFAH</a></h1>
         <nav class="header-nav" aria-label="Main navigation">
-            <a href="/artwork">Artwork</a>
+            <a href="/artwork" aria-current="page">Artwork</a>
             <a href="/membership">Membership</a>
             <a href="/events">Events</a>
             <a href="/ticketing">Tickets</a>
             <a href="/shop">Shop</a>
         </nav>
         <a class="header-auth" href="/login">Login</a>
-    </header>
+    </header>   
     <main>
-        <h2>Home Page</h2> 
+        <nav aria-label="Artwork navigation">
+            <a href="/artwork">Search</a>
+            <a href="/collections">Collections</a>
+            <a href="/exhibitions" aria-current="page">Now on View</a>
+        </nav>
+        <h2>Exhibitions</h2>
+
 
     </main>
-    <script src="js/app.js"></script>
+    <script src="js/artwork.js"></script>
 </body>
 </html>
