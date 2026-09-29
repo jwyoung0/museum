@@ -27,6 +27,10 @@ async function loginHandler(req, res) {
         role: loginResults.role
     });
 
+    const routeByRole = {
+        curator: "/curator/artwork"
+    };
+
     res.writeHead(200, {
         "Content-Type": "application/json",
         "Set-Cookie": `sessionId=${sessionId}; HttpOnly; Path=/; SameSite=Strict`
@@ -34,7 +38,8 @@ async function loginHandler(req, res) {
 
     res.end(JSON.stringify({
         username: loginResults.username,
-        role: loginResults.role
+        role: loginResults.role,
+        redirectTo: routeByRole[loginResults.role] || "/"        
     }));
 }
 
