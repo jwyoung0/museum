@@ -231,6 +231,14 @@ form h3 {
     text-align: center;
 }
 
+.artist-form-container {
+    width: min(520px, 100%);
+}
+
+.artist-form-container form {
+    width: 100%;
+}
+
 input,
 select {
     width: 100%;
@@ -317,3 +325,5 @@ button:focus-visible {
         grid-row: 1;
     }
 }
+
+

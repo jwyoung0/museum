@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>Curator Dashboard</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <h1 class="dashboard-title">Curator Dashboard</h1>
+        <a class="header-auth" href="/logout">Logout</a>
+    </header>
+
+    <main>
+        <nav aria-label="Curator navigation">
+            <a href="/curator/artwork">Artwork</a>
+            <a href="/curator/artists" aria-current="page">Artists</a>
+            <a href="/curator/collections">Collections</a>
+            <a href="/curator/exhibitions">Exhibits</a>
+        </nav>
+
+        <section class="formcontainer artist-form-container" aria-labelledby="artist-form-title">
+            <form id="artist-form" action="/api/curator/artists" method="post">
+                <h2 id="artist-form-title">Create Artist</h2>
+
+                <div class="field-row">
+                    <label for="fullName">Full name</label>
+                    <input id="fullName" name="fullName" type="text" maxlength="100" required>
+                </div>
+
+                <div class="field-row">
+                    <label for="birthYear">Birth year</label>
+                    <input id="birthYear" name="birthYear" type="number" step="1" required>
+                </div>
+
+                <div class="field-row">
+                    <label for="placeOfBirth">Place of birth</label>
+                    <input id="placeOfBirth" name="placeOfBirth" type="text" maxlength="100">
+                </div>
+
+                <div class="field-row">
+                    <label for="period">Period</label>
+                    <input id="period" name="period" type="text" maxlength="50">
+                </div>
+
+                <div class="field-row">
+                    <label for="deathYear">Death year</label>
+                    <input id="deathYear" name="deathYear" type="number" step="1">
+                </div>
+
+                <div class="field-row">
+                    <label for="sex">Sex</label>
+                    <input id="sex" name="sex" type="text" maxlength="20">
+                </div>
+
+                <div class="field-row">
+                    <label for="nationality">Nationality</label>
+                    <input id="nationality" name="nationality" type="text" maxlength="50">
+                </div>
+
+                <button type="submit">Create Artist</button>
+            </form>
+        </section>
+    </main>
+    <script src="js/app.js"></script>
+</body>
+</html>

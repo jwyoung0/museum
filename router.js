@@ -59,6 +59,12 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" && req.url === "/curator/artists") {
+            if (!requireCurator(req, res)) return;
+            sendPage(res, "curator-artists.html", "text/html");
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/curator/collections") {
             if (!requireCurator(req, res)) return;
             sendPage(res, "curator-collections.html", "text/html");
