@@ -16,7 +16,7 @@ async function loginAttempt({ username, password }) {
         .input("password", sql.NVarChar(255), password)
         .query(`
            SELECT username, role
-           FROM dbo.authentication
+           FROM dbo.USER_ACCOUNT
            WHERE username = @username AND password = @password;            
         `);
 
