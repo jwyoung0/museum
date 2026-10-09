@@ -22,7 +22,80 @@
             <a href="/curator/exhibitions">Exhibits</a>
         </nav>
 
-        <section class="formcontainer artist-form-container" aria-labelledby="artist-form-title">
+        <section class="artists-workspace">
+            <header class="workspace-header">
+                <h2>Artists</h2>
+            </header>
+
+            <div class="workspace-toolbar">
+                <input
+                    type="search"
+                    id="artist-search"
+                    placeholder="Search artists..."
+                    aria-label="Search artists"
+                >
+
+                <button
+                    type="button"
+                    id="add-artist-button"
+                >
+                    + Add Artist    
+                </button>
+            </div>
+
+            <div class="artists-table-container">
+                <table class="artists-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Lifespan</th>
+                            <th>Nationality</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        
+                        <!-- Sample row 1 -->
+                        <tr>
+                            <td>Vincent van Gogh</td>
+                            <td>1853–1890</td>
+                            <td>Dutch</td>
+                            <td>
+                                <button type="button">Edit</button>
+                                <button type="button">Delete</button>
+                            </td>
+                        </tr>
+
+                        <!-- Sample row 2 -->
+                        <tr>
+                            <td>Claude Monet</td>
+                            <td>1840–1926</td>
+                            <td>French</td>
+                            <td>
+                                <button type="button">Edit</button>
+                                <button type="button">Delete</button>
+                            </td>
+                        </tr>
+
+                        <!-- Sample row 3 -->
+                        <tr>
+                            <td>Frida Kahlo</td>
+                            <td>1907–1954</td>
+                            <td>Mexican</td>
+                            <td>
+                                <button type="button">Edit</button>
+                                <button type="button">Delete</button>
+                            </td>
+                        </tr>
+                    
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <!-- <section class="formcontainer artist-form-container" aria-labelledby="artist-form-title">
             <form id="artist-form" action="/api/curator/artists" method="post">
                 <h2 id="artist-form-title">Create Artist</h2>
 
@@ -68,7 +141,7 @@
 
                 <button type="submit">Create Artist</button>
             </form>
-        </section>
+        </section> -->
     </main>
     <script src="/js/curator-artists.js"></script>
 </body>

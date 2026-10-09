@@ -231,6 +231,102 @@ form h3 {
     text-align: center;
 }
 
+/* Curator Dashboard start here*/
+.artists-workspace {
+    width: 100%;
+    margin: 20px 0;
+    padding: 24px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+}
+
+.workspace-header {
+    margin-bottom: 24px;
+}
+
+.workspace-header h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-align: left;
+}
+
+.workspace-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.workspace-toolbar input[type="search"] {
+    flex: 1;
+    max-width: 500px;
+}
+
+.workspace-toolbar button {
+    flex-shrink: 0;
+}
+
+.artists-table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.artists-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--paper);
+}
+
+.artists-table thead {
+    background: var(--bg);
+}
+
+.artists-table th {
+    padding:12px 16px;
+    border-bottom: 2px solid var(--line);
+    text-align: left;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.artists-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+}
+
+.artists-table tbody tr:hover {
+    background: rgba(37, 99, 235, 0.04);
+}
+
+.artists-table td:last-child {
+    white-space: nowrap;
+}
+
+.artists-table .actions {
+    display: flex;
+    gap: 8px;
+}
+
+.artists-table th:nth-child(1) {
+    width: 40%;
+}
+
+.artists-table th:nth-child(2) {
+    width: 20%;
+}
+
+.artists-table th:nth-child(3) {
+    width: 20%;
+}
+
+.artists-table th:nth-child(4) {
+    width: 20%;
+}
+/* Curator Dashboard end*/
+
 .artist-form-container {
     width: min(520px, 100%);
 }
@@ -332,6 +428,22 @@ button:focus-visible {
         grid-column: 2;
         grid-row: 1;
     }
+
+    .workspace-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .workspace-toolbar input[type="search"] {
+        max-width: none;
+        width: 100%;
+    }
+
+    .workspace-toolbar button {
+        width: 100%;
+    }
+
+    .artists-table {
+        min-width: 700px;
+    }
 }
-
-
