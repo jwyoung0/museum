@@ -239,6 +239,14 @@ form h3 {
     width: 100%;
 }
 
+.artwork-form-container {
+    width: min(520px, 100%);
+}
+
+.artwork-form-container form {
+    width: 100%;
+}
+
 input,
 select {
     width: 100%;

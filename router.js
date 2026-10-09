@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { loginHandler } = require("./handlers/login");
+const { createArtistHandler } = require("./handlers/artists");
 
 async function router(req, res) {
     try {
@@ -8,6 +9,13 @@ async function router(req, res) {
         // POST routing starts here
         if (req.method === "POST" && req.url === "/api/login") {
             await loginHandler(req, res);
+            return;
+        }
+
+        if (req.method === "POST" && req.url === "/api/curator/artists") {
+            if (!requireCurator(req, res)) return;
+
+            await createArtistHandler(req, res);
             return;
         }
 
@@ -85,6 +93,11 @@ async function router(req, res) {
 
         if (req.method === "GET" && req.url === "/js/collections.js") {
             sendPage(res, path.join("js", "collections.js"), "application/javascript");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/js/curator-artists.js") {
+            sendPage(res, path.join("js", "curator-artists.js"), "application/javascript");
             return;
         }
 

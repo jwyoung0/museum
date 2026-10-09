@@ -21,6 +21,63 @@
             <a href="/curator/collections">Collections</a>
             <a href="/curator/exhibitions">Exhibits</a>
         </nav>
+        <section class="formcontainer artwork-form-container" aria-labelledby="artwork-form-title">
+            <form id="artwork-form" action="/api/curator/artwork" method="post">
+                <h2 id="artwork-form-title">Create Artwork</h2>
+
+                <div class="field-row">
+                    <label for="artworkName">Artwork name *</label>
+                    <input id="artworkName" name="artworkName" type="text" maxlength="100" required>
+                </div>
+
+                <div class="field-row">
+                    <label for="category">Category *</label>
+                    <input id="category" name="category" type="text" maxlength="50" required>
+                </div>
+
+                <div class="field-row">
+                    <label for="medium">Medium</label>
+                    <input id="medium" name="medium" type="text" maxlength="50" required>
+                </div>
+
+                <div class="field-row">
+                    <label for="dimensions">Dimensions</label>
+                    <input id="dimensions" name="dimensions" type="text" maxlength="50">
+                </div>
+
+                <div class="field-row">
+                    <label for="creationDate">Creation Date</label>
+                    <input id="creationDate" name="creationDate" type="number" step="1">
+                </div>
+
+                <div class="field-row">
+                    <label for="artist">Artist</label>
+                    <input id="artist" name="artist" type="text" maxlength="50">
+                </div>
+
+                <div class="field-row">
+                    <label for="collection">Collection</label>
+                    <input id="collection" name="collection" type="text" maxlength="50">
+                </div>
+
+                <div class="field-row">
+                    <label for="style">Style</label>
+                    <input id="style" name="style" type="text" maxlength="50">
+                </div>
+
+                <div class="field-row">
+                    <label for="period">Period</label>
+                    <input id="period" name="period" type="text" maxlength="50">
+                </div>
+
+                <div class="field-row">
+                    <label for="imageURL">Image URL</label>
+                    <input id="imageURL" name="imageURL" type="text" maxlength="500">
+                </div>
+
+                <button type="submit">Create Artwork</button>
+            </form>
+        </section>
     </main>
     <script src="js/app.js"></script>
 </body>
