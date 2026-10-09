@@ -12,13 +12,6 @@ async function router(req, res) {
             return;
         }
 
-        if (req.method === "POST" && req.url === "/api/curator/artists") {
-            if (!requireCurator(req, res)) return;
-
-            await createArtistHandler(req, res);
-            return;
-        }
-
         // GET - HTML file routing starts here
         if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             sendPage(res, "index.html", "text/html");
@@ -98,6 +91,37 @@ async function router(req, res) {
 
         if (req.method === "GET" && req.url === "/js/curator-artists.js") {
             sendPage(res, path.join("js", "curator-artists.js"), "application/javascript");
+            return;
+        }
+
+        // Curator dashboard routing starts here
+        if (req.method === "POST" && req.url === "/api/curator/artists") {
+            if (!requireCurator(req, res)) return;
+            await createArtistHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/api/curator/artists") {
+            if (!requireCurator(req, res)) return;
+            await listArtistsHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/api/curator/artists/:id") {
+            if (!requireCurator(req, res)) return;
+            await readArtistHandler(req, res);
+            return;
+        }
+
+        if (req.method === "PUT" && req.url === "/api/curator/artists/:id") {
+            if (!requireCurator(req, res)) return;
+            await updateArtistHandler(req, res);
+            return;
+        }
+
+        if (req.method === "DELETE" && req.url === "/api/curator/artists/:id") {
+            if (!requireCurator(req, res)) return;
+            await deleteArtistHandler(req, res);
             return;
         }
 
