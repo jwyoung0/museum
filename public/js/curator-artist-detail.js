@@ -16,6 +16,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("birth-year").textContent =
             artist.birthYear ?? "";
 
+        document.getElementById("place-of-birth").textContent =
+            artist.placeOfBirth ?? "";
+
+        document.getElementById("nationality").textContent = 
+            artist.nationality ?? "";
+
         document.getElementById("death-year").textContent =
             artist.deathYear ?? "";
 

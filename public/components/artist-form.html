@@ -1,5 +1,10 @@
 <section class="formcontainer artist-form-container" aria-labelledby="artist-form-title">
-    <form id="artist-form" action="/api/curator/artists" method="post">
+    <form 
+        id="artist-form" 
+        data-mode="create"
+        data-artist-id=""
+        action="/api/curator/artists" 
+        method="post">
         <h2 id="artist-form-title">Create Artist</h2>
 
         <div class="field-row">
@@ -42,6 +47,18 @@
             <input id="nationality" name="nationality" type="text" maxlength="50">
         </div>
 
-        <button type="submit">Create Artist</button>
+        <div class="form-actions">
+            <button
+                id="artist-submit-button"
+                type="submit">
+                Create Artist
+            </button>
+
+            <button
+                id="artist-cancel-button"
+                type="button">
+                Cancel
+            </button>
+        </div>
     </form>
 </section>
