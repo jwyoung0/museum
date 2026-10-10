@@ -22,8 +22,39 @@
             <a href="/curator/exhibitions">Exhibits</a>
         </nav>
 
+        <section class="artist-detail-workspace">
+        <a href="/curator/artists">
+            ← Back to Artists
+        </a>
+            <header class="workspace-header">
+                <h2 id="artist-name">Loading...</h2>
+            </header>
 
-        <h2>Artist detail</h2>
+            <dl class="artist-detail-grid">
+                <dt>Birth Year</dt>
+                <dd id="birth-year"></dd>
+
+                <dt>Death Year</dt>
+                <dd id="death-year"></dd>
+
+                <dt>Nationality</dt>
+                <dd id="nationality"></dd>
+
+                <dt>Place of Birth</dt>
+                <dd id="place-of-birth"></dd>
+
+                <dt>Period</dt>
+                <dd id="period"></dd>
+
+                <dt>Sex</dt>
+                <dd id="sex"></dd>
+            </dl>
+
+            <div id="detail-error" hidden>
+                Unable to load artist.
+            </div>
+        </section>
+        
     </main>
     <script src="/js/curator-artist-detail.js"></script>
 </body>

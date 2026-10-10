@@ -331,6 +331,69 @@ form h3 {
     text-align: center;
     color: var(--muted);
 }
+
+.artist-detail-workspace {
+    width: 100%;
+    max-width: 1060px;
+    margin: 0 auto;
+}
+
+.artist-detail-workspace .workspace-header {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.artist-detail-workspace h2 {
+    margin: 0;
+}
+
+.back-link {
+    display: inline-block;
+    align-self: flex-start;
+    margin-bottom: 1rem;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+.artist-detail-grid {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 1rem;
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface, #fff);
+}
+
+.artist-detail-grid dt {
+    font-weight: 600;
+    color: var(--text-secondary, #555);
+}
+
+.artist-detail-grid dd {
+    margin: 0;
+}
+
+#loading-state,
+#detail-error {
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 6px;
+}
+
+#loading-state {
+    background: #f5f5f5;
+}
+
+#detail-error {
+    color: #b91c1c;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+}
 /* Curator Dashboard end*/
 
 .artist-form-container {
@@ -451,5 +514,14 @@ button:focus-visible {
 
     .artists-table {
         min-width: 700px;
+    }
+
+    .artist-detail-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .artist-detail-grid dt {
+        margin-top: 0.75rem;
     }
 }
