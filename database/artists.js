@@ -135,10 +135,25 @@ async function deleteArtist(artistId) {
     return result.recordset[0] || null;
 }
 
+async function countArtistArtworks(artistId) {
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .input("artistId", artistId)
+        .query(`
+            SELECT COUNT(*) AS artworkCount
+            FROM dbo.ARTWORK_ARTIST
+            WHERE artistId = @artistId
+        `);
+
+    return result.recordset[0].artworkCount;
+}
+
 module.exports = {
     createArtist,
     listArtists,
     readArtist,
     updateArtist,
-    deleteArtist
+    deleteArtist,
+    countArtistArtworks
 };

@@ -1,3 +1,5 @@
+let currentArtist = null;
+
 document.addEventListener("DOMContentLoaded", async () => {
     const artistId = window.location.pathname.split("/").pop();
 
@@ -9,6 +11,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         const artist = await response.json();
+
+        currentArtist = artist;
 
         document.getElementById("artist-name").textContent = 
             artist.fullName;
@@ -29,7 +33,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             artist.period ?? "";
 
         document.getElementById("sex").textContent =
-            artist.sex ?? ""
+            artist.sex ?? "";
+
+        const deleteButton = document.getElementById("delete-artist-button");
+        deleteButton.hidden = false;
+        deleteButton.addEventListener("click", handleDeleteArtist);
     } catch (error) {
         document.getElementById("detail-error").hidden = false;
     }

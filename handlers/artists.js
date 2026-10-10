@@ -3,7 +3,8 @@ const {
     listArtists, 
     readArtist, 
     updateArtist,
-    deleteArtist 
+    deleteArtist, 
+    countArtistArtworks
 } = require("../database/artists");
 
 const { readJsonBody } = require("../utils/http");
@@ -59,7 +60,12 @@ async function readArtistHandler(req, res) {
         "Content-Type": "application/json"
     });
 
-    res.end(JSON.stringify(artist));
+    const artworkCount = await countArtistArtworks(artistId);
+
+    res.end(JSON.stringify({
+        ...artist,
+        artworkCount
+    }));
 }
 
 async function updateArtistHandler(req, res) {
