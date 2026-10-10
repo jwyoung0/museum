@@ -132,6 +132,12 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" && req.url === "/components/artist-form.html") {
+            if (!requireCurator(req, res)) return;
+            sendPage(res, path.join("components", "artist-form.html"), "text/html");
+            return;
+        }
+
         const artistMatch = req.url.match(/^\/api\/curator\/artists\/(\d+)$/); 
 
         if (req.method === "GET" && artistMatch) {

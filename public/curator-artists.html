@@ -66,56 +66,23 @@
                     </tbody>
                 </table>
             </div>
-
         </section>
 
-        <!-- <section class="formcontainer artist-form-container" aria-labelledby="artist-form-title">
-            <form id="artist-form" action="/api/curator/artists" method="post">
-                <h2 id="artist-form-title">Create Artist</h2>
+        <div id="artist-form-container">
+            <aside
+                id="artist-form-container"
+                class="artist-drawer"
+                aria-labelledby="artist-form-title"
+                aria-hidden="true"
+                hidden
+            >
+                <button type="button" id="close-artist-drawer">
+                    Close
+                </button>
+                <div id="artist-form-content"></div>
+            </aside>
+        </div>
 
-                <div class="field-row">
-                    <label for="fullName">Full name *</label>
-                    <input id="fullName" name="fullName" type="text" maxlength="100" required>
-                </div>
-
-                <div class="field-row">
-                    <label for="birthYear">Birth year *</label>
-                    <input id="birthYear" name="birthYear" type="number" step="1" required>
-                </div>
-
-                <div class="field-row">
-                    <label for="placeOfBirth">Place of birth</label>
-                    <input id="placeOfBirth" name="placeOfBirth" type="text" maxlength="100">
-                </div>
-
-                <div class="field-row">
-                    <label for="period">Period</label>
-                    <input id="period" name="period" type="text" maxlength="50">
-                </div>
-
-                <div class="field-row">
-                    <label for="deathYear">Death year</label>
-                    <input id="deathYear" name="deathYear" type="number" step="1">
-                </div>
-
-                <div class="field-row">
-                    <label for="sex">Sex</label>
-                    <select id="sex" name="sex">
-                        <option value="" disable selected>Select sex...</option>
-                        <option value="female">Female</option>
-                        <option value="male">Male</option>
-                        <option value="other">Not specified</option>
-                    </select>
-                </div>
-
-                <div class="field-row">
-                    <label for="nationality">Nationality</label>
-                    <input id="nationality" name="nationality" type="text" maxlength="50">
-                </div>
-
-                <button type="submit">Create Artist</button>
-            </form>
-        </section> -->
     </main>
     <script src="/js/curator-artists.js"></script>
 </body>

@@ -1,3 +1,5 @@
+//const { createArtist } = require("../../database/artists");
+
 let allArtists = [];
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -6,6 +8,10 @@ document.addEventListener("DOMContentLoaded", () => {
     document
         .getElementById("artist-search")
         .addEventListener("input", handleSearch);
+
+    document
+        .getElementById("add-artist-button")
+        .addEventListener("click", addArtist);
 });
 
 async function loadArtists() {
@@ -87,6 +93,26 @@ function handleSearch(event) {
     }
 
     renderArtists(filteredArtists);
+}
+
+async function addArtist() {
+    const data = new FormData(form);
+    
+    const artist = {
+        fullName: data.get("fullName").trim(),
+        birthYear: Number(data.get("birthYear")),
+        placeOfBirth: data.get("placeOfBirth"),
+        period: data.get("period"),
+        deathYear: data.get("deathYear") ? Number(data.get("deathYear")) : null,
+        sex: data.get("sex"),
+        nationality: data.get("nationality")
+    };
+
+    const response = await fetch(form.action, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(artist)
+    });
 }
 
 // Possible debounce function later
