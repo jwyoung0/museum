@@ -42,3 +42,28 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.getElementById("detail-error").hidden = false;
     }
 });
+
+function handleDeleteArtist() {
+    if (currentArtist.artworkCount > 0) {
+        alert(
+            `${currentArtist.fullName} is associated with ` + 
+            `${currentArtist.artworkCount} artworks.\n\n` + 
+            "Reassign or remove those artworks before deleting."
+        );
+        return;
+    }
+
+    confirmDeleteArtist();
+}
+
+async function confirmDeleteArtist() {
+    const confirmed = window.confirm(
+        `Delete ${currentArtist.fullName}?`
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    await deleteArtist();
+}
