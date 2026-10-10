@@ -325,6 +325,12 @@ form h3 {
 .artists-table th:nth-child(4) {
     width: 20%;
 }
+
+#search-empty-state {
+    padding: 32px;
+    text-align: center;
+    color: var(--muted);
+}
 /* Curator Dashboard end*/
 
 .artist-form-container {

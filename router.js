@@ -1,7 +1,12 @@
 const fs = require("fs");
 const path = require("path");
 const { loginHandler } = require("./handlers/login");
-const { createArtistHandler } = require("./handlers/artists");
+const { createArtistHandler,
+        listArtistsHandler,
+        readArtistHandler,
+        updateArtistHandler,
+        deleteArtistHandler
+ } = require("./handlers/artists");
 
 async function router(req, res) {
     try {
@@ -109,6 +114,32 @@ async function router(req, res) {
 
         if (req.method === "GET" && req.url === "/api/curator/artists/:id") {
             if (!requireCurator(req, res)) return;
+            await readArtistHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" &&
+            req.url.match(/^\/curator\/artists\/\d+$/)
+        ) {
+            if (!requireCurator(req, res)) return;
+            sendPage(res, "curator-artist-detail.html", "text/html");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/js/curator-artist-detail.js") {
+            if (!requireCurator(req, res)) return;
+            sendPage(res, path.join("js", "curator-artist-detail.js"), "application/javascript");
+            return;
+        }
+
+        const artistMatch = req.url.match(/^\/api\/curator\/artists\/(\d+)$/); 
+
+        if (req.method === "GET" && artistMatch) {
+            if (!requireCurator(req, res)) return;
+            req.params = {
+                id: artistMatch[1]
+            };
+            
             await readArtistHandler(req, res);
             return;
         }

@@ -2,7 +2,8 @@ const {
     createArtist,
     listArtists, 
     readArtist, 
-    updateArtist 
+    updateArtist,
+    deleteArtist 
 } = require("../database/artists");
 
 const { readJsonBody } = require("../utils/http");
