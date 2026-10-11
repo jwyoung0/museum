@@ -63,12 +63,17 @@ function buildLifespan(artist) {
 function renderArtists(artists) {
     const tableBody = document.getElementById("artists-table-body");
 
-
     const searchEmptyState = document.getElementById("search-empty-state");
-
-    tableBody.innerHTML = "";
+    
+    tableBody.querySelectorAll("tr:not(#search-empty-state):not(#error-state)")
+        .forEach((row) => row.remove());
 
     searchEmptyState.hidden = true;
+
+    if (artists.length === 0) {
+        searchEmptyState.hidden = false;
+        return;
+    }
 
     artists.forEach((artist) => {
         tableBody.insertAdjacentHTML(

@@ -55,13 +55,24 @@
                     </thead>
 
                     <tbody id="artists-table-body">
-                        <div id="search-empty-state" hidden>
+                        <tr id="search-empty-state" hidden>
+                            <td colspan="4" style="text-align: center;">
+                                No artists match your search.
+                            </td>
+                        </tr>
+
+
+                        <!-- <div id="search-empty-state" hidden>
                             No artists match your search.
-                        </div>
+                        </div> -->
                         
-                        <div id="error-state" hidden>
+                        <!-- <div id="error-state" hidden>
                             Unable to load artists.
-                        </div>
+                        </div> -->
+
+                                    <tr id="error-state" hidden>
+                <td colspan="4" style="text-align: center;">Unable to load artists.</td>
+            </tr>
                     
                     </tbody>
                 </table>
