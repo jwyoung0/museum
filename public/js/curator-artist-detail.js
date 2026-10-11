@@ -67,3 +67,35 @@ async function confirmDeleteArtist() {
 
     await deleteArtist();
 }
+
+async function deleteArtist() {
+    try {
+        const response = await fetch(
+            `/api/curator/artists/${currentArtist.artistId}`,
+            {
+                method: "DELETE"
+            } 
+        );
+
+        if (response.status === 204) {
+            window.location.href = "/curator/artists";
+            return;
+        }
+
+        if (response.status === 409) {
+            const error = await response.json();
+
+            alert(error.error);
+
+            location.reload();
+            return;
+        }
+
+        if (response.status === 404) {
+            alert("Artist not found");
+            return;   
+        }
+    } catch (error) {
+        alert("Unable to delete artist. Please try again.");
+    }
+}

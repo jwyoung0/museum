@@ -104,6 +104,21 @@ async function updateArtistHandler(req, res) {
 async function deleteArtistHandler(req, res) {
     const artistId = req.params.id;
 
+    const artworkCount = await countArtistArtworks(artistId);
+
+    if (artworkCount > 0) {
+        res.writeHead(409, {"Content-Type": "application/json"});
+    
+        return res.end(JSON.stringify({
+            error:
+                `This artist is associated with ` + 
+                `${artworkCount} artworks. ` +
+                `Reassign or remove those artworks ` +
+                `before deleting the artist.`,
+            artworkCount
+        }));
+    }
+
     const deletedArtist = await deleteArtist(artistId);
 
     if (!deletedArtist) {
@@ -111,9 +126,7 @@ async function deleteArtistHandler(req, res) {
             "Content-Type": "application/json"
         });
 
-        return res.end(
-            JSON.stringify({ error: "Artist not found" })
-        );
+        return res.end(JSON.stringify({ error: "Artist not found" }));
     }
 
     res.writeHead(204);
