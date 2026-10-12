@@ -61,25 +61,25 @@ async function router(req, res) {
 
         if (req.method === "GET" && req.url === "/curator/artwork") {
             if (!requireCurator(req, res)) return;
-            sendPage(res, "curator-artwork.html", "text/html");
+            sendPage(res, path.join("curator", "artwork.html"), "text/html");
             return;
         }
 
         if (req.method === "GET" && req.url === "/curator/artists") {
             if (!requireCurator(req, res)) return;
-            sendPage(res, "curator-artists.html", "text/html");
+            sendPage(res, path.join("curator", "artists.html"), "text/html");
             return;
         }
 
         if (req.method === "GET" && req.url === "/curator/collections") {
             if (!requireCurator(req, res)) return;
-            sendPage(res, "curator-collections.html", "text/html");
+            sendPage(res, path.join("curator", "collections.html"), "text/html");
             return;
         }
 
         if (req.method === "GET" && req.url === "/curator/exhibitions") {
             if (!requireCurator(req, res)) return;
-            sendPage(res, "curator-exhibitions.html", "text/html");
+            sendPage(res, path.join("curator", "exhibitions.html"), "text/html");
             return;
         }
 
@@ -118,7 +118,7 @@ async function router(req, res) {
             pathname.match(/^\/curator\/artists\/\d+$/)
         ) {
             if (!requireCurator(req, res)) return;
-            sendPage(res, "curator-artist-detail.html", "text/html");
+            sendPage(res, path.join("curator", "artist-detail.html"), "text/html");
             return;
         }
 
