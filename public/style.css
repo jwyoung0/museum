@@ -86,6 +86,10 @@ a:hover {
     justify-self: end;
 }
 
+.header-auth-form button {
+    color: #ffffff;
+}
+
 .dashboard-title {
     grid-column: 2;
     grid-row: 1;
