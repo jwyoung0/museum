@@ -11,7 +11,9 @@
     <header class="dashboard-header">
         <h1 class="site-title"><a href="/">MFAH</a></h1>
         <h1 class="dashboard-title">Curator Dashboard</h1>
-        <a class="header-auth" href="/logout">Logout</a>
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
     </header>
 
     <main>

@@ -96,9 +96,10 @@ a:hover {
     white-space: nowrap;
 }
 
-.dashboard-header .header-auth {
+.dashboard-header .header-auth-form {
     grid-column: 3;
     grid-row: 1;
+    justify-self: end;
 }
 
 /* Navigation and page layout */
@@ -422,7 +423,7 @@ form h2 {
         grid-row: 2;
     }
 
-    .dashboard-header .header-auth {
+    .dashboard-header .header-auth-form {
         grid-column: 2;
         grid-row: 1;
     }
