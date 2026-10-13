@@ -1,0 +1,197 @@
+const { sql, getPool } = require("./connection");
+
+async function createArtwork({
+        title,
+        category,
+        medium,
+        dimensions,
+        creationDate,
+        imageURL,
+        artistId,
+        collectionId,
+        StyleID,
+        periodID
+}) {
+    if (typeof title !== "string" || !title.trim()) {
+        throw new TypeError("title is required");
+    }
+
+    if (typeof category !== "string" || !category.trim()) {
+        throw new TypeError("category is required");
+    }
+
+    if (typeof medium !== "string" || !medium.trim()) {
+        throw new TypeError("medium is required");
+    }
+
+    if (!Number.isInteger(artistId)) {
+        throw new TypeError("artistId is required and must be an integer");
+    }
+
+    if (!Number.isInteger(collectionId)) {
+        throw new TypeError("collectionId is required and must be an integer");
+    }
+
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .input("title", sql.NVarChar(100), title.trim())
+        .input("category", sql.NVarChar(50), category.trim())
+        .input("medium", sql.NVarChar(50), medium.trim())
+        .input("dimensions", sql.NVarChar(50), dimensions || null)
+        .input("creationDate", sql.Int, creationDate || null)
+        .input("imageURL", sql.NVarChar(500), imageURL || null)
+        .input("artistId", sql.Int, artistId)
+        .input("collectionId", sql.Int, collectionId)
+        .input("StyleID", sql.Int, StyleID || null)
+        .input("periodID", sql.Int, periodID || null)
+        .query(`
+            INSERT INTO dbo.ARTWORKS
+            (
+                title,
+                category,
+                medium,
+                dimensions,
+                creationDate,
+                imageURL,
+                artistId,
+                collectionId,
+                StyleID,
+                periodID
+            )
+            OUTPUT INSERTED.*
+            VALUES
+            (
+                @title,
+                @category,
+                @medium,
+                @dimensions,
+                @creationDate,
+                @imageURL,
+                @artistId,
+                @collectionId,
+                @StyleID,
+                @periodID
+            );
+        `);
+
+    return result.recordset[0];
+}
+
+async function listArtwork() {
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .query(`
+            SELECT *
+            FROM dbo.ARTWORKS
+            ORDER BY title;
+        `);
+
+    return result.recordset;
+}
+
+async function readArtwork(accessionId) {
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .input("accessionId", sql.Int, accessionId)
+        .query(`
+            SELECT *
+            FROM dbo.ARTWORKS
+            WHERE accessionId = @accessionId;
+        `);
+
+    return result.recordset[0] || null;
+}
+
+async function updateArtwork(
+    accessionId,
+    {
+        title,
+        category,
+        medium,
+        dimensions,
+        creationDate,
+        imageURL,
+        artistId,
+        collectionId,
+        StyleID,
+        periodID
+    }
+) {
+    if (typeof title !== "string" || !title.trim()) {
+        throw new TypeError("title is required");
+    }
+
+    if (typeof category !== "string" || !category.trim()) {
+        throw new TypeError("category is required");
+    }
+
+    if (typeof medium !== "string" || !medium.trim()) {
+        throw new TypeError("medium is required");
+    }
+
+    if (!Number.isInteger(artistId)) {
+        throw new TypeError("artistId is required and must be an integer");
+    }
+
+    if (!Number.isInteger(collectionId)) {
+        throw new TypeError("collectionId is required and must be an integer");
+    }
+
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .input("accessionId", sql.Int, accessionId)
+        .input("title", sql.NVarChar(100), title.trim())
+        .input("category", sql.NVarChar(50), category.trim())
+        .input("medium", sql.NVarChar(50), medium.trim())
+        .input("dimensions", sql.NVarChar(50), dimensions || null)
+        .input("creationDate", sql.Int, creationDate || null)
+        .input("imageURL", sql.NVarChar(500), imageURL || null)
+        .input("artistId", sql.Int, artistId)
+        .input("collectionId", sql.Int, collectionId)
+        .input("StyleID", sql.Int, StyleID || null)
+        .input("periodID", sql.Int, periodID || null)
+        .query(`
+            UPDATE dbo.ARTWORKS
+            SET
+                title=@title,
+                category=@category,
+                medium=@medium,
+                dimensions=@dimensions,
+                creationDate=@creationDate,
+                imageURL=@imageURL,
+                artistId=@artistId,
+                collectionId=@collectionId,
+                StyleID=@StyleID,
+                periodID=@periodID
+            OUTPUT INSERTED.*
+            WHERE accessionId = @accessionId;
+        `);
+
+    return result.recordset[0] || null;
+}
+
+async function deleteArtwork(accessionId) {
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .input("accessionId", sql.Int, accessionId)
+        .query(`
+            DELETE FROM dbo.ARTWORKS
+            OUTPUT DELETED.*
+            WHERE accessionId = @accessionId;
+        `);
+
+    return result.recordset[0] || null;
+}
+
+module.exports = {
+    createArtwork,
+    listArtwork,
+    readArtwork,
+    updateArtwork,
+    deleteArtwork
+};

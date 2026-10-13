@@ -93,6 +93,13 @@ async function updateArtist(
         nationality
     }
 ) {
+    if (typeof fullName !== "string" || !fullName.trim()) {
+        throw new TypeError("fullName is required");
+    }
+
+    if (!Number.isInteger(birthYear)) {
+        throw new TypeError("birthYear is required and must be an integer");
+    }    
     const pool = await getPool();
 
     const result = await pool.request()

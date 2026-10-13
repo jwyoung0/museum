@@ -18,6 +18,7 @@ async function createArtworkHandler(req, res) {
         dimensions: body.dimensions,
         creationDate: body.creationDate,
         imageURL: body.imageURL,
+        artistId: body.artistId,
         collectionId: body.collectionId,
         StyleID: body.StyleID,
         periodID: body.periodID
@@ -75,6 +76,7 @@ async function updateArtworkHandler(req, res) {
         dimensions: body.dimensions,
         creationDate: body.creationDate,
         imageURL: body.imageURL,
+        artistId: body.artistId,
         collectionId: body.collectionId,
         StyleID: body.StyleID,
         periodID: body.periodID
