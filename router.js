@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { loginHandler } = require("./handlers/login");
+const { logoutHandler } = require("./handlers/logout");
 const { createArtistHandler,
         listArtistsHandler,
         readArtistHandler,
@@ -14,6 +15,11 @@ async function router(req, res) {
         // POST routing starts here
         if (req.method === "POST" && req.url === "/api/login") {
             await loginHandler(req, res);
+            return;
+        }
+
+        if (req.method === "POST" && req.url === "/api/logout") {
+            await logoutHandler(req, res);
             return;
         }
 

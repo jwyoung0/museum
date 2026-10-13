@@ -443,6 +443,20 @@ form h3 {
     margin-bottom: 16px;
 }
 
+.header-auth-form {
+  display: inline-block;
+}
+
+.header-auth {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-decoration: underline;
+}
+
 input,
 select {
     width: 100%;

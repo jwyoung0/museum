@@ -11,7 +11,9 @@
     <header class="dashboard-header">
         <h1 class="site-title"><a href="/">MFAH</a></h1>
         <h1 class="dashboard-title">Curator Dashboard</h1>
-        <a class="header-auth" href="/logout">Logout</a>
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
     </header>
 
     <main>
@@ -61,19 +63,9 @@
                             </td>
                         </tr>
 
-
-                        <!-- <div id="search-empty-state" hidden>
-                            No artists match your search.
-                        </div> -->
-                        
-                        <!-- <div id="error-state" hidden>
-                            Unable to load artists.
-                        </div> -->
-
-                                    <tr id="error-state" hidden>
-                <td colspan="4" style="text-align: center;">Unable to load artists.</td>
-            </tr>
-                    
+                        <tr id="error-state" hidden>
+                            <td colspan="4" style="text-align: center;">Unable to load artists.</td>
+                        </tr>                    
                     </tbody>
                 </table>
             </div>
