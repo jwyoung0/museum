@@ -88,9 +88,13 @@ function renderArtists(artists) {
                 <td>${buildLifespan(artist)}</td>
                 <td>${artist.nationality ?? ""}</td>
                 <td>
-                    <a href="/curator/artists/${artist.artistId}">
+                    <button
+                        type="button"
+                        class="view-artist-button"
+                        data-artist-id="${artist.artistId}"
+                    >
                         View
-                    </a>
+                    </button>
 
                     <button
                         class="edit-artist-button"
@@ -102,6 +106,16 @@ function renderArtists(artists) {
             `
         );
     });
+
+    document
+        .querySelectorAll(".view-artist-button")
+        .forEach((button) => {
+            button.addEventListener("click", () => {
+                window.location.assign(
+                    `/curator/artists/${button.dataset.artistId}`
+                );
+            });
+        });
 
     document
         .querySelectorAll(".edit-artist-button")
