@@ -3,8 +3,7 @@ const {
     listArtwork, 
     readArtwork, 
     updateArtwork,
-    deleteArtwork, 
-    countArtworks
+    deleteArtwork
 } = require("../database/artwork");
 
 const { readJsonBody } = require("../utils/http");
@@ -13,13 +12,15 @@ async function createArtworkHandler(req, res) {
     const body = await readJsonBody(req);
 
     const artwork = {
-        fullName: body.fullName,
-        birthYear: body.birthYear,
-        placeOfBirth: body.placeOfBirth,
-        period: body.period,
-        deathYear: body.deathYear,
-        sex: body.sex,
-        nationality: body.nationality
+        title: body.title,
+        category: body.category,
+        medium: body.medium,
+        dimensions: body.dimensions,
+        creationDate: body.creationDate,
+        imageURL: body.imageURL,
+        collectionId: body.collectionId,
+        StyleID: body.StyleID,
+        periodID: body.periodID
     };
 
     const createdArtwork = await createArtwork(artwork);
@@ -60,12 +61,7 @@ async function readArtworkHandler(req, res) {
         "Content-Type": "application/json"
     });
 
-    const artworkCount = await countArtworkArtworks(artworkId);
-
-    res.end(JSON.stringify({
-        ...artwork,
-        artworkCount
-    }));
+    res.end(JSON.stringify(artwork));
 }
 
 async function updateArtworkHandler(req, res) {
@@ -73,13 +69,15 @@ async function updateArtworkHandler(req, res) {
     const body = await readJsonBody(req);
 
     const artwork = {
-        fullName: body.fullName,
-        birthYear: body.birthYear,
-        placeOfBirth: body.placeOfBirth,
-        period: body.period,
-        deathYear: body.deathYear,
-        sex: body.sex,
-        nationality: body.nationality
+        title: body.title,
+        category: body.category,
+        medium: body.medium,
+        dimensions: body.dimensions,
+        creationDate: body.creationDate,
+        imageURL: body.imageURL,
+        collectionId: body.collectionId,
+        StyleID: body.StyleID,
+        periodID: body.periodID
     };
 
     const updatedArtwork = await updateArtwork(artworkId, artwork);
@@ -103,21 +101,6 @@ async function updateArtworkHandler(req, res) {
 
 async function deleteArtworkHandler(req, res) {
     const artworkId = req.params.id;
-
-    const artworkCount = await countArtworkArtworks(artworkId);
-
-    if (artworkCount > 0) {
-        res.writeHead(409, {"Content-Type": "application/json"});
-    
-        return res.end(JSON.stringify({
-            error:
-                `This artwork is associated with ` + 
-                `${artworkCount} artworks. ` +
-                `Reassign or remove those artworks ` +
-                `before deleting the artwork.`,
-            artworkCount
-        }));
-    }
 
     const deletedArtwork = await deleteArtwork(artworkId);
 
