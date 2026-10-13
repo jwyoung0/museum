@@ -109,9 +109,10 @@ a:hover {
     white-space: nowrap;
 }
 
-.dashboard-header .header-auth {
+.dashboard-header .header-auth-form {
     grid-column: 3;
     grid-row: 1;
+    justify-self: end;
 }
 
 /* Navigation */
@@ -538,7 +539,7 @@ button:focus-visible {
         grid-row: 2;
     }
 
-    .dashboard-header .header-auth {
+    .dashboard-header .header-auth-form {
         grid-column: 2;
         grid-row: 1;
     }
