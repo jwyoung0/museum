@@ -23,64 +23,69 @@
             <a href="/curator/collections">Collections</a>
             <a href="/curator/exhibitions">Exhibits</a>
         </nav>
-        <section class="formcontainer artwork-form-container" aria-labelledby="artwork-form-title">
-            <form id="artwork-form" action="/api/curator/artwork" method="post">
-                <h2 id="artwork-form-title">Create Artwork</h2>
 
-                <div class="field-row">
-                    <label for="artworkName">Artwork name *</label>
-                    <input id="artworkName" name="artworkName" type="text" maxlength="100" required>
-                </div>
+        <section class="artwork-workspace">
+            <header class="workspace-header">
+                <h2>Artwork</h2>
+            </header>
 
-                <div class="field-row">
-                    <label for="category">Category *</label>
-                    <input id="category" name="category" type="text" maxlength="50" required>
-                </div>
+            <div class="workspace-toolbar">
+                <input
+                    type="search"
+                    id="artwork-search"
+                    placeholder="Search artwork..."
+                    aria-label="Search artwork"
+                >
 
-                <div class="field-row">
-                    <label for="medium">Medium</label>
-                    <input id="medium" name="medium" type="text" maxlength="50" required>
-                </div>
+                <button
+                    type="button"
+                    id="add-artwork-button"
+                >
+                    + Add Artwork
+                </button>
+            </div>
 
-                <div class="field-row">
-                    <label for="dimensions">Dimensions</label>
-                    <input id="dimensions" name="dimensions" type="text" maxlength="50">
-                </div>
+            <div class="artwork-table-container">
+                <table class="artwork-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Artist</th>
+                            <th>Year</th>
+                        </tr>
+                    </thead>
 
-                <div class="field-row">
-                    <label for="creationDate">Creation Date</label>
-                    <input id="creationDate" name="creationDate" type="number" step="1">
-                </div>
+                    <tbody id="artwork-table-body">
+                        <tr id="search-empty-state" hidden>
+                            <td colspan="3" style="text-align: center;">
+                                No artwork pieces match your search.
+                            </td>
+                        </tr>
 
-                <div class="field-row">
-                    <label for="artist">Artist</label>
-                    <input id="artist" name="artist" type="text" maxlength="50">
-                </div>
-
-                <div class="field-row">
-                    <label for="collection">Collection</label>
-                    <input id="collection" name="collection" type="text" maxlength="50">
-                </div>
-
-                <div class="field-row">
-                    <label for="style">Style</label>
-                    <input id="style" name="style" type="text" maxlength="50">
-                </div>
-
-                <div class="field-row">
-                    <label for="period">Period</label>
-                    <input id="period" name="period" type="text" maxlength="50">
-                </div>
-
-                <div class="field-row">
-                    <label for="imageURL">Image URL</label>
-                    <input id="imageURL" name="imageURL" type="text" maxlength="500">
-                </div>
-
-                <button type="submit">Create Artwork</button>
-            </form>
+                        <tr id="error-state" hidden>
+                            <td colspan="3" style="text-align: center;">
+                                Unable to load artwork.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </section>
+
+        <aside
+            id="artwork-form-container"
+            class="artwork-drawer"
+            aria-labelledby="artwork-form-title"
+            aria-hidden="true"
+            hidden
+        >
+            <button type="button" id="close-artwork-drawer">
+                Close
+            </button>
+            <div id="artwork-form-content"></div>
+        </aside>
+        
     </main>
-    <script src="/js/app.js"></script>
+    <script src="/js/curator-artwork.js"></script>
 </body>
 </html>
