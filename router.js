@@ -152,7 +152,28 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" && 
+            pathname.match(/^\/curator\/artists\/\d+$/)
+        ) {
+            if (!requireCurator(req, res)) return;
+            sendPage(res, path.join("curator", "artwork-detail.html"), "text/html");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/js/curator-artwork-detail.js") {
+            if (!requireCurator(req, res)) return;
+            sendPage(res, path.join("js", "curator-artwork-detail.js"), "application/javascript");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/js/components/artwork-form.html") {
+            if (!requireCurator(req, res)) return;
+            sendPage(res, path.join("components", "artwork-form.html"), "text/html");
+            return;
+        }
+
         const artistMatch = pathname.match(/^\/api\/curator\/artists\/(\d+)$/);
+        const artworkMatch = pathname.match(/^\/api\/curator\/artists\/(\d+)$/);
 
         if (artistMatch && ["GET", "PUT", "DELETE"].includes(req.method)) {
             req.params = { id: artistMatch[1] };
@@ -165,6 +186,21 @@ async function router(req, res) {
                 await updateArtistHandler(req, res);
             } else {
                 await deleteArtistHandler(req, res);
+            }
+            return;
+        }
+
+        if (artworkMatch && ["GET", "PUT", "DELETE"].includes(req.method)) {
+            req.params = { id: artworkMatch[1] };
+
+            if (!requireCurator(req, res)) return;
+
+            if (req.method === "GET") {
+                await readArtworkHandler(req, res);
+            } else if (req.method === "PUT") {
+                await updateArtworkHandler(req, res);
+            } else {
+                await deleteArtworkHandler(req, res);
             }
             return;
         }
