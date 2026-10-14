@@ -326,7 +326,6 @@ async function submitArtworkForm(event) {
         dimensions: data.get("dimensions").trim(),
         collectionId: Number(data.get("collection")),                        
         category: data.get("category").trim(),
-        period: data.get("period").trim(),
         styleID: data.get("styleID") ? Number(data.get("styleID")) : null,
         periodID: data.get("periodID") ? Number(data.get("periodID")) : null,
         imageURL: data.get("imageURL").trim()
