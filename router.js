@@ -126,9 +126,15 @@ async function router(req, res) {
 
         if (req.method === "POST" && req.url === "/api/curator/artwork") {
             if (!requireCurator(req, res)) return;
-            await listArtworkHandler(req, res);
+            await createArtworkHandler(req, res);
             return;
         }
+
+        if (req.method === "GET" && req.url === "/api/curator/artwork") {
+            if (!requireCurator(req, res)) return;
+            await listArtworkHandler(req, res);
+            return;
+        }        
 
         const pathname = new URL(req.url, "http://localhost").pathname;
 
@@ -153,7 +159,7 @@ async function router(req, res) {
         }
 
         if (req.method === "GET" && 
-            pathname.match(/^\/curator\/artists\/\d+$/)
+            pathname.match(/^\/curator\/artwork\/\d+$/)
         ) {
             if (!requireCurator(req, res)) return;
             sendPage(res, path.join("curator", "artwork-detail.html"), "text/html");
@@ -173,7 +179,7 @@ async function router(req, res) {
         }
 
         const artistMatch = pathname.match(/^\/api\/curator\/artists\/(\d+)$/);
-        const artworkMatch = pathname.match(/^\/api\/curator\/artists\/(\d+)$/);
+        const artworkMatch = pathname.match(/^\/api\/curator\/artwork\/(\d+)$/);
 
         if (artistMatch && ["GET", "PUT", "DELETE"].includes(req.method)) {
             req.params = { id: artistMatch[1] };
