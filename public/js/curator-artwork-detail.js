@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         currentArtwork = artwork;
 
+        document.getElementById("artwork-name").textContent = artwork.title;
+
         document.getElementById("artworkName").textContent = 
             artwork.title;
 
@@ -43,6 +45,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         document.getElementById("imageURL").textContent = 
             artwork.imageURL ?? "";
+
+        const image = document.getElementById("artwork-image");
+        if (artwork.imageURL) {
+            image.src = artwork.imageURL;
+            image.alt = artwork.title || "Artwork";
+            image.hidden = false;
+        }
 
         const deleteButton = document.getElementById("delete-artwork-button");
         deleteButton.hidden = false;
