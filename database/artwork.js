@@ -106,12 +106,18 @@ async function readArtwork(accessionId) {
             SELECT
                 a.*,
                 ar.fullName AS artist,
-                c.collectionName AS collection
+                c.collectionName AS collection,
+                p.periodName AS period,
+                s.styleName AS style
             FROM dbo.ARTWORKS a
             INNER JOIN dbo.ARTISTS ar
                 ON a.artistId = ar.artistId
             INNER JOIN dbo.COLLECTIONS c
                 ON a.collectionId = c.collectionId
+            INNER JOIN dbo.PERIODS p
+                ON a.periodID = p.periodID
+            INNER JOIN dbo.STYLES s
+                ON a.styleID = s.styleID 
             WHERE a.accessionId = @accessionId;
         `);
 

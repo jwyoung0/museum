@@ -113,7 +113,7 @@ function renderArtwork(artworks) {
         .forEach((button) => {
             button.addEventListener("click", 
                 () => openArtworkDrawerForEdit(
-                    button.dataset.accesionId
+                    button.dataset.accessionId
                 )
             );
         });
@@ -125,12 +125,11 @@ function handleSearch(event) {
             .trim()
             .toLowerCase();
 
-    const filteredArtwork = 
+    const filteredArtwork =
         allArtwork.filter((artwork) =>
-            artwork.fullName
-                .toLowerCase()
-                .includes(query)
-    );
+            artwork.title?.toLowerCase().includes(query) ||
+            artwork.artist?.toLowerCase().includes(query)
+        );
 
     const searchEmptyState =
         document.getElementById("search-empty-state");
@@ -215,12 +214,15 @@ async function submitArtworkForm(event) {
 
     const artwork = {
         title: data.get("title").trim(),
-        birthYear: data.get("birthYear") ? Number(data.get("birthYear")) : null,
-        deathYear: data.get("deathYear") ? Number(data.get("deathYear")) : null,
-        placeOfBirth: data.get("placeOfBirth"),
-        period: data.get("period"),
-        sex: data.get("sex"),
-        nationality: data.get("nationality")
+        artistId: Number(data.get("artistId")),
+        creationDate: Number(data.get("creationDate")),
+        medium: data.get("medium").trim(),
+        dimensions: data.get("dimensions").trim(),
+        collectionId: Number(data.get("collectionId")),                        
+        category: data.get("category").trim(),
+        period: data.get("period").trim(),
+        style: data.get("style").trim(),
+        imageURL: data.get("imageURL").trim()
     };
 
     const mode = form.dataset.mode;
@@ -283,7 +285,7 @@ function showDrawer() {
 
     drawer.setAttribute("aria-hidden", "false");
 
-    document.getElementById("fullName")?.focus();
+    document.getElementById("title")?.focus();
 }
 
 function setFormMode(mode, id = "") {
@@ -322,13 +324,16 @@ async function loadArtworkIntoForm(id) {
 
     const artwork = await response.json();
 
-    document.getElementById("fullName").value = artwork.fullName ?? "";
-    document.getElementById("birthYear").value = artwork.birthYear ?? "";
-    document.getElementById("placeOfBirth").value = artwork.placeOfBirth ?? "";
+    document.getElementById("artworkName").value = artwork.title ?? "";
+    document.getElementById("category").value = artwork.category ?? "";
+    document.getElementById("medium").value = artwork.medium ?? "";
+    document.getElementById("dimensions").value = artwork.dimensions ?? "";
+    document.getElementById("creationDate").value = artwork.creationDate ?? "";
+    document.getElementById("imageURL").value = artwork.imageURL ?? "";
+    document.getElementById("collection").value = artwork.collection ?? "";
+    document.getElementById("artist").value = artwork.artist ?? "";
+    document.getElementById("style").value = artwork.style ?? "";
     document.getElementById("period").value = artwork.period ?? "";
-    document.getElementById("deathYear").value = artwork.deathYear ?? "";
-    document.getElementById("sex").value = artwork.sex ?? "";
-    document.getElementById("nationality").value = artwork.nationality ?? "";
 
     captureInitialFormState();   
     
