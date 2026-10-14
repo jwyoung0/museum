@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>Curator Dashboard</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <h1 class="dashboard-title">Curator Dashboard</h1>
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
+    </header>
+
+    <main>
+        <nav aria-label="Curator navigation">
+            <a href="/curator/artwork" aria-current="page">Artwork</a>
+            <a href="/curator/artists">Artists</a>
+            <a href="/curator/collections">Collections</a>
+            <a href="/curator/exhibitions">Exhibits</a>
+        </nav>
+
+        <section class="artwork-detail-workspace">
+        <a href="/curator/artwork">
+            ← Back to Artwork
+        </a>
+            <header class="workspace-header">
+                <h2 id="artwork-name">Loading...</h2>
+            </header>
+
+            <dl class="artwork-detail-grid">
+                <dt>Title</dt>
+                <dd id="artworkName"></dd>
+
+                <dt>Artist</dt>
+                <dd id="artist"></dd>
+
+                <dt>Creation Date</dt>
+                <dd id="creationDate"></dd>
+
+                <dt>Category</dt>
+                <dd id="category"></dd>
+
+                <dt>Medium</dt>
+                <dd id="medium"></dd>
+
+                <dt>Dimensions</dt>
+                <dd id="dimensions"></dd>
+
+                <dt>Collection</dt>
+                <dd id="collection"></dd>
+
+                <dt>Style</dt>
+                <dd id="style"></dd>
+
+                <dt>Period</dt>
+                <dd id="period"></dd>
+
+                <dt>Image URL</dt>
+                <dd id="imageURL"></dd>
+            </dl>
+
+            <div class="artwork-actions">
+                <button
+                    id="delete-artwork-button"
+                    class="button-danger"
+                    hidden>
+                    Delete Artwork
+                </button>
+            </div>
+            
+            <div id="detail-error" hidden>
+                Unable to load artwork.
+            </div>
+        </section>
+        
+    </main>
+    <script src="/js/curator-artwork-detail.js"></script>
+</body>
+</html>

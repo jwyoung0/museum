@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener("keydown", (event) => {
         if (
             event.key === "Escape" &&
-            !document.getElementById("Artwork-form-container").hidden
+            !document.getElementById("artwork-form-container").hidden
         ) {
             closeArtworkDrawer();
         }
@@ -51,7 +51,7 @@ async function loadArtwork() {
     }
 }
 
-function renderArtwork(artwork) {
+function renderArtwork(artworks) {
     const tableBody = document.getElementById("artwork-table-body");
 
     const searchEmptyState = document.getElementById("search-empty-state");
@@ -61,12 +61,12 @@ function renderArtwork(artwork) {
 
     searchEmptyState.hidden = true;
 
-    if (artwork.length === 0) {
+    if (artworks.length === 0) {
         searchEmptyState.hidden = false;
         return;
     }
 
-    artwork.forEach((artwork) => {
+    artworks.forEach((artwork) => {
         tableBody.insertAdjacentHTML(
             "beforeend",
             `
@@ -77,15 +77,19 @@ function renderArtwork(artwork) {
                     </a>
                 </td>
                 <td>${artwork.artist}</td>
-                <td>${artwork.dateCreated}</td>
+                <td>${artwork.creationDate}</td>
                 <td>
-                    <a href="/curator/artwork/${artwork.accessionId}">
+                    <button
+                        type="button"
+                        class="view-artwork-button"
+                        data-accession-Id="${artwork.accessionId}"
+                    >
                         View
-                    </a>
+                    </button>
 
                     <button
                         class="edit-artwork-button"
-                        data-artwork-id="${artwork.accessionId}">
+                        data-accession-Id="${artwork.accessionId}">
                         Edit
                     </button>
                 </td>
@@ -95,11 +99,21 @@ function renderArtwork(artwork) {
     });
 
     document
+        .querySelectorAll(".view-artwork-button")
+        .forEach((button) => {
+            button.addEventListener("click", () => {
+                window.location.assign(
+                    `/curator/artwork/${button.dataset.accessionId}`
+                );
+            });
+        });
+
+    document
         .querySelectorAll(".edit-artwork-button")
         .forEach((button) => {
             button.addEventListener("click", 
                 () => openArtworkDrawerForEdit(
-                    button.dataset.artworkId
+                    button.dataset.accesionId
                 )
             );
         });

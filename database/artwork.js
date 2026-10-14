@@ -83,9 +83,15 @@ async function listArtwork() {
 
     const result = await pool.request()
         .query(`
-            SELECT *
-            FROM dbo.ARTWORKS
-            ORDER BY title;
+            SELECT
+                a.accessionId,
+                a.title,
+                ar.fullName AS artist,
+                a.creationDate
+            FROM dbo.ARTWORKS a
+            INNER JOIN dbo.ARTISTS ar
+                ON a.artistId = ar.artistId
+            ORDER BY a.title;
         `);
 
     return result.recordset;
@@ -97,9 +103,16 @@ async function readArtwork(accessionId) {
     const result = await pool.request()
         .input("accessionId", sql.Int, accessionId)
         .query(`
-            SELECT *
-            FROM dbo.ARTWORKS
-            WHERE accessionId = @accessionId;
+            SELECT
+                a.*,
+                ar.fullName AS artist,
+                c.collectionName AS collection
+            FROM dbo.ARTWORKS a
+            INNER JOIN dbo.ARTISTS ar
+                ON a.artistId = ar.artistId
+            INNER JOIN dbo.COLLECTIONS c
+                ON a.collectionId = c.collectionId
+            WHERE a.accessionId = @accessionId;
         `);
 
     return result.recordset[0] || null;

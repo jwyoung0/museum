@@ -336,6 +336,70 @@ form h2 {
     color: var(--muted);
 }
 
+/* Curator artwork list */
+
+.artwork-workspace {
+    width: 100%;
+    margin: 20px 0;
+    padding: 24px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+}
+
+.artwork-table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.artwork-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--paper);
+}
+
+.artwork-table thead {
+    background: var(--bg);
+}
+
+.artwork-table th {
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--line);
+    text-align: left;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.artwork-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+}
+
+.artwork-table tbody tr:hover {
+    background: rgba(37, 99, 235, 0.04);
+}
+
+.artwork-table td:last-child {
+    white-space: nowrap;
+}
+
+.artwork-table th:nth-child(1) {
+    width: 40%;
+}
+
+.artwork-table th:nth-child(2),
+.artwork-table th:nth-child(3),
+.artwork-table th:nth-child(4) {
+    width: 20%;
+}
+
+#search-empty-state {
+    padding: 32px;
+    text-align: center;
+    color: var(--muted);
+}
+
 /* Curator artist detail */
 
 .artist-detail-workspace {
@@ -369,6 +433,51 @@ form h2 {
 }
 
 .artist-detail-grid dd {
+    margin: 0;
+}
+
+#detail-error {
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 6px;
+    color: #b91c1c;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+}
+
+/* Curator artwork detail */
+
+.artwork-detail-workspace {
+    width: 100%;
+    max-width: 1060px;
+    margin: 0 auto;
+}
+
+.artwork-detail-workspace .workspace-header {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.artwork-detail-workspace h2 {
+    margin: 0;
+}
+
+.artwork-detail-grid {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 1rem;
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface, #fff);
+}
+
+.artwork-detail-grid dt {
+    font-weight: 600;
+    color: var(--text-secondary, #555);
+}
+
+.artwork-detail-grid dd {
     margin: 0;
 }
 

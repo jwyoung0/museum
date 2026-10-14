@@ -149,7 +149,7 @@ async function countArtistArtworks(artistId) {
         .input("artistId", artistId)
         .query(`
             SELECT COUNT(*) AS artworkCount
-            FROM dbo.ARTWORK_ARTIST
+            FROM dbo.ARTWORKS
             WHERE artistId = @artistId
         `);
 
