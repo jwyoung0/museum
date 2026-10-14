@@ -159,6 +159,8 @@ async function loadArtworkFormContainer() {
 
     document.getElementById("artwork-form-content").innerHTML = html;
 
+    await loadArtworkLookups();
+
     attachArtworkFormHandler();
 
     artworkFormLoaded = true;
@@ -325,7 +327,8 @@ async function submitArtworkForm(event) {
         collectionId: Number(data.get("collection")),                        
         category: data.get("category").trim(),
         period: data.get("period").trim(),
-        style: data.get("style").trim(),
+        styleID: data.get("styleID") ? Number(data.get("styleID")) : null,
+        periodID: data.get("periodID") ? Number(data.get("periodID")) : null,
         imageURL: data.get("imageURL").trim()
     };
 
@@ -439,8 +442,8 @@ async function loadArtworkIntoForm(id) {
     document.getElementById("collection").value = artwork.collection ?? "";
     document.getElementById("artist-search").value = artwork.artist ?? "";
     document.getElementById("artistId").value = artwork.artistId ?? "";
-    document.getElementById("style").value = artwork.style ?? "";
-    document.getElementById("period").value = artwork.period ?? "";
+    document.getElementById("styleID").value = artwork.StyleID ?? artwork.styleID ?? "";
+    document.getElementById("periodID").value = artwork.periodID ?? "";
 
     captureInitialFormState();   
     
@@ -469,4 +472,28 @@ function confirmDiscardChanges() {
     }
 
     return window.confirm("Discard unsaved changes?");
+}
+
+async function loadArtworkLookups() {
+    const response = await fetch("/api/curator/artwork-lookups");
+
+    if (!response.ok) {
+        throw new Error(`Failed to load artwork lookups: ${response.status}`);
+    }
+
+    const { styles, periods } = await response.json();
+
+    fillLookupSelect("styleID", styles, "styleID", "styleName");
+    fillLookupSelect("periodID", periods, "periodID", "periodName");
+}
+
+function fillLookupSelect(selectId, rows, idKey, nameKey) {
+    const select = document.getElementById(selectId);
+
+    for (const row of rows) {
+        const option = document.createElement("option");
+        option.value = row[idKey];
+        option.textContent = row[nameKey];
+        select.appendChild(option);
+    }
 }
