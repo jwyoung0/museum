@@ -106,12 +106,19 @@ async function router(req, res) {
             return;
         }
 
+        // Curator dashboard routing starts here
         if (req.method === "GET" && req.url === "/js/curator-artists.js") {
+            if (!requireCurator(req, res)) return;
             sendPage(res, path.join("js", "curator-artists.js"), "application/javascript");
             return;
         }
 
-        // Curator dashboard routing starts here
+        if (req.method === "GET" && req.url === "/js/curator-artwork.js") {
+            if (!requireCurator(req, res)) return;
+            sendPage(res, path.join("js", "curator-artwork.js"), "application/javascript");
+            return;
+        }    
+
         if (req.method === "POST" && req.url === "/api/curator/artists") {
             if (!requireCurator(req, res)) return;
             await createArtistHandler(req, res);
@@ -172,7 +179,7 @@ async function router(req, res) {
             return;
         }
 
-        if (req.method === "GET" && req.url === "/js/components/artwork-form.html") {
+        if (req.method === "GET" && req.url === "/components/artwork-form.html") {
             if (!requireCurator(req, res)) return;
             sendPage(res, path.join("components", "artwork-form.html"), "text/html");
             return;

@@ -8,7 +8,7 @@
         <h2 id="artwork-form-title">Create Artwork</h2>
 
         <div class="field-row">
-            <label for="artworkName">Artwork name *</label>
+            <label for="artworkName">Title *</label>
             <input id="artworkName" name="artworkName" type="text" maxlength="100" required>
         </div>
 
@@ -57,6 +57,18 @@
             <input id="imageURL" name="imageURL" type="text" maxlength="500">
         </div>
 
-        <button type="submit">Create Artwork</button>
+        <div class="form-actions">
+            <button
+                id="artwork-submit-button"
+                type="submit">
+                Create Artwork
+            </button>
+
+            <button
+                id="artwork-cancel-button"
+                type="button">
+                Cancel
+            </button>
+        </div>
     </form>
 </section>

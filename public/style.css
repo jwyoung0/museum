@@ -397,6 +397,22 @@ form h2 {
     box-shadow: -8px 0 20px rgba(0, 0, 0, 0.1);
 }
 
+/* Curator artwork drawer */
+
+.artwork-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 1000;
+    width: min(520px, 100vw);
+    height: 100vh;
+    padding: 24px;
+    overflow-y: auto;
+    background: var(--paper);
+    border-left: 1px solid var(--line);
+    box-shadow: -8px 0 20px rgba(0, 0, 0, 0.1);
+}
+
 /* Status messages */
 
 #login-message {

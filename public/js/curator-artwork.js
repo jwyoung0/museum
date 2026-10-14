@@ -41,7 +41,7 @@ window.addEventListener("beforeunload", (event) => {
 
 async function loadArtwork() {
     try{
-        const response = await fetch("/api/curator/Artwork");
+        const response = await fetch("/api/curator/artwork");
 
         allArtwork = await response.json();
 
