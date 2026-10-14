@@ -114,9 +114,9 @@ async function readArtwork(accessionId) {
                 ON a.artistId = ar.artistId
             INNER JOIN dbo.COLLECTIONS c
                 ON a.collectionId = c.collectionId
-            INNER JOIN dbo.PERIODS p
+            LEFT JOIN dbo.PERIODS p
                 ON a.periodID = p.periodID
-            INNER JOIN dbo.STYLES s
+            LEFT JOIN dbo.STYLES s
                 ON a.styleID = s.styleID 
             WHERE a.accessionId = @accessionId;
         `);
