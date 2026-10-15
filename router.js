@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const { authVisitorHandler } = require("./handlers/auth-visitor");
 const { loginHandler } = require("./handlers/login");
 const { logoutHandler } = require("./handlers/logout");
 const { createArtistHandler,
@@ -14,13 +15,18 @@ const { createArtworkHandler,
         updateArtworkHandler,
         deleteArtworkHandler
  } = require("./handlers/artwork");
-const { listArtworkLookupsHandler } =
-    require("./handlers/artwork-lookup");
+const { listArtworkLookupsHandler } = require("./handlers/artwork-lookup");
+
 
 async function router(req, res) {
     try {
     
         // POST routing starts here
+        if (req.method === "POST" && req.url === "/api/auth-visitor") {
+            await authVisitorHandler(req, res);
+            return;
+        }
+
         if (req.method === "POST" && req.url === "/api/login") {
             await loginHandler(req, res);
             return;
@@ -63,6 +69,16 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" && req.url === "/auth-visitor") {
+            sendPage(res, "auth-visitor.html", "text/html");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/auth-create-account") {
+            sendPage(res, "auth-create-account.html", "text/html");
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/auth-staff") {
             sendPage(res, "auth-staff.html", "text/html");
             return;
@@ -102,6 +118,11 @@ async function router(req, res) {
             sendPage(res, path.join("js", "login.js"), "application/javascript");
             return;
         }
+
+        if (req.method === "GET" && req.url === "/js/auth-visitor.js") {
+            sendPage(res, path.join("js", "auth-visitor.js"), "application/javascript");
+            return;
+        }        
 
         if (req.method === "GET" && req.url === "/js/collections.js") {
             sendPage(res, path.join("js", "collections.js"), "application/javascript");
