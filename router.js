@@ -63,8 +63,8 @@ async function router(req, res) {
             return;
         }
 
-        if (req.method === "GET" && req.url === "/login") {
-            sendPage(res, "login.html", "text/html");
+        if (req.method === "GET" && req.url === "/auth-staff") {
+            sendPage(res, "auth-staff.html", "text/html");
             return;
         }
 
