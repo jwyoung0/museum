@@ -17,7 +17,7 @@
             <a href="/ticketing">Tickets</a>
             <a href="/shop">Shop</a>
         </nav>
-        <a class="header-auth" href="/login">Staff Login</a>        
+    <a class="header-auth" href="/auth-external">Sign In</a>
     </header>
     <main>
         <nav aria-label="Artwork navigation">
@@ -28,8 +28,8 @@
         <h2>Search Artwork</h2>
         <div class="field-bar">
             <input 
-                id="search-artwork"
-                name="search-artwork"
+                id="public-search-artwork"
+                name="public-search-artwork"
                 type="text"
                 required           
             >
@@ -46,6 +46,9 @@
         </div>
 
     </main>
+    <footer>
+        <a class="header-auth" href="/login">Staff Portal</a>
+    </footer>
     <script src="js/artwork.js"></script>
 </body>
 </html>
