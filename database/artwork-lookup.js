@@ -20,4 +20,14 @@ async function listPeriods() {
     return result.recordset;
 }
 
-module.exports = { listStyles , listPeriods };
+async function listCollections() {
+    const pool = await getPool();
+    const result = await pool.request().query(`
+       SELECT collectionId, collectionName
+       FROM dbo.COLLECTIONS
+       ORDER BY collectionName;
+    `);
+    return result.recordset;
+}
+
+module.exports = { listStyles , listPeriods, listCollections };

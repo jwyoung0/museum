@@ -46,12 +46,18 @@
             >
             <input id="artistId" name="artistId" type="hidden">
             <div id="artist-search-results" role="listbox" hidden></div>
-        </div>
-       
+        </div>       
 
-        <div class="field-row">
+        <!-- <div class="field-row">
             <label for="collection">Collection *</label>
             <input id="collection" name="collection" type="text" maxlength="50">
+        </div> -->
+
+        <div class="field-row">
+            <label for="collectionId">Collection *</label>
+            <select id="collectionId" name="collectionId" required>
+                <option value="">Select collection...</option>
+            </select>
         </div>
 
         <div class="field-row">

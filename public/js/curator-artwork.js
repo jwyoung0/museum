@@ -324,7 +324,7 @@ async function submitArtworkForm(event) {
         creationDate: Number(data.get("creationDate")),
         medium: data.get("medium").trim(),
         dimensions: data.get("dimensions").trim(),
-        collectionId: Number(data.get("collection")),                        
+        collectionId: data.get("collectionId") ? Number(data.get("collectionId")) : null,                        
         category: data.get("category").trim(),
         styleID: data.get("styleID") ? Number(data.get("styleID")) : null,
         periodID: data.get("periodID") ? Number(data.get("periodID")) : null,
@@ -438,7 +438,7 @@ async function loadArtworkIntoForm(id) {
     document.getElementById("dimensions").value = artwork.dimensions ?? "";
     document.getElementById("creationDate").value = artwork.creationDate ?? "";
     document.getElementById("imageURL").value = artwork.imageURL ?? "";
-    document.getElementById("collection").value = artwork.collection ?? "";
+    document.getElementById("collectionId").value = artwork.collectionId ?? "";
     document.getElementById("artist-search").value = artwork.artist ?? "";
     document.getElementById("artistId").value = artwork.artistId ?? "";
     document.getElementById("styleID").value = artwork.styleID ?? "";
@@ -480,8 +480,9 @@ async function loadArtworkLookups() {
         throw new Error(`Failed to load artwork lookups: ${response.status}`);
     }
 
-    const { styles, periods } = await response.json();
+    const { styles, periods, collections } = await response.json();
 
+    fillLookupSelect("collectionId", collections, "collectionId", "collectionName")
     fillLookupSelect("styleID", styles, "styleID", "styleName");
     fillLookupSelect("periodID", periods, "periodID", "periodName");
 }
