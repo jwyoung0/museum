@@ -1,5 +1,5 @@
 let allArtwork = [];
-let availableArtists = [];
+// let availableArtists = [];
 
 let artworkFormLoaded = false;
 let lastFocusedElement = null;
@@ -166,26 +166,11 @@ async function loadArtworkFormContainer() {
     artworkFormLoaded = true;
 }
 
-async function loadAvailableArtists() {
-    const response = await fetch("/api/curator/artists");
-
-    if (!response.ok) {
-        throw new Error(`Failed to load artists: ${response.status}`);
-    }
-
-    const artists = await response.json();
-
-    if (!Array.isArray(artists)) {
-        throw new Error("Artist response was not a list.");
-    }
-
-    availableArtists = artists;
-}
 
 async function openArtworkDrawer() {
     try {
         await loadArtworkFormContainer();
-        await loadAvailableArtists();
+
 
         setFormMode("create");
         captureInitialFormState();
@@ -212,8 +197,6 @@ function closeArtworkDrawer() {
 
 function attachArtworkFormHandler() {
     const form = document.getElementById("artwork-form");
-    const artistSearch = document.getElementById("artist-search");
-    const artistResults = document.getElementById("artist-search-results");
 
     if (!form) {
         return;
@@ -223,78 +206,8 @@ function attachArtworkFormHandler() {
     form.addEventListener("input", updateDirtyState);
     form.addEventListener("change", updateDirtyState);
 
-    artistSearch.addEventListener("input", handleArtistSearch);
-
-    artistResults.addEventListener("click", (event) => {
-        const option = event.target.closest("[data-artist-id]");
-
-        if (!option) {
-            return;
-        }
-
-        selectArtist(option.dataset.artistId);
-    });
-
     document.getElementById("artwork-cancel-button")
         .addEventListener("click", closeArtworkDrawer);
-}
-
-function handleArtistSearch(event) {
-    document.getElementById("artistId").value = "";
-
-    const query = event.target.value.trim().toLowerCase();
-
-    const matches = availableArtists.filter((artist) =>
-        artist.fullName?.toLowerCase().includes(query)
-    );
-
-    renderArtistSearchResults(matches);
-}
-
-function renderArtistSearchResults(artists) {
-    const results = document.getElementById("artist-search-results");
-
-    results.replaceChildren();
-
-    for (const artist of artists) {
-        const option = document.createElement("button");
-
-        option.type = "button";
-        option.dataset.artistId = artist.artistId;
-        option.textContent = artist.fullName;
-
-        results.appendChild(option);
-    }
-
-    const hasResults = artists.length > 0;
-
-    results.hidden = !hasResults;
-    document
-        .getElementById("artist-search")
-        .setAttribute("aria-expanded", String(hasResults));
-}
-
-function selectArtist(artistId) {
-    const artist = availableArtists.find(
-        (item) => String(item.artistId) === String(artistId)
-    );
-
-    if (!artist) {
-        throw new Error(`Artist not found: ${artistId}`);
-    }
-
-    document.getElementById("artist-search").value = artist.fullName;
-    document.getElementById("artistId").value = artist.artistId;
-
-    const results = document.getElementById("artist-search-results");
-    results.replaceChildren();
-    results.hidden = true;
-
-    document
-        .getElementById("artist-search")
-        .setAttribute("aria-expanded", "false");
-
-    updateDirtyState();
 }
 
 async function submitArtworkForm(event) {
@@ -303,20 +216,6 @@ async function submitArtworkForm(event) {
     const form = event.target;
 
     const data = new FormData(form);
-    const artistIdValue = data.get("artistId");
-    const artistId = Number(artistIdValue);
-
-    if (
-        typeof artistIdValue !== "string" ||
-        artistIdValue.trim() === "" ||
-        !Number.isInteger(artistId) ||
-        artistId <= 0 ||
-        !availableArtists.some((artist) => artist.artistId === artistId)
-    ) {
-        alert("Select an artist from the search results before submitting.");
-        document.getElementById("artist-search").focus();
-        return;
-    }    
 
     const artwork = {
         title: data.get("artworkName").trim(),
@@ -369,7 +268,6 @@ async function submitArtworkForm(event) {
 async function openArtworkDrawerForEdit(id) {
     try {
         await loadArtworkFormContainer();
-        await loadAvailableArtists();
 
         const form = document.getElementById("artwork-form");
 
@@ -439,7 +337,6 @@ async function loadArtworkIntoForm(id) {
     document.getElementById("creationDate").value = artwork.creationDate ?? "";
     document.getElementById("imageURL").value = artwork.imageURL ?? "";
     document.getElementById("collectionId").value = artwork.collectionId ?? "";
-    document.getElementById("artist-search").value = artwork.artist ?? "";
     document.getElementById("artistId").value = artwork.artistId ?? "";
     document.getElementById("styleID").value = artwork.styleID ?? "";
     document.getElementById("periodID").value = artwork.periodID ?? "";
@@ -480,8 +377,9 @@ async function loadArtworkLookups() {
         throw new Error(`Failed to load artwork lookups: ${response.status}`);
     }
 
-    const { styles, periods, collections } = await response.json();
+    const { styles, periods, collections, artists } = await response.json();
 
+    fillLookupSelect("artistId", artists, "artistId", "fullName");
     fillLookupSelect("collectionId", collections, "collectionId", "collectionName")
     fillLookupSelect("styleID", styles, "styleID", "styleName");
     fillLookupSelect("periodID", periods, "periodID", "periodName");

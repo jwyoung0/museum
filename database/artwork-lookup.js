@@ -30,4 +30,14 @@ async function listCollections() {
     return result.recordset;
 }
 
-module.exports = { listStyles , listPeriods, listCollections };
+async function listArtists() {
+    const pool = await getPool();
+    const result = await pool.request().query(`
+       SELECT artistId, fullName
+       FROM dbo.ARTISTS
+       ORDER BY fullName;
+    `);
+    return result.recordset;
+}
+
+module.exports = { listStyles , listPeriods, listCollections, listArtists };

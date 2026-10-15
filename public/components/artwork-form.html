@@ -33,25 +33,11 @@
         </div>
 
         <div class="field-row">
-            <label for="artist-search">Artist *</label>
-            <input 
-                id="artist-search" 
-                name="artistSearch" 
-                type="search" 
-                autocomplete="off"
-                aria-autocomplete="list"
-                aria-controls="artist-search-results"
-                aria-expanded="false"
-                required
-            >
-            <input id="artistId" name="artistId" type="hidden">
-            <div id="artist-search-results" role="listbox" hidden></div>
-        </div>       
-
-        <!-- <div class="field-row">
-            <label for="collection">Collection *</label>
-            <input id="collection" name="collection" type="text" maxlength="50">
-        </div> -->
+            <label for="artistId">Artist *</label>
+            <select id="artistId" name="artistId" required>
+                <option value="">Select artist...</option>
+            </select>
+        </div>
 
         <div class="field-row">
             <label for="collectionId">Collection *</label>
