@@ -441,7 +441,7 @@ async function loadArtworkIntoForm(id) {
     document.getElementById("collection").value = artwork.collection ?? "";
     document.getElementById("artist-search").value = artwork.artist ?? "";
     document.getElementById("artistId").value = artwork.artistId ?? "";
-    document.getElementById("styleID").value = artwork.StyleID ?? artwork.styleID ?? "";
+    document.getElementById("styleID").value = artwork.styleID ?? "";
     document.getElementById("periodID").value = artwork.periodID ?? "";
 
     captureInitialFormState();   

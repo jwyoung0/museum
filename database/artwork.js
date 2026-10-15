@@ -9,7 +9,7 @@ async function createArtwork({
         imageURL,
         artistId,
         collectionId,
-        StyleID,
+        styleID,
         periodID
 }) {
     if (typeof title !== "string" || !title.trim()) {
@@ -43,7 +43,7 @@ async function createArtwork({
         .input("imageURL", sql.NVarChar(500), imageURL || null)
         .input("artistId", sql.Int, artistId)
         .input("collectionId", sql.Int, collectionId)
-        .input("StyleID", sql.Int, StyleID || null)
+        .input("styleID", sql.Int, styleID || null)
         .input("periodID", sql.Int, periodID || null)
         .query(`
             INSERT INTO dbo.ARTWORKS
@@ -56,7 +56,7 @@ async function createArtwork({
                 imageURL,
                 artistId,
                 collectionId,
-                StyleID,
+                styleID,
                 periodID
             )
             OUTPUT INSERTED.*
@@ -70,7 +70,7 @@ async function createArtwork({
                 @imageURL,
                 @artistId,
                 @collectionId,
-                @StyleID,
+                @styleID,
                 @periodID
             );
         `);
@@ -135,7 +135,7 @@ async function updateArtwork(
         imageURL,
         artistId,
         collectionId,
-        StyleID,
+        styleID,
         periodID
     }
 ) {
@@ -171,7 +171,7 @@ async function updateArtwork(
         .input("imageURL", sql.NVarChar(500), imageURL || null)
         .input("artistId", sql.Int, artistId)
         .input("collectionId", sql.Int, collectionId)
-        .input("StyleID", sql.Int, StyleID || null)
+        .input("styleID", sql.Int, styleID || null)
         .input("periodID", sql.Int, periodID || null)
         .query(`
             UPDATE dbo.ARTWORKS
@@ -184,7 +184,7 @@ async function updateArtwork(
                 imageURL=@imageURL,
                 artistId=@artistId,
                 collectionId=@collectionId,
-                StyleID=@StyleID,
+                styleID=@styleID,
                 periodID=@periodID
             OUTPUT INSERTED.*
             WHERE accessionId = @accessionId;

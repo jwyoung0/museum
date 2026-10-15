@@ -20,7 +20,7 @@ async function createArtworkHandler(req, res) {
         imageURL: body.imageURL,
         artistId: body.artistId,
         collectionId: body.collectionId,
-        StyleID: body.StyleID,
+        styleID: body.styleID,
         periodID: body.periodID
     };
 
@@ -78,7 +78,7 @@ async function updateArtworkHandler(req, res) {
         imageURL: body.imageURL,
         artistId: body.artistId,
         collectionId: body.collectionId,
-        StyleID: body.StyleID,
+        styleID: body.styleID,
         periodID: body.periodID
     };
 
