@@ -1,9 +1,17 @@
+import { createDrawer } from "/js/drawer.js";
+import { createFormState } from "/js/form-state.js";
+
 let allArtists = [];
 
 let artistFormLoaded = false;
-let lastFocusedElement = null;
-let initialFormState = "";
-let formDirty = false;
+let formState = null;
+
+const artistDrawer = createDrawer({
+    element: document.getElementById("artist-form-container"),
+    closeButton: document.getElementById("close-artist-drawer"),
+    initialFocus: () => document.getElementById("fullName"),
+    canClose: () => formState === null || formState.confirmDiscard()
+});
 
 document.addEventListener("DOMContentLoaded", () => {
     loadArtists();
@@ -15,25 +23,10 @@ document.addEventListener("DOMContentLoaded", () => {
     document
         .getElementById("add-artist-button")
         .addEventListener("click", openArtistDrawer);
-
-    document
-        .getElementById("close-artist-drawer")
-        .addEventListener("click", closeArtistDrawer);
-});
-
-document.addEventListener("keydown", (event) => {
-        if (
-            event.key === "Escape" &&
-            !document.getElementById("artist-form-container").hidden
-        ) {
-            closeArtistDrawer();
-        }
 });
 
 window.addEventListener("beforeunload", (event) => {
-    const drawerOpen = !document.getElementById("artist-form-container").hidden;
-
-    if (drawerOpen && formDirty) {
+    if (artistDrawer.isOpen() && formState?.isDirty()) {
         event.preventDefault();
         event.returnValue = "";
     }
@@ -180,26 +173,12 @@ async function openArtistDrawer() {
         await loadArtistFormContainer();
 
         setFormMode("create");
-        captureInitialFormState();
+        formState.capture();
 
-        showDrawer();
+        artistDrawer.open();
     } catch (error) {
             console.error(error);        
     }
-}
-
-function closeArtistDrawer() {
-    if (!confirmDiscardChanges()) {
-        return;
-    }
-
-    const drawer = document.getElementById("artist-form-container");
-
-    drawer.hidden = true;
-
-    drawer.setAttribute("aria-hidden", "true");
-
-    lastFocusedElement?.focus();
 }
 
 function attachArtistFormHandler() {
@@ -209,12 +188,12 @@ function attachArtistFormHandler() {
         return;
     }
 
+    formState = createFormState(form);
+
     form.addEventListener("submit", submitArtistForm);
-    form.addEventListener("input", updateDirtyState);
-    form.addEventListener("change", updateDirtyState);
 
     document.getElementById("artist-cancel-button")
-        .addEventListener("click", closeArtistDrawer);
+        .addEventListener("click", artistDrawer.close);
 }
 
 async function submitArtistForm(event) {
@@ -256,11 +235,11 @@ async function submitArtistForm(event) {
         }
 
         form.reset();
-        captureInitialFormState();
+        formState.capture();
         
         await loadArtists();
         
-        closeArtistDrawer();
+        artistDrawer.close();
                 
     } catch (error) {
         console.error("Artist creation failed:",error);
@@ -279,22 +258,10 @@ async function openArtistDrawerForEdit(id) {
 
         await loadArtistIntoForm(id);
 
-        showDrawer();
+        artistDrawer.open();
     } catch (error) {
         alert("Unable to load artist");
     }
-}
-
-function showDrawer() {
-    const drawer = document.getElementById("artist-form-container");
-
-    lastFocusedElement = document.activeElement;
-
-    drawer.hidden = false;
-
-    drawer.setAttribute("aria-hidden", "false");
-
-    document.getElementById("fullName")?.focus();
 }
 
 function setFormMode(mode, id = "") {
@@ -341,33 +308,9 @@ async function loadArtistIntoForm(id) {
     document.getElementById("sex").value = artist.sex ?? "";
     document.getElementById("nationality").value = artist.nationality ?? "";
 
-    captureInitialFormState();   
+    formState.capture();
     
     submitButton.disabled = false;
-}
-
-function getFormState() {
-    const form = document.getElementById("artist-form");
-
-    return JSON.stringify(Object.fromEntries(new FormData(form)));
-}
-
-function captureInitialFormState() {
-    initialFormState = getFormState();
-    
-    formDirty = false;
-}
-
-function updateDirtyState() {
-    formDirty = getFormState() !== initialFormState;
-}
-
-function confirmDiscardChanges() {
-    if (!formDirty) {
-        return true;
-    }
-
-    return window.confirm("Discard unsaved changes?");
 }
 
 async function loadArtistLookups() {

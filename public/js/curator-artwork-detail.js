@@ -76,7 +76,7 @@ async function confirmDeleteArtwork() {
 async function deleteArtwork() {
     try {
         const response = await fetch(
-            `/api/curator/artwork/${currentArtwork.artworkId}`,
+            `/api/curator/artwork/${currentArtwork.accessionId}`,
             {
                 method: "DELETE"
             } 

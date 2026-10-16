@@ -156,6 +156,18 @@ async function router(req, res) {
             return;
         }    
 
+        if (req.method === "GET" && req.url === "/js/drawer.js") {
+            if (!requireCurator(req, res)) return;
+            sendPage(res, path.join("js", "drawer.js"), "application/javascript");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/js/form-state.js") {
+            if (!requireCurator(req, res)) return;
+            sendPage(res, path.join("js", "form-state.js"), "application/javascript");
+            return;
+        }
+
         if (req.method === "POST" && req.url === "/api/curator/artists") {
             if (!requireCurator(req, res)) return;
             await createArtistHandler(req, res);

@@ -1,9 +1,17 @@
+import { createDrawer } from "/js/drawer.js";
+import { createFormState } from "/js/form-state.js";
+
 let allArtwork = [];
 
 let artworkFormLoaded = false;
-let lastFocusedElement = null;
-let initialFormState = "";
-let formDirty = false;
+let formState = null;
+
+const artworkDrawer = createDrawer({
+    element: document.getElementById("artwork-form-container"),
+    closeButton: document.getElementById("close-artwork-drawer"),
+    initialFocus: () => document.getElementById("title"),
+    canClose: () => formState === null || formState.confirmDiscard()
+});
 
 document.addEventListener("DOMContentLoaded", () => {
     loadArtwork();
@@ -15,25 +23,10 @@ document.addEventListener("DOMContentLoaded", () => {
     document
         .getElementById("add-artwork-button")
         .addEventListener("click", openArtworkDrawer);
-
-    document
-        .getElementById("close-artwork-drawer")
-        .addEventListener("click", closeArtworkDrawer);
-});
-
-document.addEventListener("keydown", (event) => {
-        if (
-            event.key === "Escape" &&
-            !document.getElementById("artwork-form-container").hidden
-        ) {
-            closeArtworkDrawer();
-        }
 });
 
 window.addEventListener("beforeunload", (event) => {
-    const drawerOpen = !document.getElementById("artwork-form-container").hidden;
-
-    if (drawerOpen && formDirty) {
+    if (artworkDrawer.isOpen() && formState?.isDirty()) {
         event.preventDefault();
         event.returnValue = "";
     }
@@ -172,26 +165,12 @@ async function openArtworkDrawer() {
 
 
         setFormMode("create");
-        captureInitialFormState();
+        formState.capture();
 
-        showDrawer();
+        artworkDrawer.open();
     } catch (error) {
             console.error(error);        
     }
-}
-
-function closeArtworkDrawer() {
-    if (!confirmDiscardChanges()) {
-        return;
-    }
-
-    const drawer = document.getElementById("artwork-form-container");
-
-    drawer.hidden = true;
-
-    drawer.setAttribute("aria-hidden", "true");
-
-    lastFocusedElement?.focus();
 }
 
 function attachArtworkFormHandler() {
@@ -201,12 +180,12 @@ function attachArtworkFormHandler() {
         return;
     }
 
+    formState = createFormState(form);
+
     form.addEventListener("submit", submitArtworkForm);
-    form.addEventListener("input", updateDirtyState);
-    form.addEventListener("change", updateDirtyState);
 
     document.getElementById("artwork-cancel-button")
-        .addEventListener("click", closeArtworkDrawer);
+        .addEventListener("click", artworkDrawer.close);
 }
 
 async function submitArtworkForm(event) {
@@ -251,11 +230,11 @@ async function submitArtworkForm(event) {
         }
 
         form.reset();
-        captureInitialFormState();
+        formState.capture();
         
         await loadArtwork();
         
-        closeArtworkDrawer();
+        artworkDrawer.close();
                 
     } catch (error) {
         console.error("artwork creation failed:",error);
@@ -274,23 +253,11 @@ async function openArtworkDrawerForEdit(id) {
 
         await loadArtworkIntoForm(id);
 
-        showDrawer();
+        artworkDrawer.open();
     } catch (error) {
         console.error("Unable to open artwork for editing:", error);
         alert("Unable to load artwork");
     }
-}
-
-function showDrawer() {
-    const drawer = document.getElementById("artwork-form-container");
-
-    lastFocusedElement = document.activeElement;
-
-    drawer.hidden = false;
-
-    drawer.setAttribute("aria-hidden", "false");
-
-    document.getElementById("title")?.focus();
 }
 
 function setFormMode(mode, id = "") {
@@ -340,33 +307,9 @@ async function loadArtworkIntoForm(id) {
     document.getElementById("styleID").value = artwork.styleID ?? "";
     document.getElementById("periodID").value = artwork.periodID ?? "";
 
-    captureInitialFormState();   
+    formState.capture();
     
     submitButton.disabled = false;
-}
-
-function getFormState() {
-    const form = document.getElementById("artwork-form");
-
-    return JSON.stringify(Object.fromEntries(new FormData(form)));
-}
-
-function captureInitialFormState() {
-    initialFormState = getFormState();
-    
-    formDirty = false;
-}
-
-function updateDirtyState() {
-    formDirty = getFormState() !== initialFormState;
-}
-
-function confirmDiscardChanges() {
-    if (!formDirty) {
-        return true;
-    }
-
-    return window.confirm("Discard unsaved changes?");
 }
 
 async function loadArtworkLookups() {
