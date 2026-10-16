@@ -25,30 +25,46 @@
             <a href="/collections">Collections</a>
             <a href="/exhibitions">Now on View</a>
         </nav>
-        <h2>Search Artwork</h2>
-        <div class="field-bar">
-            <input 
-                id="visitor-artwork-search"
-                name="visitor-artwork-search"
-                type="text"
-                required           
-            >
-            <select
-                id="search-artwork-field"
-                name="search-artwork-field"
-                required
-            >
-                <option value="" disable selected>Select field...</option>
-                <option value="title">Title</option>
-                <option value="artist">Artist</option>
-            </select>
-            <button 
-                type="submit"
-                id="search-artwork-button"
-            >
-                Search
-            </button>
-        </div>
+
+        <section class="artwork-workspace">
+            <header class="workspace-header">
+                <h2>Search Artwork</h2>
+            </header>
+            
+            <div class="field-bar">
+                <input 
+                    id="visitor-artwork-search"
+                    name="visitor-artwork-search"
+                    type="text"
+                    required           
+                >
+                <select
+                    id="search-artwork-field"
+                    name="search-artwork-field"
+                    required
+                >
+                    <option value="" disable selected>Select field...</option>
+                    <option value="title">Title</option>
+                    <option value="artist">Artist</option>
+                </select>
+                <button 
+                    type="submit"
+                    id="search-artwork-button"
+                >
+                    Search
+                </button>
+            </div> 
+            
+            <p id="search-empty-state" hidden>
+                No artwork pieces match your search.
+            </p>
+
+            <div id="artwork-results">
+                
+            </div>
+        </section>
+
+        
 
     </main>
     <footer>

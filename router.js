@@ -3,6 +3,9 @@ const path = require("path");
 const { authVisitorHandler } = require("./handlers/auth-visitor");
 const { loginHandler } = require("./handlers/login");
 const { logoutHandler } = require("./handlers/logout");
+const { listArtworkForVisitorHandler,
+        readArtworkForVisitorHandler 
+} = require("./handlers/artwork");
 const { createArtistHandler,
         listArtistsHandler,
         readArtistHandler,
@@ -54,9 +57,9 @@ async function router(req, res) {
             return;
         }
 
-        // if (req.method === "GET" && req.url === "/api/artwork") {
-        //     await listArtworkHandler
-        // }
+        if (req.method === "GET" && req.url === "/api/artwork") {
+            await listArtworkForVisitorHandler(req, res);
+        }
 
         if (req.method === "GET" && req.url === "/collections") {
             sendPage(res, "collections.html", "text/html");
