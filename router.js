@@ -190,7 +190,13 @@ async function router(req, res) {
             if (!requireCurator(req, res)) return;
             await listArtworkHandler(req, res);
             return;
-        }        
+        } 
+        
+        if (req.method === "GET" && req.url === "/director/dashboard") {
+            if (!requireDirector(req, res)) return;
+            sendPage(res, path.join("director", "dashboard.html"), "text/html");
+            return;
+        }
 
         const pathname = new URL(req.url, "http://localhost").pathname;
 
@@ -328,6 +334,18 @@ function requireAdmin(req, res) {
 
 function requireCurator(req, res) {
     if (!req.user || req.user.role !== "curator") {
+        res.writeHead(302, {
+            "Location": "/",
+            "Content-Length": 0
+        });
+        res.end();
+        return false;
+    }
+    return true;
+}
+
+function requireDirector(req, res) {
+    if (!req.user || req.user.role !== "director") {
         res.writeHead(302, {
             "Location": "/",
             "Content-Length": 0

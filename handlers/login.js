@@ -28,7 +28,8 @@ async function loginHandler(req, res) {
     });
 
     const routeByRole = {
-        curator: "/curator/artwork"
+        curator: "/curator/artwork",
+        director: "/director/dashboard"
     };
 
     res.writeHead(200, {
