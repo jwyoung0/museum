@@ -5,9 +5,9 @@ const {
     updateArtist,
     deleteArtist, 
     countArtistArtworks
-} = require("../database/artists");
+} = require("../../database/artists");
 
-const { readJsonBody } = require("../utils/http");
+const { readJsonBody } = require("../../utils/http");
 
 async function createArtistHandler(req, res) {
     const body = await readJsonBody(req);

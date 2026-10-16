@@ -1,5 +1,4 @@
 let allArtwork = [];
-// let availableArtists = [];
 
 let artworkFormLoaded = false;
 let lastFocusedElement = null;

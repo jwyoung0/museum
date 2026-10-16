@@ -4,9 +4,9 @@ const {
     readArtwork, 
     updateArtwork,
     deleteArtwork
-} = require("../database/artwork");
+} = require("../../database/artwork");
 
-const { readJsonBody } = require("../utils/http");
+const { readJsonBody } = require("../../utils/http");
 
 async function createArtworkHandler(req, res) {
     const body = await readJsonBody(req);
