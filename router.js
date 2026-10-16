@@ -10,7 +10,8 @@ const { createArtistHandler,
         listArtistsHandler,
         readArtistHandler,
         updateArtistHandler,
-        deleteArtistHandler
+        deleteArtistHandler,
+        listArtistLookupHandler
  } = require("./handlers/curator/artists");
 const { createArtworkHandler,
         listArtworkHandler,
@@ -59,6 +60,7 @@ async function router(req, res) {
 
         if (req.method === "GET" && req.url === "/api/artwork") {
             await listArtworkForVisitorHandler(req, res);
+            return;
         }
 
         if (req.method === "GET" && req.url === "/collections") {
@@ -163,6 +165,12 @@ async function router(req, res) {
         if (req.method === "GET" && req.url === "/api/curator/artists") {
             if (!requireCurator(req, res)) return;
             await listArtistsHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/api/curator/artist-lookup") {
+            if (!requireCurator(req, res)) return;
+            await listArtistLookupHandler(req, res);
             return;
         }
 

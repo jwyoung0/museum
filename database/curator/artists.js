@@ -156,11 +156,22 @@ async function countArtistArtworks(artistId) {
     return result.recordset[0].artworkCount;
 }
 
+async function listPeriods() {
+    const pool = await getPool();
+    const result = await pool.request().query(`
+       SELECT periodID, periodName
+       FROM dbo.PERIODS
+       ORDER BY periodName; 
+    `);
+    return result.recordset;
+}
+
 module.exports = {
     createArtist,
     listArtists,
     readArtist,
     updateArtist,
     deleteArtist,
-    countArtistArtworks
+    countArtistArtworks,
+    listPeriods
 };

@@ -168,6 +168,8 @@ async function loadArtistFormContainer() {
 
     document.getElementById("artist-form-content").innerHTML = html;
 
+    await loadArtistLookups();
+
     attachArtistFormHandler();
 
     artistFormLoaded = true;
@@ -366,4 +368,27 @@ function confirmDiscardChanges() {
     }
 
     return window.confirm("Discard unsaved changes?");
+}
+
+async function loadArtistLookups() {
+    const response = await fetch("/api/curator/artist-lookup");
+
+    if(!response.ok) {
+        throw new Error(`Failed to load artwork lookups: ${response.status}`);
+    }
+
+    const { periods } = await response.json();
+
+    fillLookupSelect("period", periods, "periodName", "periodName");
+}
+
+function fillLookupSelect(selectId, rows, idKey, nameKey) {
+    const select = document.getElementById(selectId);
+
+    for (const row of rows) {
+        const option = document.createElement("option");
+        option.value = row[idKey];
+        option.textContent = row[nameKey];
+        select.appendChild(option);
+    }
 }

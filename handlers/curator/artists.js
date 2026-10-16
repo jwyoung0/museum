@@ -4,7 +4,8 @@ const {
     readArtist, 
     updateArtist,
     deleteArtist, 
-    countArtistArtworks
+    countArtistArtworks,
+    listPeriods
 } = require("../../database/curator/artists");
 
 const { readJsonBody } = require("../../utils/http");
@@ -133,10 +134,23 @@ async function deleteArtistHandler(req, res) {
     res.end();
 }
 
+async function listArtistLookupHandler(req, res) {
+    const [ periods ] = await Promise.all([
+        listPeriods()
+    ]);
+
+    res.writeHead(200, {
+        "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify({ periods }));
+}
+
 module.exports = {
     createArtistHandler,
     listArtistsHandler,
     readArtistHandler,
     updateArtistHandler,
-    deleteArtistHandler
+    deleteArtistHandler,
+    listArtistLookupHandler
 };
