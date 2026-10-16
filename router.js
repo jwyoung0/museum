@@ -43,7 +43,8 @@ async function router(req, res) {
 
         // GET - HTML file routing starts here
         if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
-            sendPage(res, "index.html", "text/html");
+            sendVisitorPage(req, res, "index.html");
+            // sendPage(res, "index.html", "text/html");
             return;
         }
 
@@ -54,7 +55,8 @@ async function router(req, res) {
         }
 
         if (req.method === "GET" && req.url === "/artwork") {
-            sendPage(res, "artwork.html", "text/html");
+            sendVisitorPage(req, res, "artwork.html");
+            // sendPage(res, "artwork.html", "text/html");
             return;
         }
 
@@ -64,17 +66,20 @@ async function router(req, res) {
         }
 
         if (req.method === "GET" && req.url === "/collections") {
-            sendPage(res, "collections.html", "text/html");
+            sendVisitorPage(req, res, "collections.html");
+            // sendPage(res, "collections.html", "text/html");
             return;
         }
 
         if (req.method === "GET" && req.url === "/exhibitions") {
-            sendPage(res, "exhibitions.html", "text/html");
+            sendVisitorPage(req, res, "exhibitions.html");            
+            // sendPage(res, "exhibitions.html", "text/html");
             return;
         }
 
         if (req.method === "GET" && req.url === "/about") {
-            sendPage(res, "about.html", "text/html");
+            sendVisitorPage(req, res, "about.html");
+            // sendPage(res, "about.html", "text/html");
             return;
         }
 
@@ -366,6 +371,39 @@ function requireDirector(req, res) {
         return false;
     }
     return true;
+}
+
+function sendVisitorPage(req, res, filename) {
+    const filePath = path.join(__dirname, "public", filename);
+
+    fs.readFile(filePath, "utf8", (err, html) => {
+        if (err) {
+            console.error(`Failed to read visitor page: ${filePath}`, err);
+            res.writeHead(500, { "Content-Type": "text/plain" });
+            res.end("Server error");
+            return;
+        }
+
+        const placeholder = "<!-- VISITOR_AUTH -->";
+
+        if (!html.includes(placeholder)) {
+            console.error(`Visitor auth placeholder not found in: ${filePath}`);
+            res.writeHead(500, { "Content-Type": "text/plain" });
+            res.end("Page configuration error");
+            return;
+        }
+
+        const authControl = req.user
+            ? `<form class="header-auth-form" action="/api/logout" method="post">
+                   <button class="header-auth" type="submit">Log Out</button>
+               </form>`
+            : `<a class="header-auth" href="/auth-visitor">Sign In</a>`;
+
+        const renderedHtml = html.replace(placeholder, authControl);
+
+        res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+        res.end(renderedHtml);
+    });
 }
 
 module.exports = router;
