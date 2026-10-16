@@ -2,16 +2,10 @@ let allArtwork = [];
 
 document.addEventListener("DOMContentLoaded", () => {
     loadArtwork();
-    
-    // document
-    //     .getElementById("visitor-artwork-search")
-    //     .addEventListener("input", handleSearch);
-    
+        
     document.addEventListener("keydown", (event) => {
             if (
                 event.key === "Enter" 
-                // &&
-                // !document.getElementById("artwork-form-container").hidden
             ) {
                 handleSearch();
             }
