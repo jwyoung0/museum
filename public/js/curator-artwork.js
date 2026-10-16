@@ -370,7 +370,7 @@ function confirmDiscardChanges() {
 }
 
 async function loadArtworkLookups() {
-    const response = await fetch("/api/curator/artwork-lookups");
+    const response = await fetch("/api/curator/artwork-lookup");
 
     if (!response.ok) {
         throw new Error(`Failed to load artwork lookups: ${response.status}`);

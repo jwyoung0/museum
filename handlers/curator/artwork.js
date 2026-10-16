@@ -4,7 +4,7 @@ const {
     readArtwork, 
     updateArtwork,
     deleteArtwork
-} = require("../../database/artwork");
+} = require("../../database/curator/artwork");
 
 const { readJsonBody } = require("../../utils/http");
 

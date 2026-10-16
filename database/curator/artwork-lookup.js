@@ -1,4 +1,4 @@
-const { getPool } = require("./connection");
+const { getPool } = require("../connection");
 
 async function listStyles() {
     const pool = await getPool();

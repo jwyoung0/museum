@@ -1,4 +1,4 @@
-const { sql, getPool } = require("./connection");
+const { sql, getPool } = require("../connection");
 
 async function createArtist({
     fullName,

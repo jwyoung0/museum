@@ -5,7 +5,7 @@ const {
     updateArtist,
     deleteArtist, 
     countArtistArtworks
-} = require("../../database/artists");
+} = require("../../database/curator/artists");
 
 const { readJsonBody } = require("../../utils/http");
 

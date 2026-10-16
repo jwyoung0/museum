@@ -1,5 +1,5 @@
 const { listStyles, listPeriods, listCollections, listArtists } = 
-    require("../../database/artwork-lookup");
+    require("../../database/curator/artwork-lookup");
 
 async function listArtworkLookupsHandler(req, res) {
     const [styles, periods, collections, artists] = await Promise.all([
