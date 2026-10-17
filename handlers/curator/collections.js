@@ -10,10 +10,31 @@ const {
 const { readJsonBody } = require("../../utils/http");
 
 async function createCollectionHandler(req, res) {
+    const body = await readJsonBody(req);
 
+    const collection = {
+        collectionName: body.collectionName,
+        description: body.description
+    };
+
+    const createdCollection = await createCollection(collection);
+
+    res.writeHead(201, {
+        "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify(createdCollection));
 }
 
-async function listCollectionsHandler(req, res) {}
+async function listCollectionsHandler(req, res) {
+    const collections = await listCollections();
+
+    res.writeHead(200, {
+        "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify(collections));
+}
 
 async function readCollectionHandler(req, res) {
     const collectionId = req.params.id;
@@ -106,5 +127,5 @@ module.exports = {
     listCollectionsHandler,
     readCollectionHandler,
     updateCollectionHandler,
-    deleteCollectionHandler,
+    deleteCollectionHandler
 };

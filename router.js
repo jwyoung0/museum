@@ -20,7 +20,12 @@ const { createArtworkHandler,
         deleteArtworkHandler
  } = require("./handlers/curator/artwork");
 const { listArtworkLookupsHandler } = require("./handlers/curator/artwork-lookup");
-
+const { createCollectionHandler,
+        listCollectionsHandler,
+        readCollectionHandler,
+        updateCollectionHandler,
+        deleteCollectionHandler
+} = require("./handlers/curator/collections");
 
 async function router(req, res) {
     try {
@@ -207,7 +212,19 @@ async function router(req, res) {
             if (!requireCurator(req, res)) return;
             await listArtworkHandler(req, res);
             return;
-        } 
+        }
+        
+        if (req.method === "POST" && req.url === "/api/curator/collections") {
+            if (!requireCurator(req, res)) return;
+            await createCollectionHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/api/curator/collections") {
+            if (!requireCurator(req, res)) return;
+            await listCollectionsHandler(req, res);
+            return;
+        }
         
         if (req.method === "GET" && req.url === "/director/dashboard") {
             if (!requireDirector(req, res)) return;
@@ -259,6 +276,7 @@ async function router(req, res) {
 
         const artistMatch = pathname.match(/^\/api\/curator\/artists\/(\d+)$/);
         const artworkMatch = pathname.match(/^\/api\/curator\/artwork\/(\d+)$/);
+        const collectionMatch = pathname.match(/^\/api\/curator\/collections\/(\d+)$/);
 
         if (artistMatch && ["GET", "PUT", "DELETE"].includes(req.method)) {
             req.params = { id: artistMatch[1] };
@@ -286,6 +304,21 @@ async function router(req, res) {
                 await updateArtworkHandler(req, res);
             } else {
                 await deleteArtworkHandler(req, res);
+            }
+            return;
+        }
+
+        if (collectionMatch && ["GET", "PUT", "DELETE"].includes(req.method)) {
+            req.params = { id: collectionMatch[1] };
+
+            if (!requireCurator(req, res)) return;
+
+            if (req.method === "GET") {
+                await readCollectionHandler(req, res);
+            } else if (req.method === "PUT") {
+                await updateCollectionHandler(req, res);
+            } else {
+                await deleteCollectionHandler(req, res);
             }
             return;
         }
