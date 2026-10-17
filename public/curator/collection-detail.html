@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>Collection Details | Curator Dashboard</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <h1 class="dashboard-title">Curator Dashboard</h1>
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
+    </header>
+
+    <main>
+        <nav aria-label="Curator navigation">
+            <a href="/curator/artwork">Artwork</a>
+            <a href="/curator/artists">Artists</a>
+            <a href="/curator/collections" aria-current="page">Collections</a>
+            <a href="/curator/exhibitions">Exhibits</a>
+        </nav>
+
+        <section class="artist-detail-workspace">
+            <a href="/curator/collections">← Back to Collections</a>
+            <header class="workspace-header">
+                <h2 id="collection-name">Loading...</h2>
+            </header>
+
+            <dl class="artist-detail-grid">
+                <dt>Name</dt>
+                <dd id="collectionName"></dd>
+
+                <dt>Description</dt>
+                <dd id="description"></dd>
+
+                <dt>Artwork Count</dt>
+                <dd id="artwork-count"></dd>
+            </dl>
+
+            <div class="artist-actions">
+                <button
+                    id="delete-collection-button"
+                    class="button-danger"
+                    type="button"
+                    hidden
+                >
+                    Delete Collection
+                </button>
+            </div>
+
+            <div id="detail-error" role="alert" hidden>
+                Unable to load collection.
+            </div>
+        </section>
+    </main>
+    <script src="/js/curator-collection-detail.js"></script>
+</body>
+</html>

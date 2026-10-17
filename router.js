@@ -166,6 +166,12 @@ async function router(req, res) {
             return;
         }    
 
+        if (req.method === "GET" && req.url === "/js/curator-collections.js") {
+            if (!requireCurator(req, res)) return;
+            sendPage(res, path.join("js", "curator-collections.js"), "application/javascript");
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/js/drawer.js") {
             if (!requireCurator(req, res)) return;
             sendPage(res, path.join("js", "drawer.js"), "application/javascript");
@@ -254,6 +260,12 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" && req.url === "/components/collection-form.html") {
+            if (!requireCurator(req, res)) return;
+            sendPage(res, path.join("components", "collection-form.html"), "text/html");
+            return;
+        }
+
         if (req.method === "GET" && 
             pathname.match(/^\/curator\/artwork\/\d+$/)
         ) {
@@ -262,9 +274,23 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" &&
+            pathname.match(/^\/curator\/collections\/\d+$/)
+        ) {
+            if (!requireCurator(req, res)) return;
+            sendPage(res, path.join("curator", "collection-detail.html"), "text/html");
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/js/curator-artwork-detail.js") {
             if (!requireCurator(req, res)) return;
             sendPage(res, path.join("js", "curator-artwork-detail.js"), "application/javascript");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/js/curator-collection-detail.js") {
+            if (!requireCurator(req, res)) return;
+            sendPage(res, path.join("js", "curator-collection-detail.js"), "application/javascript");
             return;
         }
 

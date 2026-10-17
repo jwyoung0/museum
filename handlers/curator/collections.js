@@ -73,7 +73,7 @@ async function updateCollectionHandler(req, res) {
 
     const updatedCollection = await updateCollection(collectionId, collection);
 
-    if (!updatedArtist) {
+    if (!updatedCollection) {
         res.writeHead(404, {
             "Content-Type": "application/json"
         });
@@ -87,24 +87,24 @@ async function updateCollectionHandler(req, res) {
         "Content-Type": "application/json"
     });
 
-    res.body(JSON.stringify(updatedCollection));
+    res.end(JSON.stringify(updatedCollection));
 }
 
 async function deleteCollectionHandler(req, res) {
     const collectionId = req.params.id;
 
-    const collectionCount = await countCollectionArtworks(collectionId);
+    const artworkCount = await countCollectionArtworks(collectionId);
 
-    if (collectionCount > 0) {
+    if (artworkCount > 0) {
         res.writeHead(409, {"Content-Type": "application/json"});
 
         return res.end(JSON.stringify({
             error: 
                 `This collection is associated with ` +
-                `${collectionCount} artworks. ` +
+                `${artworkCount} artworks. ` +
                 `Reassign or remove those artworks ` +
                 `before deleting the collection.`,
-            collectionCount
+            artworkCount
         }));
     }
 

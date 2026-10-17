@@ -60,16 +60,16 @@ async function updateCollection(
     if (typeof collectionName !== "string" || !collectionName.trim()) {
         throw new TypeError("Collection name is required");
     }
-    if (typeof description !== "string" || !description.trim()) {
-        throw new TypeError("Description is required");
+    if (description != null && typeof description !== "string") {
+        throw new TypeError("Description must be a string");
     }
     
     const pool = await getPool();
 
-    const result = pool.request()
+    const result = await pool.request()
         .input("collectionId", sql.Int, collectionId)
-        .input("collectionName", sql.NVarChar(50), collectionName)
-        .input("description", sql.NVarChar(250), description || null)
+        .input("collectionName", sql.NVarChar(50), collectionName.trim())
+        .input("description", sql.NVarChar(250), description?.trim() || null)
         .query(`
             UPDATE dbo.COLLECTIONS
             SET
@@ -85,7 +85,7 @@ async function updateCollection(
 async function deleteCollection(collectionId) {
     const pool = await getPool();
 
-    const result = pool.request()   
+    const result = await pool.request()
         .input("collectionId", sql.Int, collectionId)
         .query(`
            DELETE FROM dbo.COLLECTIONS
@@ -102,11 +102,11 @@ async function countCollectionArtworks(collectionId) {
     const result = await pool.request()
         .input("collectionId", sql.Int, collectionId)
         .query(`
-           SELECT COUNT(*) AS collectionCount
-           FROM dbo.COLLECTIONS
+           SELECT COUNT(*) AS artworkCount
+           FROM dbo.ARTWORKS
            WHERE collectionId = @collectionId;
         `);
-        return result.recordset;
+    return result.recordset[0].artworkCount;
 }
 
 module.exports = {

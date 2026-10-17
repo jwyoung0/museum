@@ -151,7 +151,8 @@ h2 {
 /* Shared controls */
 
 input,
-select {
+select,
+textarea {
     width: 100%;
     min-height: 40px;
     padding: 8px 10px;
@@ -163,7 +164,8 @@ select {
 }
 
 input:focus,
-select:focus {
+select:focus,
+textarea:focus {
     outline: 2px solid var(--blue);
     outline-offset: 1px;
     border-color: var(--blue);
@@ -230,6 +232,13 @@ button:focus-visible {
     width: 100%;
     padding: 8px;
     font: inherit;
+}
+
+.field-row textarea {
+    width: 100%;
+    padding: 8px;
+    font: inherit;
+    resize: vertical;
 }
 
 .field-bar {
