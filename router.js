@@ -46,6 +46,12 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "POST" && req.url === "/api/director/personnel") {
+            if (!requireDirector(req, res)) return;
+            await createPersonnelHandler(req, res);
+            return;
+}
+
         // GET - HTML file routing starts here
         if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             sendVisitorPage(req, res, "index.html");
@@ -231,10 +237,22 @@ async function router(req, res) {
             await listCollectionsHandler(req, res);
             return;
         }
-        
+        // Director personnel Dashboard routing starts here
         if (req.method === "GET" && req.url === "/director/dashboard") {
             if (!requireDirector(req, res)) return;
             sendPage(res, path.join("director", "dashboard.html"), "text/html");
+            return;
+        }
+        
+        if (req.method === "GET" && req.url === "/api/director/personnel") {
+            if (!requireDirector(req, res)) return;
+            await listPersonnelHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/js/director-personnel.js") {
+            if (!requireDirector(req, res)) return;
+            sendPage(res, path.join("js", "director-personnel.js"), "application/javascript");
             return;
         }
 
