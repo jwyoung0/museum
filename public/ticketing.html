@@ -24,13 +24,11 @@
 
         <br><br>
 
-        <label for="ticketType">Ticket Type:</label>
-        <select id="ticketType" required>
-            <option value="">Select Ticket</option>
-            <option value="Adult">Adult</option>
-            <option value="Student">Student</option>
-            <option value="Child">Child</option>
-        </select>
+
+    <select id="ticketType" required>
+        <option value="">Loading ticket types...</option>
+    </select>
+
 
         <br><br>
 
@@ -38,5 +36,40 @@
 
     </form>
 
+<script>
+async function loadTicketTypes() {
+    const dropdown = document.getElementById("ticketType");
+
+    try {
+        const response = await fetch("/api/ticket-types");
+
+        if (!response.ok) {
+            throw new Error("Failed to load tickets");
+        }
+
+        const tickets = await response.json();
+
+        dropdown.innerHTML = '<option value="">Select Ticket</option>';
+
+        tickets.forEach(ticket => {
+            const option = document.createElement("option");
+
+            option.value = ticket.TicketTypeName;
+            option.textContent = ticket.TicketTypeName;
+
+            dropdown.appendChild(option);
+        });
+
+    } catch (error) {
+        console.error(error);
+        dropdown.innerHTML =
+            '<option value="">Unable to load tickets</option>';
+    }
+}
+
+loadTicketTypes();
+</script>
 </body>
 </html>
+
+
