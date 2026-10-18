@@ -26,6 +26,12 @@ const { createCollectionHandler,
         updateCollectionHandler,
         deleteCollectionHandler
 } = require("./handlers/curator/collections");
+const { createExhibitionHandler,
+    listExhibitionHandler,
+    readExhibitionHandler,
+    updateExhibitionHandler,
+    deleteExhibitionHandler
+} = require("./handlers/exhibitions");
 
 async function router(req, res) {
     try {
@@ -231,7 +237,35 @@ async function router(req, res) {
             await listCollectionsHandler(req, res);
             return;
         }
+
+        if (req.method === "GET" && req.url === "/api/collections") {
+            await listCollectionsHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/api/exhibitions") {
+            await listExhibitionHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/api/curator/exhibitions") {
+            if (!requireCurator(req, res)) return;
+            await listExhibitionHandler(req, res);
+            return;
+        }
         
+        if (req.method === "GET" && req.url === "/api/director/exhibitions") {
+            if (!requireDirector(req, res)) return;
+            await listExhibitionHandler(req, res);
+            return
+        }
+
+        if (req.method === "POST" && req.url === "/api/director/exhibitions") {
+            if (!requireDirector(req, res)) return;
+            await createExhibitionHandler(req, res);
+            return;
+        }     
+
         if (req.method === "GET" && req.url === "/director/dashboard") {
             if (!requireDirector(req, res)) return;
             sendPage(res, path.join("director", "dashboard.html"), "text/html");
@@ -300,9 +334,11 @@ async function router(req, res) {
             return;
         }
 
+        // thinking about changing regex so that curator can be director or nothing
         const artistMatch = pathname.match(/^\/api\/curator\/artists\/(\d+)$/);
         const artworkMatch = pathname.match(/^\/api\/curator\/artwork\/(\d+)$/);
         const collectionMatch = pathname.match(/^\/api\/curator\/collections\/(\d+)$/);
+        const exhibitionMatch = pathname.match(/^\/api\/exhibitions\/(\d+)$/);
 
         if (artistMatch && ["GET", "PUT", "DELETE"].includes(req.method)) {
             req.params = { id: artistMatch[1] };
@@ -328,9 +364,9 @@ async function router(req, res) {
                 await readArtworkHandler(req, res);
             } else if (req.method === "PUT") {
                 await updateArtworkHandler(req, res);
-            } else {
+            } else if (req.method === "DELETE") {
                 await deleteArtworkHandler(req, res);
-            }
+            } else return;
             return;
         }
 
@@ -343,9 +379,30 @@ async function router(req, res) {
                 await readCollectionHandler(req, res);
             } else if (req.method === "PUT") {
                 await updateCollectionHandler(req, res);
-            } else {
+            } else if (req.method === "DELETE"){
                 await deleteCollectionHandler(req, res);
+            } else return;
+            return;
+        }
+
+        if (exhibitionMatch && ["GET", "PUT", "DELETE"].includes(req.method)) {
+            req.params = { id: exhibitionMatch[1] };
+
+            if (req.method === "GET") {
+                await readExhibitionHandler(req, res);
             }
+            
+            let isDirector = requireDirector(req, res);
+            let isCurator = requireCurator(req, res);
+
+            if (req.method === "PUT") {
+                if (!(isDirector || isCurator)) return; 
+                await updateExhibitionHandler(req, res);
+            }
+            else if (req.method === "DELETE") {
+                if (!isDirector) return;
+                await deleteExhibitionHandler(req, res);
+            } else return;
             return;
         }
 
