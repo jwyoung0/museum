@@ -1,0 +1,42 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MFAH - Purchase Tickets</title>
+</head>
+<body>
+
+    <h1>Museum Ticket Purchase</h1>
+    <p>Welcome to the Museum of Fine Arts Houston!</p>
+
+    <h2>Buy Your Tickets</h2>
+
+    <form id="ticketForm">
+
+        <label for="name">Visitor Name:</label>
+        <input type="text" id="name" required>
+
+        <br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" required>
+
+        <br><br>
+
+        <label for="ticketType">Ticket Type:</label>
+        <select id="ticketType" required>
+            <option value="">Select Ticket</option>
+            <option value="Adult">Adult</option>
+            <option value="Student">Student</option>
+            <option value="Child">Child</option>
+        </select>
+
+        <br><br>
+
+        <button type="button">Purchase Ticket</button>
+
+    </form>
+
+</body>
+</html>

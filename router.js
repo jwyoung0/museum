@@ -36,6 +36,10 @@ async function router(req, res) {
             sendPage(res, "exhibitions.html", "text/html");
             return;
         }
+        if (req.method === "GET" && req.url === "/ticketing") {
+            sendPage(res, "ticketing.html", "text/html");
+            return;
+        }
 
         if (req.method === "GET" && req.url === "/about") {
             sendPage(res, "about.html", "text/html");
