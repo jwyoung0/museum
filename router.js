@@ -250,6 +250,16 @@ async function router(req, res) {
             return;
         }
 
+//        if (req.method === "GET" && req.url === "/js/director-personnel.js") {
+//            sendPage(
+//                res,
+//                path.join("js", "director-personnel.js"),
+//                "application/javascript"
+//            );
+//            return;
+//        }
+
+
         if (req.method === "GET" && req.url === "/js/director-personnel.js") {
             if (!requireDirector(req, res)) return;
             sendPage(res, path.join("js", "director-personnel.js"), "application/javascript");

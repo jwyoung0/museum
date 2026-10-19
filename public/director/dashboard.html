@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,139 +14,149 @@
 
     <main>
         <nav aria-label="Director sections">
-            <button data-tab="personnel">Personnel</button>
-            <button data-tab="memberships">Memberships</button>
-            <button data-tab="events">Events</button>
-            <button disabled>Ticket Revenue — Coming Soon</button>
+            <button type="button" data-tab="personnel">Personnel</button>
+            <button type="button" data-tab="memberships">Memberships</button>
+            <button type="button" data-tab="events">Events</button>
+            <button type="button" disabled>Ticket Revenue — Coming Soon</button>
         </nav>
-
-
 
         <section id="personnel">
             <h2>Personnel Management</h2>
 
             <p id="personnel-message" role="status">
-                Personnel records have not been loaded yet.
+                Loading personnel records...
             </p>
 
             <button type="button" id="refresh-personnel">
                 Refresh Personnel
             </button>
 
+            
             <h3>Current Personnel</h3>
 
-            <div style="overflow-x: auto;">
-                <table>
+            <div class="personnel-table-container">
+                <table class="personnel-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Legal Name</th>
+                            <th>Position</th>
+                            <th>Phone Number</th>
                             <th>Email</th>
-                            <th>Phone</th>
-                            <th>Status</th>
+                            <th>Employment Status</th>
+                            <th>Date of Birth</th>
                             <th>Start Date</th>
-                            <th>Position ID</th>
-                            <th>Actions</th>
+                            <th>End Date</th>
                         </tr>
                     </thead>
                     <tbody id="personnel-table-body">
                         <tr>
-                            <td colspan="8">No records loaded.</td>
+                            <td colspan="8">Loading personnel records...</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <h3>Add Personnel</h3>
 
-            <form id="personnel-form">
-                <div>
-                    <label for="legal-name">Legal Name</label>
-                    <input
-                        type="text"
-                        id="legal-name"
-                        name="legalName"
-                        maxlength="50"
-                        required
-                    >
-                </div>
+            <h3>Personnel Actions</h3>
 
-                <div>
-                    <label for="personnel-email">Email</label>
-                    <input
-                        type="email"
-                        id="personnel-email"
-                        name="email"
-                        maxlength="50"
-                        required
-                    >
-                </div>
+            <button type="button" id="show-add-personnel">
+                Add Personnel
+            </button>
 
-                <div>
-                    <label for="personnel-phone">Phone Number</label>
-                    <input
-                        type="tel"
-                        id="personnel-phone"
-                        name="phoneNumber"
-                        maxlength="10"
-                        placeholder="10 digits"
-                    >
-                </div>
+            <section id="add-personnel-panel" hidden>
+                <h3>Add New Personnel</h3>
 
-                <div>
-                    <label for="date-of-birth">Date of Birth</label>
-                    <input
-                        type="date"
-                        id="date-of-birth"
-                        name="dateOfBirth"
-                    >
-                </div>
+                <form id="personnel-form">
+                    <div>
+                        <label for="legal-name">Legal Name</label>
+                        <input
+                            type="text"
+                            id="legal-name"
+                            name="legalName"
+                            maxlength="50"
+                            required
+                        >
+                    </div>
 
-                <div>
-                    <label for="start-date">Start Date</label>
-                    <input
-                        type="date"
-                        id="start-date"
-                        name="startDate"
-                    >
-                </div>
+                    <div>
+                        <label for="personnel-email">Email</label>
+                        <input
+                            type="email"
+                            id="personnel-email"
+                            name="email"
+                            maxlength="50"
+                            required
+                        >
+                    </div>
 
-                <div>
-                    <label for="end-date">End Date</label>
-                    <input
-                        type="date"
-                        id="end-date"
-                        name="endDate"
-                    >
-                </div>
+                    <div>
+                        <label for="personnel-phone">Phone Number</label>
+                        <input
+                            type="tel"
+                            id="personnel-phone"
+                            name="phoneNumber"
+                            maxlength="10"
+                            pattern="[0-9]{10}"
+                            placeholder="10 digits"
+                        >
+                    </div>
 
-                <div>
-                    <label for="position-id">Position ID</label>
-                    <input
-                        type="number"
-                        id="position-id"
-                        name="positionID"
-                        min="1"
-                    >
-                </div>
+                    <div>
+                        <label for="date-of-birth">Date of Birth</label>
+                        <input
+                            type="date"
+                            id="date-of-birth"
+                            name="dateOfBirth"
+                        >
+                    </div>
 
-                <div>
-                    <label for="employment-status">Employment Status</label>
-                    <select
-                        id="employment-status"
-                        name="employmentStatus"
-                        required
-                    >
-                        <option value="1">Active</option>
-                        <option value="0">Inactive</option>
-                    </select>
-                </div>
+                    <div>
+                        <label for="start-date">Start Date</label>
+                        <input
+                            type="date"
+                            id="start-date"
+                            name="startDate"
+                        >
+                    </div>
 
-                <button type="submit">Add Personnel</button>
-            </form>
+                    <div>
+                        <label for="end-date">End Date</label>
+                        <input
+                            type="date"
+                            id="end-date"
+                            name="endDate"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="position-id">Position ID</label>
+                        <input
+                            type="number"
+                            id="position-id"
+                            name="positionID"
+                            min="1"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="employment-status">Employment Status</label>
+                        <select
+                            id="employment-status"
+                            name="employmentStatus"
+                            required
+                        >
+                            <option value="1">Active</option>
+                            <option value="0">Inactive</option>
+                        </select>
+                    </div>
+
+                    <button type="submit">Save Personnel</button>
+                    <button type="button" id="cancel-add-personnel">
+                        Cancel
+                    </button>
+                </form>
+            </section>
         </section>
-
-
 
         <section id="memberships" hidden>
             <h2>Memberships</h2>
@@ -161,12 +172,13 @@
     <script>
         document.querySelectorAll("[data-tab]").forEach(button => {
             button.addEventListener("click", () => {
-                document.querySelectorAll("main section").forEach(section => {
+                document.querySelectorAll("main > section").forEach(section => {
                     section.hidden = section.id !== button.dataset.tab;
                 });
             });
         });
     </script>
-<script src="/js/director-personnel.js" defer></script>
+
+    <script src="/js/director-personnel.js" defer></script>
 </body>
 </html>
