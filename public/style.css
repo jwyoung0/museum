@@ -9,6 +9,8 @@
     --green: #087443;
 }
 
+/* Base */
+
 * {
     box-sizing: border-box;
 }
@@ -16,6 +18,7 @@
 body {
     display: flex;
     flex-direction: column;
+    min-height: 100vh;
     margin: 0;
     background: var(--bg);
     color: var(--ink);
@@ -23,11 +26,11 @@ body {
 }
 
 body.login-page {
+    min-height: 100vh;
     background-image: url('images/MFA-Carousel-02.webp');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    min-height: 100vh;
 }
 
 a {
@@ -39,13 +42,13 @@ a:hover {
     text-decoration: underline;
 }
 
-/* Header */
+/* Site and dashboard headers */
 
-.site-header {
+.site-header,
+.dashboard-header {
     position: relative;
     min-height: 64px;
     padding: 0 max(24px, calc((100vw - 1060px) / 2));
-
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
@@ -80,23 +83,13 @@ a:hover {
     font-weight: 600;
 }
 
+.header-auth-form,
 .header-auth {
     justify-self: end;
 }
 
-/* Dashboard */
-
-.dashboard-header {
-    position: relative;
-    min-height: 64px;
-    padding: 0 max(24px, calc((100vw - 1060px) / 2));
-
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    align-items: center;
-    gap: 24px;
-    background: var(--paper);
-    border-bottom: 1px solid var(--line);
+.header-auth-form button {
+    color: #ffffff;
 }
 
 .dashboard-title {
@@ -109,19 +102,13 @@ a:hover {
     white-space: nowrap;
 }
 
-.dashboard-header .header-auth {
+.dashboard-header .header-auth-form {
     grid-column: 3;
     grid-row: 1;
+    justify-self: end;
 }
 
-/* Navigation */
-
-.dashboard nav {
-    nav {
-    display: flex;
-    gap: 18px;
-    }
-}
+/* Navigation and page layout */
 
 nav {
     display: flex;
@@ -139,16 +126,20 @@ nav a[aria-current="page"] {
     text-underline-offset: 4px;
 }
 
-/* Main */
-
 main {
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
+    padding-top: 2rem;
     width: min(1060px, calc(100% - 48px));
     margin: 0 auto;
+}
+
+footer {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1rem;
 }
 
 h2 {
@@ -157,112 +148,36 @@ h2 {
     text-align: center;
 }
 
-/* Form */
-
-.formcontainer {
-    width: 280px;
-    max-width: 100%;
-    margin: 20px 0;
-}
-
-.formcontainer form {
-    padding: 20px;
-    background: var(--paper);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-
-    display: flex;
-    flex-direction: column;
-
-}
-
-.formcontainer p {
-    margin: 0 0 16px;
-}
-
-
-
-.formcontainer label {
-    display: inline-block;
-    margin-bottom: 1px;
-    font-weight: 600;
-}
-
-
-.formcontainer form button {
-    width: 100%;
-    margin-top: 8px;
-    text-align: center;
-}
-
-.field-row {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-bottom: 16px;
-}
-
-.field-bar {
-    display: flex;
-    flex-direction: row;
-    gap: 4px;
-    margin-bottom: 16px;
-}
-
-.field-row input {
-    width: 100%;
-    padding: 8px;
-    font: inherit;
-}
-
-form p {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 5px;
-}
-
-form h2 {
-    margin: 4px 0 4px;
-
-}
-
-form h3 {
-    text-align: center;
-}
+/* Shared controls */
 
 input,
-select {
+select,
+textarea {
     width: 100%;
     min-height: 40px;
     padding: 8px 10px;
-
     color: var(--ink);
     background: var(--paper);
     border: 1px solid var(--line);
     border-radius: 6px;
-
     font: inherit;
 }
 
 input:focus,
-select:focus {
+select:focus,
+textarea:focus {
     outline: 2px solid var(--blue);
     outline-offset: 1px;
     border-color: var(--blue);
 }
 
-/* Button */
-
 button {
     min-height: 40px;
     padding: 8px 16px;
-
     color: #ffffff;
     background: var(--blue);
     border: 0;
     border-radius: 6px;
-
     font: inherit;
     font-weight: 600;
     cursor: pointer;
@@ -277,12 +192,402 @@ button:focus-visible {
     outline-offset: 2px;
 }
 
-/* Message */
+/* Forms */
 
-#message {
-    margin: 10px 0;
-    color: var(--green);
+.formcontainer {
+    width: 280px;
+    max-width: 100%;
+    margin: 20px 0;
 }
+
+.formcontainer form {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+}
+
+.formcontainer label {
+    display: inline-block;
+    margin-bottom: 1px;
+    font-weight: 600;
+}
+
+.formcontainer form button {
+    width: 100%;
+    margin-top: 8px;
+    text-align: center;
+}
+
+.field-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 16px;
+}
+
+.field-row input {
+    width: 100%;
+    padding: 8px;
+    font: inherit;
+}
+
+.field-row textarea {
+    width: 100%;
+    padding: 8px;
+    font: inherit;
+    resize: vertical;
+}
+
+.field-bar {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    margin-bottom: 16px;
+}
+
+form h2 {
+    margin: 4px 0;
+}
+
+.artist-form-container,
+.artwork-form-container {
+    width: min(520px, 100%);
+}
+
+.artist-form-container form,
+.artwork-form-container form {
+    width: 100%;
+}
+
+/* Artwork cards display */
+
+#artwork-results {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+    width: 100%;
+}
+
+.artwork-card {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--paper);
+}
+
+.artwork-card img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+}
+
+.artwork-card h3,
+.artwork-card p {
+    margin: 8px 12px;
+}
+
+.artwork-card a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.artwork-card a:hover {
+    text-decoration: underline;
+}
+
+/* Curator artist list */
+
+.artists-workspace {
+    width: 100%;
+    margin: 20px 0;
+    padding: 24px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+}
+
+.workspace-header {
+    margin-bottom: 24px;
+}
+
+.workspace-header h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-align: left;
+}
+
+.workspace-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.workspace-toolbar input[type="search"] {
+    flex: 1;
+    max-width: 500px;
+}
+
+.workspace-toolbar button {
+    flex-shrink: 0;
+}
+
+.artists-table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.artists-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--paper);
+}
+
+.artists-table thead {
+    background: var(--bg);
+}
+
+.artists-table th {
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--line);
+    text-align: left;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.artists-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+}
+
+.artists-table tbody tr:hover {
+    background: rgba(37, 99, 235, 0.04);
+}
+
+.artists-table td:last-child {
+    white-space: nowrap;
+}
+
+.artists-table th:nth-child(1) {
+    width: 40%;
+}
+
+.artists-table th:nth-child(2),
+.artists-table th:nth-child(3),
+.artists-table th:nth-child(4) {
+    width: 20%;
+}
+
+#search-empty-state {
+    padding: 32px;
+    text-align: center;
+    color: var(--muted);
+}
+
+/* Curator artwork list */
+
+.artwork-workspace {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 20px 0;
+    padding: 24px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+}
+
+.artwork-table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.artwork-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--paper);
+}
+
+.artwork-table thead {
+    background: var(--bg);
+}
+
+.artwork-table th {
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--line);
+    text-align: left;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.artwork-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+}
+
+.artwork-table tbody tr:hover {
+    background: rgba(37, 99, 235, 0.04);
+}
+
+.artwork-table td:last-child {
+    white-space: nowrap;
+}
+
+.artwork-table th:nth-child(1) {
+    width: 40%;
+}
+
+.artwork-table th:nth-child(2),
+.artwork-table th:nth-child(3),
+.artwork-table th:nth-child(4) {
+    width: 20%;
+}
+
+#search-empty-state {
+    padding: 32px;
+    text-align: center;
+    color: var(--muted);
+}
+
+/* Curator artist detail */
+
+.artist-detail-workspace {
+    width: 100%;
+    max-width: 1060px;
+    margin: 0 auto;
+}
+
+.artist-detail-workspace .workspace-header {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.artist-detail-workspace h2 {
+    margin: 0;
+}
+
+.artist-detail-grid {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 1rem;
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface, #fff);
+}
+
+.artist-detail-grid dt {
+    font-weight: 600;
+    color: var(--text-secondary, #555);
+}
+
+.artist-detail-grid dd {
+    margin: 0;
+}
+
+#detail-error {
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 6px;
+    color: #b91c1c;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+}
+
+/* Curator artwork detail */
+
+.artwork-detail-workspace {
+    width: 100%;
+    max-width: 1060px;
+    margin: 0 auto;
+}
+
+.artwork-detail-workspace .workspace-header {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.artwork-detail-workspace h2 {
+    margin: 0;
+}
+
+.artwork-detail-grid {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 1rem;
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface, #fff);
+}
+
+.artwork-detail-grid dt {
+    font-weight: 600;
+    color: var(--text-secondary, #555);
+}
+
+.artwork-detail-grid dd {
+    margin: 0;
+}
+
+#artwork-image {
+    display: block;
+    max-width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+    margin-bottom: 1.5rem;
+}
+
+#detail-error {
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 6px;
+    color: #b91c1c;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+}
+
+/* Curator artist drawer */
+
+.artist-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 1000;
+    width: min(520px, 100vw);
+    height: 100vh;
+    padding: 24px;
+    overflow-y: auto;
+    background: var(--paper);
+    border-left: 1px solid var(--line);
+    box-shadow: -8px 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Curator artwork drawer */
+
+.artwork-drawer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 1000;
+    width: min(520px, 100vw);
+    height: 100vh;
+    padding: 24px;
+    overflow-y: auto;
+    background: var(--paper);
+    border-left: 1px solid var(--line);
+    box-shadow: -8px 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Status messages */
 
 #login-message {
     margin: 16px 0 0;
@@ -290,7 +595,7 @@ button:focus-visible {
     text-align: center;
 }
 
-/* Responsive */
+/* Responsive layout */
 
 @media (max-width: 600px) {
     .site-header {
@@ -312,8 +617,35 @@ button:focus-visible {
         grid-row: 2;
     }
 
-    .dashboard-header .header-auth {
+    .dashboard-header .header-auth-form {
         grid-column: 2;
         grid-row: 1;
+    }
+
+    .workspace-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .workspace-toolbar input[type="search"] {
+        max-width: none;
+        width: 100%;
+    }
+
+    .workspace-toolbar button {
+        width: 100%;
+    }
+
+    .artists-table {
+        min-width: 700px;
+    }
+
+    .artist-detail-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+    }
+
+    .artist-detail-grid dt {
+        margin-top: 0.75rem;
     }
 }

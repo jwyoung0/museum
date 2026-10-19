@@ -1,0 +1,82 @@
+<section class="formcontainer artwork-form-container" aria-labelledby="artwork-form-title">
+    <form 
+        id="artwork-form" 
+        data-mode="create"
+        data-artwork-id=""
+        action="/api/curator/artwork" 
+        method="post">
+        <h2 id="artwork-form-title">Create Artwork</h2>
+
+        <div class="field-row">
+            <label for="artworkName">Title *</label>
+            <input id="artworkName" name="artworkName" type="text" maxlength="100" required>
+        </div>
+
+        <div class="field-row">
+            <label for="category">Category *</label>
+            <input id="category" name="category" type="text" maxlength="50" required>
+        </div>
+
+        <div class="field-row">
+            <label for="medium">Medium *</label>
+            <input id="medium" name="medium" type="text" maxlength="50" required>
+        </div>
+
+        <div class="field-row">
+            <label for="dimensions">Dimensions</label>
+            <input id="dimensions" name="dimensions" type="text" maxlength="50">
+        </div>
+
+        <div class="field-row">
+            <label for="creationDate">Creation Date</label>
+            <input id="creationDate" name="creationDate" type="number" step="1">
+        </div>
+
+        <div class="field-row">
+            <label for="artistId">Artist *</label>
+            <select id="artistId" name="artistId" required>
+                <option value="">Select artist...</option>
+            </select>
+        </div>
+
+        <div class="field-row">
+            <label for="collectionId">Collection *</label>
+            <select id="collectionId" name="collectionId" required>
+                <option value="">Select collection...</option>
+            </select>
+        </div>
+
+        <div class="field-row">
+            <label for="styleID">Style</label>
+            <select id="styleID" name="styleID">
+                <option value="">Select style...</option>
+            </select>
+        </div>
+
+        <div class="field-row">
+            <label for="periodID">Period</label>
+            <select id="periodID" name="periodID">
+                <option value="">Select period...</option>
+            </select>
+        </div>
+
+        <div class="field-row">
+            <label for="imageURL">Image URL</label>
+            <input id="imageURL" name="imageURL" type="text" maxlength="500">
+        </div>
+
+        <div class="form-actions">
+            <button
+                id="artwork-submit-button"
+                type="submit">
+                Create Artwork
+            </button>
+
+            <button
+                id="artwork-cancel-button"
+                type="button">
+                Cancel
+            </button>
+        </div>
+    </form>
+</section>

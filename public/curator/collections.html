@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>Curator Collections</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <h1 class="dashboard-title">Curator Dashboard</h1>
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
+    </header>
+
+    <main>
+        <nav aria-label="Curator navigation">
+            <a href="/curator/artwork">Artwork</a>
+            <a href="/curator/artists">Artists</a>
+            <a href="/curator/collections" aria-current="page">Collections</a>
+            <a href="/curator/exhibitions">Exhibits</a>
+        </nav>
+
+        <section class="artists-workspace" aria-labelledby="collections-title">
+            <header class="workspace-header">
+                <h2 id="collections-title">Collections</h2>
+            </header>
+
+            <div class="workspace-toolbar">
+                <input
+                    type="search"
+                    id="collection-search"
+                    placeholder="Search collections..."
+                    aria-label="Search collections"
+                >
+                <button type="button" id="add-collection-button">
+                    + Add Collection
+                </button>
+            </div>
+
+            <div class="artists-table-container">
+                <table class="artists-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="collections-table-body">
+                        <tr id="search-empty-state" hidden>
+                            <td colspan="3" style="text-align: center;">
+                                No collections match your search.
+                            </td>
+                        </tr>
+                        <tr id="error-state" hidden>
+                            <td colspan="3" style="text-align: center;">
+                                Unable to load collections.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <aside
+            id="collection-form-container"
+            class="artist-drawer"
+            aria-labelledby="collection-form-title"
+            aria-hidden="true"
+            hidden
+        >
+            <button type="button" id="close-collection-drawer">Close</button>
+            <div id="collection-form-content"></div>
+        </aside>
+    </main>
+    <script type="module" src="/js/curator-collections.js"></script>
+</body>
+</html>

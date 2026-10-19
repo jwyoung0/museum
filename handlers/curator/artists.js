@@ -1,0 +1,156 @@
+const { 
+    createArtist,
+    listArtists, 
+    readArtist, 
+    updateArtist,
+    deleteArtist, 
+    countArtistArtworks,
+    listPeriods
+} = require("../../database/curator/artists");
+
+const { readJsonBody } = require("../../utils/http");
+
+async function createArtistHandler(req, res) {
+    const body = await readJsonBody(req);
+
+    const artist = {
+        fullName: body.fullName,
+        birthYear: body.birthYear,
+        placeOfBirth: body.placeOfBirth,
+        period: body.period,
+        deathYear: body.deathYear,
+        sex: body.sex,
+        nationality: body.nationality
+    };
+
+    const createdArtist = await createArtist(artist);
+
+    res.writeHead(201, {
+        "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify(createdArtist));
+}
+
+async function listArtistsHandler(req, res) {
+    const artists = await listArtists();
+
+    res.writeHead(200, {
+        "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify(artists));
+}
+
+async function readArtistHandler(req, res) {
+    const artistId = req.params.id;
+
+    const artist = await readArtist(artistId);
+
+    if (!artist) {
+        res.writeHead(404, {
+            "Content-Type": "application/json"
+        });
+
+        return res.end(
+            JSON.stringify({ error: "Artist not found" })
+        );
+    }
+
+    res.writeHead(200, {
+        "Content-Type": "application/json"
+    });
+
+    const artworkCount = await countArtistArtworks(artistId);
+
+    res.end(JSON.stringify({
+        ...artist,
+        artworkCount
+    }));
+}
+
+async function updateArtistHandler(req, res) {
+    const artistId = req.params.id;
+    const body = await readJsonBody(req);
+
+    const artist = {
+        fullName: body.fullName,
+        birthYear: body.birthYear,
+        placeOfBirth: body.placeOfBirth,
+        period: body.period,
+        deathYear: body.deathYear,
+        sex: body.sex,
+        nationality: body.nationality
+    };
+
+    const updatedArtist = await updateArtist(artistId, artist);
+
+    if (!updatedArtist) {
+        res.writeHead(404, {
+            "Content-Type": "application/json"
+        });
+
+        return res.end(
+            JSON.stringify({ error: "Artist not found" })
+        );
+    }
+
+    res.writeHead(200, {
+        "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify(updatedArtist));
+}
+
+async function deleteArtistHandler(req, res) {
+    const artistId = req.params.id;
+
+    const artworkCount = await countArtistArtworks(artistId);
+
+    if (artworkCount > 0) {
+        res.writeHead(409, {"Content-Type": "application/json"});
+    
+        return res.end(JSON.stringify({
+            error:
+                `This artist is associated with ` + 
+                `${artworkCount} artworks. ` +
+                `Reassign or remove those artworks ` +
+                `before deleting the artist.`,
+            artworkCount
+        }));
+    }
+
+    const deletedArtist = await deleteArtist(artistId);
+
+    if (!deletedArtist) {
+        res.writeHead(404, {
+            "Content-Type": "application/json"
+        });
+
+        return res.end(JSON.stringify({ error: "Artist not found" }));
+    }
+
+    res.writeHead(204);
+    res.end();
+}
+
+async function listArtistLookupHandler(req, res) {
+    const [ periods ] = await Promise.all([
+        listPeriods()
+    ]);
+
+    res.writeHead(200, {
+        "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify({ periods }));
+}
+
+module.exports = {
+    createArtistHandler,
+    listArtistsHandler,
+    readArtistHandler,
+    updateArtistHandler,
+    deleteArtistHandler,
+    listArtistLookupHandler
+};

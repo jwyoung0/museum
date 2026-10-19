@@ -1,5 +1,6 @@
 const { loginAttempt } = require("../database/login");
 const { readJsonBody } = require("../utils/http");
+const { createSession } = require("../utils/sessions");
 
 async function loginHandler(req, res) {
     const body = await readJsonBody(req);
@@ -21,13 +22,25 @@ async function loginHandler(req, res) {
         return;
     }
 
+    const sessionId = createSession({
+        username: loginResults.username,
+        role: loginResults.role
+    });
+
+    const routeByRole = {
+        curator: "/curator/artwork",
+        director: "/director/dashboard"
+    };
+
     res.writeHead(200, {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Set-Cookie": `sessionId=${sessionId}; HttpOnly; Path=/; SameSite=Strict`
     });
 
     res.end(JSON.stringify({
         username: loginResults.username,
-        role: loginResults.role
+        role: loginResults.role,
+        redirectTo: routeByRole[loginResults.role] || "/"        
     }));
 }
 

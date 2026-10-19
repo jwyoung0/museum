@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>Curator Dashboard</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <h1 class="dashboard-title">Curator Dashboard</h1>
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
+    </header>
+
+    <main>
+        <nav aria-label="Curator navigation">
+            <a href="/curator/artwork">Artwork</a>
+            <a href="/curator/artists" aria-current="page">Artists</a>
+            <a href="/curator/collections">Collections</a>
+            <a href="/curator/exhibitions">Exhibits</a>
+        </nav>
+
+        <section class="artist-detail-workspace">
+        <a href="/curator/artists">
+            ← Back to Artists
+        </a>
+            <header class="workspace-header">
+                <h2 id="artist-name">Loading...</h2>
+            </header>
+
+            <dl class="artist-detail-grid">
+                <dt>Birth Year</dt>
+                <dd id="birth-year"></dd>
+
+                <dt>Death Year</dt>
+                <dd id="death-year"></dd>
+
+                <dt>Nationality</dt>
+                <dd id="nationality"></dd>
+
+                <dt>Place of Birth</dt>
+                <dd id="place-of-birth"></dd>
+
+                <dt>Period</dt>
+                <dd id="period"></dd>
+
+                <dt>Sex</dt>
+                <dd id="sex"></dd>
+            </dl>
+
+            <div class="artist-actions">
+                <button
+                    id="delete-artist-button"
+                    class="button-danger"
+                    hidden>
+                    Delete Artist
+                </button>
+            </div>
+            
+            <div id="detail-error" hidden>
+                Unable to load artist.
+            </div>
+        </section>
+        
+    </main>
+    <script src="/js/curator-artist-detail.js"></script>
+</body>
+</html>

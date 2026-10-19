@@ -34,7 +34,7 @@ loginForm.addEventListener(`submit`, async (event) => {
             throw new Error(result.error || 'Unable to authenticate user')
         } 
 
-        window.location.assign('/admin-dashboard');
+        window.location.assign(result.redirectTo);
 
     } catch (error) {
         loginMessage.style.color = '#dc2626';

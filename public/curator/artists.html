@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>Curator Dashboard</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <h1 class="dashboard-title">Curator Dashboard</h1>
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
+    </header>
+
+    <main>
+        <nav aria-label="Curator navigation">
+            <a href="/curator/artwork">Artwork</a>
+            <a href="/curator/artists" aria-current="page">Artists</a>
+            <a href="/curator/collections">Collections</a>
+            <a href="/curator/exhibitions">Exhibits</a>
+        </nav>
+
+        <section class="artists-workspace">
+            <header class="workspace-header">
+                <h2>Artists</h2>
+            </header>
+
+            <div class="workspace-toolbar">
+                <input
+                    type="search"
+                    id="artist-search"
+                    placeholder="Search artists..."
+                    aria-label="Search artists"
+                >
+
+                <button
+                    type="button"
+                    id="add-artist-button"
+                >
+                    + Add Artist    
+                </button>
+            </div>
+
+            <div class="artists-table-container">
+                <table class="artists-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Lifespan</th>
+                            <th>Nationality</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="artists-table-body">
+                        <tr id="search-empty-state" hidden>
+                            <td colspan="4" style="text-align: center;">
+                                No artists match your search.
+                            </td>
+                        </tr>
+
+                        <tr id="error-state" hidden>
+                            <td colspan="4" style="text-align: center;">
+                                Unable to load artists.
+                            </td>
+                        </tr>                    
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <aside
+            id="artist-form-container"
+            class="artist-drawer"
+            aria-labelledby="artist-form-title"
+            aria-hidden="true"
+            hidden
+        >
+            <button type="button" id="close-artist-drawer">
+                Close
+            </button>
+            <div id="artist-form-content"></div>
+        </aside>
+
+    </main>
+    <script type="module" src="/js/curator-artists.js"></script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>Curator Dashboard</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <h1 class="dashboard-title">Curator Dashboard</h1>
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
+    </header>
+
+    <main>
+        <nav aria-label="Curator navigation">
+            <a href="/curator/artwork" aria-current="page">Artwork</a>
+            <a href="/curator/artists">Artists</a>
+            <a href="/curator/collections">Collections</a>
+            <a href="/curator/exhibitions">Exhibits</a>
+        </nav>
+
+        <section class="artwork-workspace">
+            <header class="workspace-header">
+                <h2>Artwork</h2>
+            </header>
+
+            <div class="workspace-toolbar">
+                <input
+                    type="search"
+                    id="artwork-search"
+                    placeholder="Search artwork..."
+                    aria-label="Search artwork"
+                >
+
+                <button
+                    type="button"
+                    id="add-artwork-button"
+                >
+                    + Add Artwork
+                </button>
+            </div>
+
+            <div class="artwork-table-container">
+                <table class="artwork-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Artist</th>
+                            <th>Year</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="artwork-table-body">
+                        <tr id="search-empty-state" hidden>
+                            <td colspan="4" style="text-align: center;">
+                                No artwork pieces match your search.
+                            </td>
+                        </tr>
+
+                        <tr id="error-state" hidden>
+                            <td colspan="4" style="text-align: center;">
+                                Unable to load artwork.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <aside
+            id="artwork-form-container"
+            class="artwork-drawer"
+            aria-labelledby="artwork-form-title"
+            aria-hidden="true"
+            hidden
+        >
+            <button type="button" id="close-artwork-drawer">
+                Close
+            </button>
+            <div id="artwork-form-content"></div>
+        </aside>
+        
+    </main>
+    <script type="module" src="/js/curator-artwork.js"></script>
+</body>
+</html>

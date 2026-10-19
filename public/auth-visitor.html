@@ -10,27 +10,26 @@
 <body class="login-page">
     <header class="site-header">
     <h1 class="site-title"><a href="/">MFAH</a></h1>
-        <nav>
-            <a href="/artwork">Artwork</a>
-            <a href="/membership">Membership</a>
-            <a href="/events">Events</a>
-            <a href="/ticketing">Tickets</a>
-            <a href="/shop">Shop</a>
-            <a href="/login">Login</a>
-        </nav>
+        
+    
+    <!-- place linke to previous page here -->
+    
+    
         <hr>
     </header>
     <main> 
         <div class="formcontainer">            
             <form id="login-form">
-                <h2>Login</h2>
+                <h2>Sign In</h2>
+                <p>Sign in with the email address you used to register or join.</p>
                 <div class="field-row">
-                    <label for="username">Username</label>
+                    <label for="email">Email</label>
                     <input 
-                        id="username"
-                        name="username"
-                        type="text"
-                        placeholder="Enter username"
+                        id="email"
+                        name="email"
+                        type="email"
+                        autocomplete="email"
+                        placeholder="Enter email address"
                         required    
                     >
                 </div>
@@ -41,14 +40,19 @@
                         name="password"
                         type="password"
                         placeholder="Enter password"
+                        autocomplete="current-password"
                         required
                     >
                 </div>
-                <button type="submit">Login</button>
+                <button type="submit">Sign In</button>
+                <div class="registration-links">
+                    <p>Not registered?</p>
+                    <a href="/auth-create-account">Create an account</a>
+                </div>                
             </form>
         </div>
         <p id="login-message" role="status"></p>
     </main>
-    <script src="js/login.js"></script>
+    <script src="js/auth-visitor.js"></script>
 </body>
 </html>

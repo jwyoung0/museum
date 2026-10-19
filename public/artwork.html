@@ -17,7 +17,9 @@
             <a href="/ticketing">Tickets</a>
             <a href="/shop">Shop</a>
         </nav>
-        <a class="header-auth" href="/login">Login</a>        
+    
+        <!-- VISITOR_AUTH -->
+
     </header>
     <main>
         <nav aria-label="Artwork navigation">
@@ -25,29 +27,51 @@
             <a href="/collections">Collections</a>
             <a href="/exhibitions">Now on View</a>
         </nav>
-        <h2>Search Artwork</h2>
-        <div class="field-bar">
-            <input 
-                id="search-artwork"
-                name="search-artwork"
-                type="text"
-                required           
-            >
-            <select
-                id="search-artwork-field"
-                name="search-artwork-field"
-                required
-            >
-                <option value="" disable selected>Select field...</option>
-                <option value="title">Title</option>
-                <option value="artist">Artist</option>
-                <option value="medium">Medium</option>
-                <option value="year">Year</option>
-            </select>
-            <button type="submit">Search</button>
-        </div>
+
+        <section class="artwork-workspace">
+            <header class="workspace-header">
+                <h2>Search Artwork</h2>
+            </header>
+            
+            <div class="field-bar">
+                <input 
+                    id="visitor-artwork-search"
+                    name="visitor-artwork-search"
+                    type="text"
+                    required           
+                >
+                <select
+                    id="search-artwork-field"
+                    name="search-artwork-field"
+                    required
+                >
+                    <option value="" disable selected>Select field...</option>
+                    <option value="title">Title</option>
+                    <option value="artist">Artist</option>
+                </select>
+                <button 
+                    type="button"
+                    id="search-artwork-button"
+                >
+                    Search
+                </button>
+            </div> 
+            
+            <p id="search-empty-state" hidden>
+                No artwork pieces match your search.
+            </p>
+
+            <div id="artwork-results">
+                
+            </div>
+        </section>
+
+        
 
     </main>
+    <footer>
+        <a class="header-auth" href="/auth-staff">Staff Portal</a>
+    </footer>
     <script src="js/artwork.js"></script>
 </body>
 </html>
