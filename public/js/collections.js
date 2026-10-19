@@ -1,44 +1,57 @@
-const addObjectForm     = document.querySelector('add-object-form');
-const addObjectMessage  = document.querySelector('add-object-message');
+let allCollections = [];
 
-// add-object-form handler. Here we collect the user's input 
-// and use await fetch(...) to send an HTTP request and receive 
-// the HTTP response
-addObjectForm.addEventListener(`submit`, async (event) => {
-    event.preventDefault();
-    addObjectMessage.textContent = '';
+document.addEventListener("DOMContentLoaded", () => {
+    loadCollections();
+});
 
-    const formData = new FormData(addObjectForm);
-    const object = {
-        title: formData.get('title').trim(),
-        producer: formData.get('producer'),
-        placeOfProduction: formData.get('placeOfProduction'),
-        dateOfProduction: Number(formData.get('dateOfProduction'))
-    };
-
+async function loadCollections() {
     try {
-        const response = await fetch('/api/collections', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                title: object.title,
-                producer: object.producer,
-                placeOfProduction: object.placeOfProduction,
-                dateOfProduction: object.dateOfProduction
-            })
-        });
+        const response = await fetch("/api/collections");
 
-        const result = await response.json();
+        allCollections = await response.json();
 
-        if (!response.ok) {
-            throw new Error(result.error || 'Unable to add object.');
+        displayCollections(allCollections);
+    } catch (error) {
+        console.error("Failed to load collections.", error);
+    }
+}
+
+function displayCollections(collections) {
+    const results =
+        document.getElementById("collections-results");
+
+    results.replaceChildren();
+
+    for (const collection of collections) {
+        const card = document.createElement("article");
+        card.className = "collection-card";
+
+        if (collection.imageURL) {
+            const image = document.createElement("img");
+            image.src = collection.imageURL;
+            image.alt = collection.collectionName || "Collection";
+            image.loading = "lazy";
+
+            card.append(image);
         }
 
-        message.textContent = `${result.name} was added successfully.`;
-        addObjectForm.reset();
-    } catch (error) {
-        addObjectMessage.textContent = error.message;
+        const link = document.createElement("a");
+        link.href = collection.url || "#";
+
+        const title = document.createElement("h3");
+        title.textContent =
+            collection.collectionName ||
+            "Untitled Collection";
+
+        link.appendChild(title);
+
+        const description = document.createElement("p");
+        description.textContent =
+            collection.description ||
+            "No description available.";
+
+        card.append(link, description);
+
+        results.append(card);
     }
-});
+}

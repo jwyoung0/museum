@@ -135,11 +135,72 @@
         #confirmation:empty {
             display: none;
         }
+
+        /*brought in from style.css*/
+        .site-header,
+        .dashboard-header {
+            position: relative;
+            min-height: 64px;
+            padding: 0 max(24px, calc((100vw - 1060px) / 2));
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+            align-items: center;
+            gap: 24px;
+            background: var(--paper);
+            border-bottom: 1px solid var(--line);
+        }
+
+        .site-title {
+            justify-self: start;
+            margin: 0;
+            color: var(--ink);
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        .site-title a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .header-nav {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            white-space: nowrap;
+        }
+
+        .header-nav a,
+        .header-auth {
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .header-auth-form,
+        .header-auth {
+            justify-self: end;
+        }
+
+        .header-auth-form button {
+            color: #ffffff;
+        }
     </style>
 </head>
 
 <body>
+    <header class="site-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="/artwork" aria-current="page">Artwork</a>
+            <a href="/membership">Membership</a>
+            <a href="/events">Events</a>
+            <a href="/ticketing">Tickets</a>
+            <a href="/shop">Shop</a>
+        </nav>
+    
+        <!-- VISITOR_AUTH -->
 
+    </header>
     <div class="container">
 
         <h1>Museum Ticket Purchase</h1>

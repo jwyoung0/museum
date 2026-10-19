@@ -27,7 +27,51 @@
             <a href="/collections">Collections</a>
             <a href="/exhibitions" aria-current="page">Now on View</a>
         </nav>
-        <h2>Exhibitions</h2>
+        <section class="exhibitions-workspace">
+            <header class="workspace-header">
+                <h2>Exhibitions</h2>
+            </header>
+
+            <div class="field-bar">
+                <input 
+                    id="visitor-exhibition-search"
+                    name="visitor-exhibition-search"
+                    type="text"
+                    required           
+                >
+                <select
+                    id="search-exhibition-field"
+                    name="search-exhibition-field"
+                    required
+                >
+                    <option value="" disable selected>Select field...</option>
+                    <option value="current">Current</option>
+                    <option value="upcoming">Upcoming</option>
+                    <option value="past">Past</option>
+                </select>
+                <button 
+                    type="button"
+                    id="search-exhibition-button"
+                >
+                    Search
+                </button>
+            </div>
+
+            <p id="search-empty-state" hidden>
+                No exhibitions match your search.
+            </p>
+
+            <div id="exhibitions-results">
+                
+            </div>
+
+            <div id="exhibitions-pagination" aria-label="Exhibitions pages">
+                <button type="button" id="previous-page-button">Previous</button>
+                <span id="page-status" aria-live="polite"></span>
+                <button type="button" id="next-page-button">Next</button>
+            </div>
+        </section>
+        
 
 
     </main>

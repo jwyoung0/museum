@@ -264,7 +264,9 @@ form h2 {
 
 /* Artwork cards display */
 
-#artwork-results {
+#artwork-results,
+#collections-results,
+#exhibitions-results {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 16px;
@@ -392,7 +394,9 @@ form h2 {
 
 /* Curator artwork list */
 
-.artwork-workspace {
+.artwork-workspace,
+.collections-workspace,
+.exhibitions-workspace {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -597,7 +601,8 @@ form h2 {
 
 /* Pagination */
 
-#artwork-pagination {
+#artwork-pagination,
+#exhibitions-pagination {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -605,12 +610,14 @@ form h2 {
     margin: 1.5rem 0;
 }
 
-#artwork-pagination button {
+#artwork-pagination button,
+#exhibitions-pagination button {
     padding: 0.5rem 0.9rem;
     cursor: pointer;
 }
 
-#artwork-pagination button:disabled {
+#artwork-pagination button:disabled,
+#exhibitions-pagination button:disabled {
     cursor: not-allowed;
     opacity: 0.5;
 }

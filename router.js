@@ -242,6 +242,16 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" && req.url === "/api/collections") {
+            await listCollectionsHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/api/exhibitions") {
+            await listExhibitionsHandler(req, res);
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/api/curator/collections") {
             if (!requireCurator(req, res)) return;
             await listCollectionsHandler(req, res);
@@ -316,6 +326,8 @@ async function router(req, res) {
             return;
         }
 
+        const collectionMatchVisitor = pathname.match(/^\/api\/collections\/(\d+)$/);
+
         const artistMatch = pathname.match(/^\/api\/curator\/artists\/(\d+)$/);
         const artworkMatch = pathname.match(/^\/api\/curator\/artwork\/(\d+)$/);
         const collectionMatch = pathname.match(/^\/api\/curator\/collections\/(\d+)$/);
@@ -362,6 +374,12 @@ async function router(req, res) {
             } else {
                 await deleteCollectionHandler(req, res);
             }
+            return;
+        }
+
+        if (collectionMatchVisitor && req.method === "GET") {
+            req.params = { id: collectionMatchVisitor[1] };
+            await readCollectionHandler(req, res);
             return;
         }
 
