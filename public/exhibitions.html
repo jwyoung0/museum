@@ -27,13 +27,51 @@
             <a href="/collections">Collections</a>
             <a href="/exhibitions" aria-current="page">Now on View</a>
         </nav>
-        <h2>Exhibitions</h2>
+
+        <section class="exhibitions-workspace">
+            <header class="workspace-header">
+                <h2>Search Exhibitions</h2>
+            </header>
+            
+            <div class="field-bar">
+                <input 
+                    id="visitor-exhibitions-search"
+                    name="visitor-exhibitions-search"
+                    type="text"
+                    required           
+                >
+                <select
+                    id="search-exhibitions-field"
+                    name="search-exhibitions-field"
+                    required
+                >
+                    <option value="" disable selected>Select field...</option>
+                    <option value="current">Current</option>
+                    <option value="upcoming">Upcoming</option>
+                    <option value="past">Past</option>
+                </select>
+                <button 
+                    type="button"
+                    id="search-exhibitions-button"
+                >
+                    Search
+                </button>
+            </div> 
+            
+            <p id="search-empty-state" hidden>
+                No exhibitions match your search.
+            </p>
+
+            <div id="exhibitions-results">
+                
+            </div>
+        </section>
 
 
     </main>
     <footer>
         <a class="header-auth" href="/auth-staff">Staff Portal</a>
     </footer>    
-    <script src="js/artwork.js"></script>
+    <script src="js/exhibitions.js"></script>
 </body>
 </html>

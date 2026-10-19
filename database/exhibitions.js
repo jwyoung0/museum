@@ -35,7 +35,7 @@ async function createExhibition({
         .input("description", sql.NVarChar(500), description || null)
         .input("startDate", sql.Date, startDate)
         .input("endDate", sql.Date, endDate)
-        .input("status", )
+        .input("status", sql.NVarChar(20), status)
         .query(`
             INSERT INTO dbo.EXHIBITIONS
             (
@@ -105,8 +105,6 @@ async function updateExhibition(
     }
 
     const today = new Date();
-
-    let status;
 
     if (today < new Date(startDate)) {
         status = "upcoming";

@@ -6,7 +6,7 @@ const {
     deleteExhibition
 } = require("../database/exhibitions");
 
-const { readJsonBody } = require("../../utils/http");
+const { readJsonBody } = require("../utils/http");
 
 async function createExhibitionHandler(req, res) {
     try {
