@@ -86,9 +86,9 @@ async function router(req, res) {
 
         if (req.method === "GET" && req.url === "/exhibitions") {
             sendVisitorPage(req, res, "exhibitions.html");            
-            // sendPage(res, "exhibitions.html", "text/html");
             return;
         }
+
         if (req.method === "GET" && req.url === "/ticketing") {
             sendPage(res, "ticketing.html", "text/html");
             return;
@@ -175,6 +175,11 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" && req.url === "/js/exhibitions.js") {
+            sendPage(res, path.join("js", "exhibitions.js"), "application/javascript");            
+            return;
+        }
+
         // Curator dashboard routing starts here
         if (req.method === "GET" && req.url === "/js/curator-artists.js") {
             if (!requireCurator(req, res)) return;
@@ -254,7 +259,7 @@ async function router(req, res) {
         }
 
         if (req.method === "GET" && req.url === "/api/exhibitions") {
-            await listExhibitionsHandler(req, res);
+            await listExhibitionHandler(req, res);
             return;
         }
 

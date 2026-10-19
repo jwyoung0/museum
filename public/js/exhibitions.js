@@ -111,7 +111,7 @@ function displayExhibitions(exhibitions) {
 
         const title = document.createElement("h3");
         title.textContent =
-            exhibition.title || "Untitled Exhibition";
+            exhibition.exhibitionName || "Untitled Exhibition";
 
         link.appendChild(title);
 
