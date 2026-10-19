@@ -1,37 +1,97 @@
 let allExhibitions = [];
+const pageSize = 10;
+let currentPage = 1;
+let visibleExhibitions = [];
 
 document.addEventListener("DOMContentLoaded", () => {
     loadExhibitions();
 
     document.addEventListener("keydown", (event) => {
-        if (
-            event.key === "Enter"
-        ) {
+        if (event.key === "Enter") {
             handleSearch();
         }
     });
 
     document
-        .getElementById("search-exhibitions-button")
-        .addEventListener("click", handleSearch)
-});
+        .getElementById("search-exhibition-button")
+        .addEventListener("click", handleSearch);
 
+    document
+        .getElementById("previous-page-button")
+        .addEventListener("click", () => {
+            if (currentPage > 1) {
+                currentPage -= 1;
+                displayExhibitionsPage();
+            }
+        });
+
+    document
+        .getElementById("next-page-button")
+        .addEventListener("click", () => {
+            const pageCount = Math.ceil(
+                visibleExhibitions.length / pageSize
+            );
+
+            if (currentPage < pageCount) {
+                currentPage += 1;
+                displayExhibitionsPage();
+            }
+        });
+});
 
 async function loadExhibitions() {
     try {
         const response = await fetch("/api/exhibitions");
-
         allExhibitions = await response.json();
 
-        displayExhibitions(allExhibitions);
+        visibleExhibitions = allExhibitions;
+        currentPage = 1;
 
+        displayExhibitionsPage();
     } catch (error) {
         console.error("Failed to load exhibitions.", error);
     }
 }
 
+function displayExhibitionsPage() {
+    const startIndex = (currentPage - 1) * pageSize;
+
+    const pageExhibitions = visibleExhibitions.slice(
+        startIndex,
+        startIndex + pageSize
+    );
+
+    displayExhibitions(pageExhibitions);
+    updatePaginationControls();
+}
+
+function updatePaginationControls() {
+    const pageCount = Math.ceil(
+        visibleExhibitions.length / pageSize
+    );
+
+    const previousButton =
+        document.getElementById("previous-page-button");
+
+    const nextButton =
+        document.getElementById("next-page-button");
+
+    const pageStatus =
+        document.getElementById("page-status");
+
+    previousButton.disabled = currentPage <= 1;
+    nextButton.disabled = currentPage >= pageCount;
+
+    pageStatus.textContent =
+        pageCount === 0
+            ? "Page 0 of 0"
+            : `Page ${currentPage} of ${pageCount}`;
+}
+
 function displayExhibitions(exhibitions) {
-    const results = document.getElementById("exhibition-results");
+    const results =
+        document.getElementById("exhibitions-results");
+
     results.replaceChildren();
 
     for (const exhibition of exhibitions) {
@@ -41,7 +101,7 @@ function displayExhibitions(exhibitions) {
         if (exhibition.imageURL) {
             const image = document.createElement("img");
             image.src = exhibition.imageURL;
-            image.alt = exhibition.exhibitionName || "Exhibition";
+            image.alt = exhibition.title || "Exhibition";
             image.loading = "lazy";
             card.append(image);
         }
@@ -49,50 +109,64 @@ function displayExhibitions(exhibitions) {
         const link = document.createElement("a");
         link.href = exhibition.url;
 
-        const exhibitionName = document.createElement("h3");
-        exhibitionName.textContent = exhibition.exhibitionName || "Untitled";
+        const title = document.createElement("h3");
+        title.textContent =
+            exhibition.title || "Untitled Exhibition";
 
-        link.appendChild(exhibitionName);
+        link.appendChild(title);
 
-        const timeFrame = document.createElement("p");
-        timeFrame.textContent = buildTimeFrame(exhibition) || "Unknown date";
+        const date = document.createElement("p");
+        date.textContent =
+            exhibition.date || "Date unavailable";
 
-        card.append(link, timeFrame);
+        const status = document.createElement("p");
+        status.textContent =
+            exhibition.status || "Status unavailable";
+
+        card.append(link, date, status);
+
         results.append(card);
     }
 }
 
-function handleSearch(event) {
+function handleSearch() {
     const query = document
-        .getElementById("visitor-exhibitions-search")
+        .getElementById("visitor-exhibition-search")
         .value
         .trim()
         .toLowerCase();
 
-    const filteredExhibitions =
-        allArtwork.filter((exhibition) => 
-            exhibition.current?.toLowerCase().includes(query) ||
-            exhibition.upcoming?.toLowerCase().includes(query) ||
-            exhibition.past?.toLowerCase().includes(query)       
-        );
+    const selectedField = document
+        .getElementById("search-exhibition-field")
+        .value
+        .toLowerCase();
 
-    const searchEmptyState = document
-        .getElementById("search-empty-state");
+    const filteredExhibitions = allExhibitions.filter(
+        (exhibition) => {
+            const matchesQuery =
+                !query ||
+                exhibition.title
+                    ?.toLowerCase()
+                    .includes(query);
 
-    if (query && filteredArtwork.length === 0) {
-        searchEmptyState.hidden = false;
-    } else {
-        searchEmptyState.hidden = true;
-    }
+            const matchesField =
+                !selectedField ||
+                exhibition.status
+                    ?.toLowerCase() === selectedField;
 
-    displayExhibitions(filteredExhibitions);
-}
+            return matchesQuery && matchesField;
+        }
+    );
 
-function buildTimeFrame(exhibition) {
-    const start = exhibition.start ?? "?";
-    const end = exhibition.end ?? "";
+    const searchEmptyState =
+        document.getElementById("search-empty-state");
 
-    return end
-        ? `${start}-${end}`
-        : `${start}-`;
+    searchEmptyState.hidden =
+        !(query || selectedField) ||
+        filteredExhibitions.length > 0;
+
+    visibleExhibitions = filteredExhibitions;
+    currentPage = 1;
+
+    displayExhibitionsPage();
 }

@@ -2,6 +2,8 @@ const fs = require("fs");
 const path = require("path");
 const { authVisitorHandler } = require("./handlers/auth-visitor");
 const { loginHandler } = require("./handlers/login");
+const { listTicketTypesHandler, purchaseTicketHandler } = require("./handlers/tickets");
+
 const { logoutHandler } = require("./handlers/logout");
 const { listArtworkForVisitorHandler,
         readArtworkForVisitorHandler 
@@ -85,6 +87,20 @@ async function router(req, res) {
         if (req.method === "GET" && req.url === "/exhibitions") {
             sendVisitorPage(req, res, "exhibitions.html");            
             // sendPage(res, "exhibitions.html", "text/html");
+            return;
+        }
+        if (req.method === "GET" && req.url === "/ticketing") {
+            sendPage(res, "ticketing.html", "text/html");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/api/ticket-types") {
+            await listTicketTypesHandler(req, res);
+            return;
+        }
+
+        if (req.method === "POST" && req.url === "/api/tickets") {
+            await purchaseTicketHandler(req, res);
             return;
         }
 
@@ -229,6 +245,16 @@ async function router(req, res) {
         if (req.method === "POST" && req.url === "/api/curator/collections") {
             if (!requireCurator(req, res)) return;
             await createCollectionHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/api/collections") {
+            await listCollectionsHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/api/exhibitions") {
+            await listExhibitionsHandler(req, res);
             return;
         }
 
