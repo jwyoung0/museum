@@ -1,7 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 const { loginHandler } = require("./handlers/login");
-const { listTicketTypesHandler } = require("./handlers/tickets");
+const { listTicketTypesHandler, purchaseTicketHandler } = require("./handlers/tickets");
+
 
 async function router(req, res) {
     try {
@@ -44,6 +45,11 @@ async function router(req, res) {
 
         if (req.method === "GET" && req.url === "/api/ticket-types") {
             await listTicketTypesHandler(req, res);
+            return;
+        }
+
+        if (req.method === "POST" && req.url === "/api/tickets") {
+            await purchaseTicketHandler(req, res);
             return;
         }
 
