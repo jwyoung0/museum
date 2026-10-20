@@ -113,7 +113,37 @@ async function purchaseTicketHandler(req, res) {
     }
 }
 
+async function listMyTicketsHandler(req, res) {
+    if (!req.user || !["visitor", "member"].includes(req.user.userType)) {
+        res.writeHead(401, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Please sign in first" }));
+        return;
+    }
+
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .input("email", sql.VarChar(150), req.user.email)
+        .query(`
+            SELECT
+                T.TicketID,
+                TT.TicketTypeName,
+                T.Price,
+                T.PurchaseDate
+            FROM dbo.TICKET T
+            JOIN dbo.VISITOR V ON T.VisitorID = V.VisitorID
+            JOIN dbo.TICKET_TYPE TT ON T.TicketTypeID = TT.TicketTypeID
+            WHERE V.Email = @email
+            ORDER BY T.TicketID DESC
+        `);
+
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(result.recordset));
+}
+
 module.exports = {
     listTicketTypesHandler,
-    purchaseTicketHandler
+    purchaseTicketHandler,
+    listMyTicketsHandler
 };
+

@@ -1,0 +1,126 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tickets - MFAH</title>
+    <link rel="stylesheet" href="/style">
+
+    <style>
+        .ticket-container {
+            max-width: 900px;
+            margin: 60px auto;
+            padding: 25px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ccc;
+        }
+
+        th {
+            font-weight: bold;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 25px;
+        }
+    </style>
+</head>
+
+<body>
+    <main class="ticket-container">
+        <h1>My Ticket History</h1>
+        <p>View your previous ticket purchases.</p>
+
+        <p id="message">Loading tickets...</p>
+
+        <table id="ticketTable" style="display: none;">
+            <thead>
+                <tr>
+                    <th>Ticket ID</th>
+                    <th>Ticket Type</th>
+                    <th>Price</th>
+                    <th>Purchase Date</th>
+                </tr>
+            </thead>
+            <tbody id="ticketList"></tbody>
+        </table>
+
+        <a href="/ticketing" class="back-link">Back to Ticketing</a>
+    </main>
+
+    <script>
+        async function loadTickets() {
+            const message = document.getElementById("message");
+            const table = document.getElementById("ticketTable");
+            const ticketList = document.getElementById("ticketList");
+
+            try {
+                const response = await fetch("/api/my-tickets");
+
+                if (response.status === 401) {
+                    message.textContent = "Please sign in to view your tickets.";
+                    const link = document.createElement("a");
+                    link.href = "/auth-visitor";
+                    link.textContent = " Sign In";
+                    message.appendChild(link);
+                    return;
+                }
+
+                if (!response.ok) {
+                    throw new Error("Could not load tickets");
+                }
+
+                const tickets = await response.json();
+
+                if (tickets.length === 0) {
+                    message.textContent = "You haven't purchased any tickets yet.";
+                    return;
+                }
+
+                message.style.display = "none";
+                table.style.display = "table";
+
+                tickets.forEach(ticket => {
+                    const row = document.createElement("tr");
+
+                    const values = [
+                        ticket.TicketID,
+                        ticket.TicketTypeName,
+                        "$" + Number(ticket.Price).toFixed(2),
+                        String(ticket.PurchaseDate).split("T")[0]
+                    ];
+
+                    values.forEach(value => {
+                        const cell = document.createElement("td");
+                        cell.textContent = value;
+                        row.appendChild(cell);
+                    });
+
+                    ticketList.appendChild(row);
+                });
+
+            } catch (error) {
+                message.textContent = "Unable to load ticket history.";
+                console.error(error);
+            }
+        }
+
+        loadTickets();
+    </script>
+</body>
+</html>
