@@ -1,8 +1,8 @@
-
+/* Moved to router.js line 38-41
 const {
     listPersonnel,
     createPersonnel
-} = require("../../database/personnel");
+} = require("../../database/personnel");*/
 
 function requireDirectorApi(req, res) {
     if (!req.user || req.user.role !== "director") {
