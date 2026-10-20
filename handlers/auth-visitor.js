@@ -24,7 +24,8 @@ async function authVisitorHandler(req, res) {
 
     const sessionId = createSession({
         email: loginResults.email,
-        userType: loginResults.userType
+        userType: loginResults.userType,
+        visitorId: loginResults.visitorId
     });
 
     const routeByUserType = {
