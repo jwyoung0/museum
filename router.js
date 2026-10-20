@@ -35,6 +35,11 @@ const { createExhibitionHandler,
     deleteExhibitionHandler
 } = require("./handlers/exhibitions");
 
+const {
+    listPersonnelHandler,
+    createPersonnelHandler
+} = require("./handlers/director/personnel");
+
 async function router(req, res) {
     try {
         // POST routing starts here
@@ -285,11 +290,11 @@ async function router(req, res) {
             return;
         }
 
-        if (req.method === "GET" && req.url === "/api/collections") {
+/*        if (req.method === "GET" && req.url === "/api/collections") {
             await listCollectionsHandler(req, res);
             return;
         }
-
+Duplicate listCollectionsHandler, first one isat line 277*/
         if (req.method === "GET" && req.url === "/api/exhibitions") {
             await listExhibitionHandler(req, res);
             return;
