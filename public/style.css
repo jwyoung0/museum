@@ -529,7 +529,7 @@ form h2 {
     margin: 0;
 }
 
-.artwork-detail-grid {
+/* .artwork-detail-grid {
     display: grid;
     grid-template-columns: 220px 1fr;
     gap: 1rem;
@@ -537,7 +537,7 @@ form h2 {
     border: 1px solid var(--line);
     border-radius: 8px;
     background: var(--surface, #fff);
-}
+} */
 
 .artwork-detail-grid dt {
     font-weight: 600;
@@ -548,7 +548,33 @@ form h2 {
     margin: 0;
 }
 
+.artwork-detail-content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(250px, 40%);
+    gap: 2rem;
+    align-items: start;
+    padding: 1.5rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface, #fff);
+}
+
+.artwork-detail-grid {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 1rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
 #artwork-image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.artwork-detail-workspace > #artwork-image {
     display: block;
     max-width: 100%;
     max-height: 500px;
@@ -685,5 +711,13 @@ form h2 {
 
     .artist-detail-grid dt {
         margin-top: 0.75rem;
+    }
+
+    .artwork-detail-content {
+        grid-template-columns: 1fr;
+    }
+
+    .artwork-detail-grid {
+        grid-template-columns: 1fr;
     }
 }

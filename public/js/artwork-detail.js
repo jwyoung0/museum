@@ -43,8 +43,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         // document.getElementById("period").textContent =
         //     artwork.period ?? "";        
 
-        document.getElementById("imageURL").textContent = 
-            artwork.imageURL ?? "";
+        // document.getElementById("imageURL").textContent = 
+        //     artwork.imageURL ?? "";
 
         const image = document.getElementById("artwork-image");
         if (artwork.imageURL) {
