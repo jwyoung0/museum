@@ -29,7 +29,7 @@ async function readArtworkForVisitor(accessionId) {
             SELECT
                 a.*,
                 ar.fullName AS artist,
-                c.collectionName AS collection,
+                c.collectionName AS collection
             FROM dbo.ARTWORKS a
             INNER JOIN dbo.ARTISTS ar
                 ON a.artistId = ar.artistId

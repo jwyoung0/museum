@@ -97,7 +97,7 @@ function displayArtwork(artworks) {
         }
 
         const link = document.createElement("a");
-        link.href = artwork.url;
+        link.href = `/artwork-detail/${artwork.accessionId}`;
 
         const title = document.createElement("h3");
         title.textContent = artwork.title || "Untitled";

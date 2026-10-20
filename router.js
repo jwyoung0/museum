@@ -37,7 +37,6 @@ const { createExhibitionHandler,
 
 async function router(req, res) {
     try {
-    
         // POST routing starts here
         if (req.method === "POST" && req.url === "/api/auth-visitor") {
             await authVisitorHandler(req, res);
@@ -72,6 +71,12 @@ async function router(req, res) {
             // sendPage(res, "artwork.html", "text/html");
             return;
         }
+
+        // if (req.method === "GET" && req.url === "/artwork-detail") {
+        //     sendVisitorPage(req, res, "artwork-detail.html");
+        //     // sendPage(res, "artwork.html", "text/html");
+        //     return;
+        // }        
 
         if (req.method === "GET" && req.url === "/api/artwork") {
             await listArtworkForVisitorHandler(req, res);
@@ -167,6 +172,11 @@ async function router(req, res) {
 
         if (req.method === "GET" && req.url === "/js/artwork.js") {
             sendPage(res, path.join("js", "artwork.js"), "application/javascript");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/js/artwork-detail.js") {
+            sendPage(res, path.join("js", "artwork-detail.js"), "application/javascript");
             return;
         }
 
@@ -347,6 +357,13 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" && 
+            pathname.match(/^\/artwork-detail\/\d+$/)
+        ) {
+            sendVisitorPage(req, res, "artwork-detail.html");
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/js/curator-artwork-detail.js") {
             if (!requireCurator(req, res)) return;
             sendPage(res, path.join("js", "curator-artwork-detail.js"), "application/javascript");
@@ -370,6 +387,8 @@ async function router(req, res) {
         const artworkMatch = pathname.match(/^\/api\/curator\/artwork\/(\d+)$/);
         const collectionMatch = pathname.match(/^\/api\/curator\/collections\/(\d+)$/);
         const exhibitionMatch = pathname.match(/^\/api\/exhibitions\/(\d+)$/);
+        
+        const artworkMatchVisitor = pathname.match(/^\/api\/artwork-detail\/(\d+)$/);
 
         if (artistMatch && ["GET", "PUT", "DELETE"].includes(req.method)) {
             req.params = { id: artistMatch[1] };
@@ -436,6 +455,12 @@ async function router(req, res) {
             } else return;
             return;
         }
+
+        if (artworkMatchVisitor && req.method === "GET") {
+            req.params = { id: artworkMatchVisitor[1] };
+            await readArtworkForVisitorHandler(req, res);
+            return;
+        }        
 
         // Images routing
         if (req.method === "GET" && req.url.startsWith("/images/")) {
