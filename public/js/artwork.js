@@ -1,5 +1,9 @@
 let allArtwork = [];
 
+const pageSize = 10;
+let currentPage = 1;
+let visibleArtwork = [];
+
 document.addEventListener("DOMContentLoaded", () => {
     loadArtwork();
         
@@ -14,6 +18,26 @@ document.addEventListener("DOMContentLoaded", () => {
     document
         .getElementById("search-artwork-button")
         .addEventListener("click", handleSearch);
+
+    document
+        .getElementById("previous-page-button")
+        .addEventListener("click", () => {
+            if (currentPage > 1) {
+                currentPage -= 1;
+                displayArtworkPage();
+            }
+        });
+
+    document
+        .getElementById("next-page-button")
+        .addEventListener("click", () => {
+            const pageCount = Math.ceil(visibleArtwork.length / pageSize);
+
+            if (currentPage < pageCount) {
+                currentPage += 1;
+                displayArtworkPage();
+            }
+        });
 });
 
 async function loadArtwork() {
@@ -22,11 +46,38 @@ async function loadArtwork() {
 
         allArtwork = await response.json();
 
-        displayArtwork(allArtwork);
+        visibleArtwork = allArtwork;
+        currentPage = 1;
+        displayArtworkPage();
 
     } catch (error) {
         console.error("Failed to load artwork.", error);
     }
+}
+
+function displayArtworkPage() {
+    const startIndex = (currentPage - 1) * pageSize;
+    const pageArtwork = visibleArtwork.slice(
+        startIndex,
+        startIndex + pageSize
+    );
+
+    displayArtwork(pageArtwork);
+    updatePaginationControls();
+}
+
+function updatePaginationControls() {
+    const pageCount = Math.ceil(visibleArtwork.length / pageSize);
+    const previousButton = document.getElementById("previous-page-button");
+    const nextButton = document.getElementById("next-page-button");
+    const pageStatus = document.getElementById("page-status");
+
+    previousButton.disabled = currentPage <= 1;
+    nextButton.disabled = currentPage >= pageCount;
+
+    pageStatus.textContent = pageCount === 0
+        ? "Page 0 of 0"
+        : `Page ${currentPage} of ${pageCount}`;
 }
 
 function displayArtwork(artworks) {
@@ -46,7 +97,7 @@ function displayArtwork(artworks) {
         }
 
         const link = document.createElement("a");
-        link.href = artwork.url;
+        link.href = `/artwork-detail/${artwork.accessionId}`;
 
         const title = document.createElement("h3");
         title.textContent = artwork.title || "Untitled";
@@ -86,5 +137,7 @@ function handleSearch(event) {
         searchEmptyState.hidden = true;
     }
 
-    displayArtwork(filteredArtwork);
+    visibleArtwork = filteredArtwork;
+    currentPage = 1;
+    displayArtworkPage();
 }

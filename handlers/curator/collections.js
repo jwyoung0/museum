@@ -3,8 +3,7 @@ const {
     listCollections,
     readCollection,
     updateCollection,
-    deleteCollection,
-    countCollectionArtworks
+    deleteCollection
 } = require("../../database/curator/collections");
 
 const { readJsonBody } = require("../../utils/http");
