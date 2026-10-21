@@ -167,6 +167,11 @@ async function router(req, res) {
         }
 
         // Client script file routing starts here
+        if (req.method === "GET" && req.url === "/js/index.js") {
+            sendPage(res, path.join("js", "index.js"), "application/javascript");
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/js/login.js") {
             sendPage(res, path.join("js", "login.js"), "application/javascript");
             return;
