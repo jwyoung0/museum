@@ -8,8 +8,12 @@
     <link rel="stylesheet" href="/style">
 </head>
 <body>
-    <header>
-        <h1>Museum Director Dashboard</h1>
+    <header class="dashboard-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <h1 class="dashboard-title">Museum Director Dashboard</h1>
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
     </header>
 
     <main>
