@@ -18,7 +18,10 @@ async function listArtworkForVisitorHandler(req, res) {
 async function readArtworkForVisitorHandler(req, res) {
     const artworkId = req.params.id;
 
-    const artwork = await readArtworkForVisitor(artworkId);
+    const artwork = await readArtworkForVisitor(
+        artworkId,
+        req.user?.visitorId
+    );
 
     if(!artwork) {
         res.writeHead(404, {

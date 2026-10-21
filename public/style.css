@@ -200,6 +200,10 @@ button:focus-visible {
     margin: 20px 0;
 }
 
+.register-page .formcontainer {
+    width: 320px;
+}
+
 .formcontainer form {
     display: flex;
     flex-direction: column;

@@ -34,6 +34,7 @@ const { createExhibitionHandler,
     updateExhibitionHandler,
     deleteExhibitionHandler
 } = require("./handlers/exhibitions");
+const { registerVisitorHandler } = require("./handlers/register-visitor");
 
 const { 
     listPersonnelHandler,
@@ -45,6 +46,11 @@ async function router(req, res) {
         // POST routing starts here
         if (req.method === "POST" && req.url === "/api/auth-visitor") {
             await authVisitorHandler(req, res);
+            return;
+        }
+
+        if (req.method === "POST" && req.url === "/api/register-visitor") {
+            await registerVisitorHandler(req, res);
             return;
         }
 
@@ -131,8 +137,9 @@ async function router(req, res) {
             return;
         }
 
-        if (req.method === "GET" && req.url === "/auth-create-account") {
-            sendPage(res, "auth-create-account.html", "text/html");
+        if (req.method === "GET" &&
+            (req.url === "/register-visitor" || req.url === "/auth-create-account")) {
+            sendPage(res, "register-visitor.html", "text/html");
             return;
         }
 
@@ -179,7 +186,12 @@ async function router(req, res) {
         if (req.method === "GET" && req.url === "/js/auth-visitor.js") {
             sendPage(res, path.join("js", "auth-visitor.js"), "application/javascript");
             return;
-        }        
+        }
+        
+        if (req.method === "GET" && req.url === "/js/register-visitor.js") {
+            sendPage(res, path.join("js", "register-visitor.js"), "application/javascript");
+            return;
+        }
 
         if (req.method === "GET" && req.url === "/js/artwork.js") {
             sendPage(res, path.join("js", "artwork.js"), "application/javascript");
