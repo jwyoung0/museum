@@ -1,0 +1,68 @@
+<section class="formcontainer artist-form-container" aria-labelledby="exhibition-form-title">
+    <form
+        id="exhibition-form"
+        data-mode="create"
+        data-exhibition-id=""
+        action="/api/curator/exhibitions"
+        method="post"
+    >
+        <h2 id="exhibition-form-title">Create Exhibition</h2>
+
+        <div class="field-row">
+            <label for="exhibitionName">Name *</label>
+            <input
+                id="exhibitionName"
+                name="exhibitionName"
+                type="text"
+                maxlength="50"
+                required
+            >
+        </div>
+
+        <!-- <div class="field-row">
+            <label for="status">Status</label>
+            <select id="status" name="status">
+                <option value="">Select status</option>
+                <option value="upcoming">Upcoming</option>
+                <option value="current">Current</option>
+                <option value="past">Past</option>
+            </select>
+        </div> -->
+
+        <div class="field-row">
+            <label for="startDate">Start Date</label>
+            <input
+                id="startDate"
+                name="startDate"
+                type="date"
+            >
+        </div>
+
+        <div class="field-row">
+            <label for="endDate">End Date</label>
+            <input
+                id="endDate"
+                name="endDate"
+                type="date"
+            >
+        </div>
+
+        <div class="field-row">
+            <label for="description">Description</label>
+            <textarea
+                id="description"
+                name="description"
+                maxlength="250"
+                rows="4"
+            ></textarea>
+        </div>
+
+        <div class="form-actions">
+            <button id="exhibition-submit-button" type="submit">
+                Create Exhibition
+            </button>
+            <button id="exhibition-cancel-button" type="button">
+                Cancel
+            </button>
+        </div>
+    </form>
