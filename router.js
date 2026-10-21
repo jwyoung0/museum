@@ -42,6 +42,11 @@ const { createExhibitionHandler,
 } = require("./handlers/exhibitions");
 const { registerVisitorHandler } = require("./handlers/register-visitor");
 
+const { 
+    listPersonnelHandler,
+    createPersonnelHandler
+} = require("./handlers/director/personnel");
+
 async function router(req, res) {
     try {
         // POST routing starts here
@@ -62,6 +67,12 @@ async function router(req, res) {
 
         if (req.method === "POST" && req.url === "/api/logout") {
             await logoutHandler(req, res);
+            return;
+        }
+
+        if (req.method === "POST" && req.url === "/api/director/personnel") {
+            if (!requireDirector(req, res)) return;
+            await createPersonnelHandler(req, res);
             return;
         }
 
@@ -358,11 +369,11 @@ if (req.method === "PUT" && productUpdateMatch) {
             return;
         }
 
-        if (req.method === "GET" && req.url === "/api/collections") {
+/*        if (req.method === "GET" && req.url === "/api/collections") {
             await listCollectionsHandler(req, res);
             return;
         }
-
+Duplicate listCollectionsHandler, first one isat line 277*/
         if (req.method === "GET" && req.url === "/api/exhibitions") {
             await listExhibitionHandler(req, res);
             return;
@@ -385,10 +396,32 @@ if (req.method === "PUT" && productUpdateMatch) {
             await createExhibitionHandler(req, res);
             return;
         }     
-
+// Director personnel Dashboard routing starts here
         if (req.method === "GET" && req.url === "/director/dashboard") {
             if (!requireDirector(req, res)) return;
             sendPage(res, path.join("director", "dashboard.html"), "text/html");
+            return;
+        }
+        
+        if (req.method === "GET" && req.url === "/api/director/personnel") {
+            if (!requireDirector(req, res)) return;
+            await listPersonnelHandler(req, res);
+            return;
+        }
+
+//        if (req.method === "GET" && req.url === "/js/director-personnel.js") {
+//            sendPage(
+//                res,
+//                path.join("js", "director-personnel.js"),
+//                "application/javascript"
+//            );
+//            return;
+//        }
+
+
+        if (req.method === "GET" && req.url === "/js/director-personnel.js") {
+            if (!requireDirector(req, res)) return;
+            sendPage(res, path.join("js", "director-personnel.js"), "application/javascript");
             return;
         }
 
