@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#2563eb">
-    <title>Curator Dashboard</title>
+    <title>Curator Dashboard - Exhibitions</title>
     <link rel="stylesheet" href="/style">
 </head>
 <body>
@@ -21,9 +21,63 @@
             <a href="/curator/artwork">Artwork</a>
             <a href="/curator/artists">Artists</a>
             <a href="/curator/collections">Collections</a>
-            <a href="/curator/exhibitions" aria-current="page">Exhibits</a>
+            <a href="/curator/exhibitions" aria-current="page">Exhibitions</a>
         </nav>
+
+        <section class="artists-workspace" aria-labelledby="exhibtions-title">
+            <header class="workspace-header">
+                <h2 id="exhibitions-title">Exhibitions</h2>
+            </header>
+
+            <div class="workspace-toolbar">
+                <input
+                    type="search"
+                    id="exhibition-search"
+                    placeholder="Search exhibitions..."
+                    aria-label="Search exhibitions"
+                >
+                <button type="button" id="add-exhibitions-button">
+                    + Add Exhibition
+                </button>
+            </div>
+
+            <div class="artists-table-container">
+                <table class="artists-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Dates</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="exhibitions-table-body">
+                        <tr id="search-empty-state" hidden>
+                            <td colspan="4" style="text-align: center;">
+                                No exhibitions match your state.
+                            </td>
+                        </tr>
+                        <tr id="error-state" hidden>
+                            <td colspan="4" style="text-align: center;">
+                                Unable to load exhibitions.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <aside
+            id="exhibition-form-container"
+            class="artist-drawer"
+            aria-labelledby="exhibition-form-title"
+            aria-hidden="true"
+            hidden
+        >
+            <button type="button" id="close-exhibition-drawer">Close</button>
+            <div id="exhibition-form-content"></div>
+        </aside>
     </main>
-    <script src="/js/app.js"></script>
+    <script type="module" src="/js/curator-exhibitions.js"></script>
 </body>
 </html>

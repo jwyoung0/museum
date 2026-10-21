@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>Create an Account | MFAH Portal</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body class="login-page register-page">
+    <header class="site-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <a href="/auth-visitor">Back to Sign In</a>
+    </header>
+    <main>
+        <div class="formcontainer">
+            <form id="register-form">
+                <h2>Create an Account</h2>
+                <p>Enter your name, email address, and choose a password.</p>
+                <div class="field-row">
+                    <label for="name">Name</label>
+                    <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        autocomplete="name"
+                        maxlength="100"
+                        required
+                    >
+                </div>
+                <div class="field-row">
+                    <label for="email">Email</label>
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        autocomplete="email"
+                        maxlength="50"
+                        required
+                    >
+                </div>
+                <div class="field-row">
+                    <label for="password">Password</label>
+                    <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        autocomplete="new-password"
+                        maxlength="20"
+                        required
+                    >
+                </div>
+                <div class="field-row">
+                    <label for="password-confirm">Confirm Password</label>
+                    <input
+                        id="password-confirm"
+                        name="passwordConfirm"
+                        type="password"
+                        autocomplete="new-password"
+                        maxlength="20"
+                        required
+                    >
+                </div>
+                <button type="submit">Create Account</button>
+                <div class="registration-links">
+                    <p>Already registered?</p>
+                    <a href="/auth-visitor">Sign In</a>
+                </div>
+            </form>
+        </div>
+        <p id="login-message" role="status" aria-live="polite"></p>
+    </main>
+    <script src="/js/register-visitor.js"></script>
+</body>
+</html>

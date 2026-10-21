@@ -86,9 +86,12 @@ function renderCollections(collections) {
         descriptionCell.textContent = collection.description ?? "";
 
         const actionsCell = document.createElement("td");
-        const viewLink = document.createElement("a");
-        viewLink.href = nameLink.href;
-        viewLink.textContent = "View";
+        const viewButton = document.createElement("button");
+        viewButton.type = "button";
+        viewButton.className ="view-collection-button";
+        viewButton.dataset.collectionId = collection.collectionId;
+        viewButton.textContent = "View";
+
 
         const editButton = document.createElement("button");
         editButton.type = "button";
@@ -96,9 +99,15 @@ function renderCollections(collections) {
         editButton.dataset.collectionId = collection.collectionId;
         editButton.textContent = "Edit";
 
-        actionsCell.append(viewLink, " ", editButton);
+        actionsCell.append(viewButton, " ", editButton);
         row.append(nameCell, descriptionCell, actionsCell);
         tableBody.insertBefore(row, emptyState);
+
+        viewButton.addEventListener("click", () => {
+            window.location.assign(
+                `/curator/collections/${viewButton.dataset.collectionId}`
+            );
+        });
 
         editButton.addEventListener("click", () =>
             openCollectionDrawerForEdit(collection.collectionId)

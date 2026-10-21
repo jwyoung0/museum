@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>Exhibition Details | Curator Dashboard</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <h1 class="dashboard-title">Curator Dashboard</h1>
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
+    </header>
+
+    <main>
+        <nav aria-label="Curator navigation">
+            <a href="/curator/artwork">Artwork</a>
+            <a href="/curator/artists">Artists</a>
+            <a href="/curator/collections">Collections</a>
+            <a href="/curator/exhibitions" aria-current="page">Exhibitions</a>
+        </nav>
+
+        <section class="artist-detail-workspace">
+            <a href="/curator/exhibitions">← Back to Exhibitions</a>
+            <header class="workspace-header">
+                <h2 id="exhibition-name">Loading...</h2>
+            </header>
+
+            <dl class="artist-detail-grid">
+                <dt>Name</dt>
+                <dd id="exhibitionName"></dd>
+
+                <dt>Status</dt>
+                <dd id="status"></dd>
+
+                <dt>Start Date</dt>
+                <dd id="startDate"></dd>
+
+                <dt>End Date</dt>
+                <dd id="endDate"></dd>
+
+                <dt>Description</dt>
+                <dd id="description"></dd>
+            </dl>
+
+            <div class="artist-actions">
+                <button
+                    id="delete-exhibition-button"
+                    class="button-danger"
+                    type="button"
+                    hidden
+                >
+                    Delete Exhibition
+                </button>
+            </div>
+
+            <div id="detail-error" role="alert" hidden>
+                Unable to load exhibition.
+            </div>
+        </section>
+    </main>
+    <script src="/js/curator-exhibition-detail.js"></script>
+</body>
+</html>

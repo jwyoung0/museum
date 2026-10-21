@@ -50,7 +50,8 @@ async function listExhibitionHandler(req, res) {
     }
 }
 
-async function readExhibitionHandler(req, res, exhibitionId) {
+async function readExhibitionHandler(req, res) {
+    const exhibitionId = req.params.id;    
     try {
         const exhibition = await readExhibition(
             Number(exhibitionId)
@@ -82,7 +83,8 @@ async function readExhibitionHandler(req, res, exhibitionId) {
     }
 }
 
-async function updateExhibitionHandler(req, res, exhibitionId) {
+async function updateExhibitionHandler(req, res) {
+    const exhibitionId = req.params.id;
     try {
         const body = await readJsonBody(req);
 
@@ -117,7 +119,8 @@ async function updateExhibitionHandler(req, res, exhibitionId) {
     }
 }
 
-async function deleteExhibitionHandler(req, res, exhibitionId) {
+async function deleteExhibitionHandler(req, res) {
+    const exhibitionId = req.params.id;
     try {
         const exhibition = await deleteExhibition(
             Number(exhibitionId)
