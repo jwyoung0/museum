@@ -1,8 +1,8 @@
-/* Moved to router.js line 38-41
+/* Moved to router.js line 38-41 or not?*/
 const {
     listPersonnel,
     createPersonnel
-} = require("../../database/personnel");*/
+} = require("../../database/director/personnel");
 
 function requireDirectorApi(req, res) {
     if (!req.user || req.user.role !== "director") {
@@ -44,6 +44,7 @@ async function listPersonnelHandler(req, res) {
     }
 }
 
+
 async function createPersonnelHandler(req, res) {
     if (!requireDirectorApi(req, res)) return;
 
@@ -56,24 +57,72 @@ async function createPersonnelHandler(req, res) {
 
         const personnel = JSON.parse(body);
 
-        if (
-            typeof personnel.legalName !== "string" ||
-            !personnel.legalName.trim() ||
-            typeof personnel.email !== "string" ||
-            !personnel.email.trim()
-        ) {
+        const fname = personnel.fname?.trim();
+        const mname = personnel.mname?.trim() || null;
+        const lname = personnel.lname?.trim();
+        const dateOfBirth = personnel.dateOfBirth;
+        const ssn = personnel.ssn;
+        const email = personnel.email?.trim() || null;
+        const phoneNumber = personnel.phoneNumber?.trim() || null;
+        const startDate = personnel.startDate || null;
+        const endDate = personnel.endDate || null;
+        const positionID =
+            personnel.positionID == null || personnel.positionID === ""
+                ? null
+                : Number(personnel.positionID);
+        const status = Number(personnel.employmentStatus);
+
+        if (!fname || !lname || !dateOfBirth || !ssn) {
             res.writeHead(400, {
                 "Content-Type": "application/json"
             });
 
             return res.end(JSON.stringify({
-                error: "Legal name and email are required"
+                error: "First name, last name, date of birth, and SSN are required"
             }));
         }
 
-        const status = Number(personnel.employmentStatus);
+        if (fname.length > 50 || mname?.length > 50 || lname.length > 50) {
+            res.writeHead(400, {
+                "Content-Type": "application/json"
+            });
 
-        if (status !== 0 && status !== 1) {
+            return res.end(JSON.stringify({
+                error: "Names must not exceed 50 characters"
+            }));
+        }
+
+        if (!/^\d{9}$/.test(ssn)) {
+            res.writeHead(400, {
+                "Content-Type": "application/json"
+            });
+
+            return res.end(JSON.stringify({
+                error: "SSN must contain exactly 9 digits"
+            }));
+        }
+
+        if (email && email.length > 50) {
+            res.writeHead(400, {
+                "Content-Type": "application/json"
+            });
+
+            return res.end(JSON.stringify({
+                error: "Email must not exceed 50 characters"
+            }));
+        }
+
+        if (phoneNumber && !/^\d{10}$/.test(phoneNumber)) {
+            res.writeHead(400, {
+                "Content-Type": "application/json"
+            });
+
+            return res.end(JSON.stringify({
+                error: "Phone number must contain exactly 10 digits"
+            }));
+        }
+
+        if (!Number.isInteger(status) || (status !== 0 && status !== 1)) {
             res.writeHead(400, {
                 "Content-Type": "application/json"
             });
@@ -83,11 +132,31 @@ async function createPersonnelHandler(req, res) {
             }));
         }
 
+        if (
+            positionID !== null &&
+            (!Number.isInteger(positionID) || positionID < 1)
+        ) {
+            res.writeHead(400, {
+                "Content-Type": "application/json"
+            });
+
+            return res.end(JSON.stringify({
+                error: "Invalid position ID"
+            }));
+        }
+
         const created = await createPersonnel({
-            ...personnel,
-            legalName: personnel.legalName.trim(),
-            email: personnel.email.trim(),
-            employmentStatus: status
+            fname,
+            mname,
+            lname,
+            email,
+            phoneNumber,
+            dateOfBirth,
+            startDate,
+            endDate,
+            positionID,
+            employmentStatus: status,
+            ssn
         });
 
         res.writeHead(201, {
@@ -120,6 +189,7 @@ async function createPersonnelHandler(req, res) {
         }));
     }
 }
+
 
 module.exports = {
     listPersonnelHandler,

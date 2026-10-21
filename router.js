@@ -35,7 +35,7 @@ const { createExhibitionHandler,
     deleteExhibitionHandler
 } = require("./handlers/exhibitions");
 
-const {
+const { 
     listPersonnelHandler,
     createPersonnelHandler
 } = require("./handlers/director/personnel");

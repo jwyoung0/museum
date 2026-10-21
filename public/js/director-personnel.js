@@ -45,13 +45,50 @@ if (
                 const row = document.createElement("tr");
                 const cell = document.createElement("td");
 
-                cell.colSpan = 8;
+                cell.colSpan = 11;
                 cell.textContent = "No personnel records found.";
 
                 row.appendChild(cell);
                 personnelTableBody.appendChild(row);
             }
+            personnel.forEach(person => {
+                const row = document.createElement("tr");
 
+/*                const fullName = [
+                    person.Fname,
+                    person.Mname,
+                    person.Lname
+                ].filter(Boolean).join(" ");
+*/
+                const values = [
+                    person.Fname ?? "",
+                    person.Mname ?? "",
+                    person.Lname ?? "",
+                    person.PositionID ?? "",
+                    person.PhoneNumber ?? "",
+                    person.Email ?? "",
+                    person.EmploymentStatus ? "Active" : "Inactive",
+                    person.DateOfBirth
+                        ? String(person.DateOfBirth).slice(0, 10)
+                        : "",
+                    person.StartDate
+                        ? String(person.StartDate).slice(0, 10)
+                        : "",
+                    person.EndDate
+                        ? String(person.EndDate).slice(0, 10)
+                        : "",
+                    person.SSN ?? ""
+                ];
+
+                values.forEach(value => {
+                    const cell = document.createElement("td");
+                    cell.textContent = value ?? "";
+                    row.appendChild(cell);
+                });
+
+                personnelTableBody.appendChild(row);
+            });
+/*
             personnel.forEach(person => {
                 const row = document.createElement("tr");
 
@@ -79,7 +116,7 @@ if (
 
                 personnelTableBody.appendChild(row);
             });
-
+*/
             personnelMessage.textContent =
                 `Loaded ${personnel.length} personnel record(s).`;
         } catch (error) {
@@ -91,7 +128,7 @@ if (
             const row = document.createElement("tr");
             const cell = document.createElement("td");
 
-            cell.colSpan = 8;
+            cell.colSpan = 11;
             cell.textContent = "Failed to load personnel records.";
 
             row.appendChild(cell);
@@ -116,20 +153,61 @@ if (
 
     personnelForm.addEventListener("submit", async event => {
         event.preventDefault();
+        console.log("Save Personnel submit Handler triggered.");
 
         const formData = new FormData(personnelForm);
 
+        const getText = name => {
+            const value = formData.get(name);
+            return value == null ? "" : value.trim();
+        };
+        
+        const fname = getText("fname");
+        const lname = getText("lname");
+        const dateOfBirth = getText("dateOfBirth");
+ /*       const ssn = getText("ssn");*/
+        const ssnInput = getText("ssn");
+        const ssn = ssnInput.replace(/-/g, "");
+        const employmentStatus = getText("employmentStatus");
+
+        if (employmentStatus !== "0" && employmentStatus !== "1") {
+            personnelMessage.textContent =
+                "Please select a valid employment status.";
+            return;
+        }
+
+        if (!fname || !lname || !dateOfBirth || !ssn) {
+            personnelMessage.textContent =
+                "First name, last name, date of birth, and SSN are required.";
+            return;
+        }
+
+/*        if (!/^\d{9}$/.test(ssn)) {
+            personnelMessage.textContent =
+                "SSN must contain exactly 9 digits.";
+            return;
+        }
+*/
+        if (!/^\d{9}$/.test(ssn)) {
+            personnelMessage.textContent =
+                "SSN must contain exactly 9 digits, optionally formatted as 123-45-6789.";
+            return;
+        }
+
         const personnel = {
-            legalName: formData.get("legalName").trim(),
-            email: formData.get("email").trim(),
-            phoneNumber: formData.get("phoneNumber").trim() || null,
-            dateOfBirth: formData.get("dateOfBirth") || null,
-            startDate: formData.get("startDate") || null,
-            endDate: formData.get("endDate") || null,
-            positionID: formData.get("positionID")
-                ? Number(formData.get("positionID"))
+            fname,
+            mname: getText("mname") || null,
+            lname,
+            email: getText("email") || null,
+            phoneNumber: getText("phoneNumber") || null,
+            dateOfBirth,
+            startDate: getText("startDate") || null,
+            endDate: getText("endDate") || null,
+            positionID: getText("positionID")
+                ? Number(getText("positionID"))
                 : null,
-            employmentStatus: Number(formData.get("employmentStatus"))
+            employmentStatus: Number(employmentStatus),
+            ssn
         };
 
         try {
@@ -143,7 +221,16 @@ if (
                 body: JSON.stringify(personnel)
             });
 
-            const result = await response.json();
+            const responseText = await response.text();
+            let result;
+
+            try {
+                result = JSON.parse(responseText);
+            } catch {
+                throw new Error(
+                    `Server returned an unexpected response (HTTP ${response.status}).`
+                );
+            }
 
             if (!response.ok) {
                 throw new Error(
