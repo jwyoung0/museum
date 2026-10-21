@@ -4,6 +4,12 @@ const { authVisitorHandler } = require("./handlers/auth-visitor");
 const { loginHandler } = require("./handlers/login");
 const { listTicketTypesHandler, purchaseTicketHandler } = require("./handlers/tickets");
 
+const {
+    listProductsHandler,
+    createProductHandler,
+    updateProductHandler
+} = require("./handlers/gift-shop/products");
+
 const { logoutHandler } = require("./handlers/logout");
 const { listArtworkForVisitorHandler,
         readArtworkForVisitorHandler 
@@ -68,6 +74,51 @@ async function router(req, res) {
         path.join("gift-shop", "dashboard.html"),
         "text/html"
     );
+    return;
+}
+if (req.method === "GET" && req.url === "/gift-shop/products") {
+    if (!requireGiftShopManager(req, res)) return;
+
+    sendPage(
+        res,
+        path.join("gift-shop", "products.html"),
+        "text/html"
+    );
+    return;
+}
+if (req.method === "GET" && req.url === "/js/gift-shop-products.js") {
+    if (!requireGiftShopManager(req, res)) return;
+
+    sendPage(
+        res,
+        path.join("js", "gift-shop-products.js"),
+        "application/javascript"
+    );
+    return;
+}
+if (req.method === "GET" && req.url === "/api/gift-shop/products") {
+    if (!requireGiftShopManager(req, res)) return;
+
+    await listProductsHandler(req, res);
+    return;
+}
+if (req.method === "POST" && req.url === "/api/gift-shop/products") {
+    if (!requireGiftShopManager(req, res)) return;
+
+    await createProductHandler(req, res);
+    return;
+}
+const productUpdateMatch = new URL(req.url, "http://localhost")
+    .pathname.match(/^\/api\/gift-shop\/products\/(\d+)$/);
+
+if (req.method === "PUT" && productUpdateMatch) {
+    if (!requireGiftShopManager(req, res)) return;
+
+    req.params = {
+        id: productUpdateMatch[1]
+    };
+
+    await updateProductHandler(req, res);
     return;
 }
         if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
