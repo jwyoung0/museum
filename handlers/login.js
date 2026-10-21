@@ -27,10 +27,11 @@ async function loginHandler(req, res) {
         role: loginResults.role
     });
 
-    const routeByRole = {
-        curator: "/curator/artwork",
-        director: "/director/dashboard"
-    };
+   const routeByRole = {
+    curator: "/curator/artwork",
+    director: "/director/dashboard",
+    gift_shop_manager: "/gift-shop/dashboard"
+};
 
     res.writeHead(200, {
         "Content-Type": "application/json",

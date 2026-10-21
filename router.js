@@ -54,6 +54,16 @@ async function router(req, res) {
         }
 
         // GET - HTML file routing starts here
+        if (req.method === "GET" && req.url === "/gift-shop/dashboard") {
+    if (!requireGiftShopManager(req, res)) return;
+
+    sendPage(
+        res,
+        path.join("gift-shop", "dashboard.html"),
+        "text/html"
+    );
+    return;
+}
         if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             sendVisitorPage(req, res, "index.html");
             // sendPage(res, "index.html", "text/html");
@@ -542,6 +552,18 @@ function requireDirector(req, res) {
         res.end();
         return false;
     }
+    return true;
+}
+function requireGiftShopManager(req, res) {
+    if (!req.user || req.user.role !== "gift_shop_manager") {
+        res.writeHead(302, {
+            "Location": "/",
+            "Content-Length": 0
+        });
+        res.end();
+        return false;
+    }
+
     return true;
 }
 

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>Gift Shop Dashboard</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <h1 class="dashboard-title">Gift Shop Dashboard</h1>
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
+    </header>
+
+    <main>
+        <nav aria-label="Gift Shop navigation">
+            <a href="/gift-shop/products">Products</a>
+            <a href="/gift-shop/inventory">Inventory</a>
+            <a href="/gift-shop/sales">Sales</a>
+        </nav>
+    </main>
+    <script src="/js/app.js"></script>
+</body>
+</html>
