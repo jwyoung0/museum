@@ -221,6 +221,12 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" && req.url === "/js/curator-exhibitions.js") {
+            if (!requireCurator(req, res)) return;
+            sendPage(res, path.join("js", "curator-exhibitions.js"), "application/javascript");
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/js/drawer.js") {
             if (!requireCurator(req, res)) return;
             sendPage(res, path.join("js", "drawer.js"), "application/javascript");

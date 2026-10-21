@@ -86,9 +86,6 @@ function renderCollections(collections) {
         descriptionCell.textContent = collection.description ?? "";
 
         const actionsCell = document.createElement("td");
-        // const viewLink = document.createElement("a");
-        // viewLink.href = nameLink.href;
-        // viewLink.textContent = "View";
         const viewButton = document.createElement("button");
         viewButton.type = "button";
         viewButton.className ="view-collection-button";
