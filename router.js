@@ -2,8 +2,20 @@ const fs = require("fs");
 const path = require("path");
 const { authVisitorHandler } = require("./handlers/auth-visitor");
 const { loginHandler } = require("./handlers/login");
-const { listTicketTypesHandler, purchaseTicketHandler } = require("./handlers/tickets");
-
+const {
+    listTicketTypesHandler,
+    purchaseTicketHandler,
+    listMyTicketsHandler
+} = require("./handlers/tickets");
+const {
+    ticketSalesByTypeHandler,
+    dailyTicketSalesHandler,
+    visitorPurchaseSummaryHandler
+} = require("./handlers/ticket-reports");
+const {
+    getVisitorProfileHandler,
+    updateVisitorProfileHandler
+} = require("./handlers/visitor-profile");
 const { logoutHandler } = require("./handlers/logout");
 const { listArtworkForVisitorHandler,
         readArtworkForVisitorHandler 
@@ -116,6 +128,16 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" && req.url === "/ticket-history") {
+            sendPage(res, "ticket-history.html", "text/html");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/visitor-profile") {
+            sendPage(res, "visitor-profile.html", "text/html");
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/api/ticket-types") {
             await listTicketTypesHandler(req, res);
             return;
@@ -123,6 +145,39 @@ async function router(req, res) {
 
         if (req.method === "POST" && req.url === "/api/tickets") {
             await purchaseTicketHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/api/my-tickets") {
+        await listMyTicketsHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/api/visitor-profile") {
+            await getVisitorProfileHandler(req, res);
+            return;
+        }
+
+        if (req.method === "PUT" && req.url === "/api/visitor-profile") {
+            await updateVisitorProfileHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/api/ticket-reports/sales") {
+            if (!requireDirector(req, res)) return;
+            await ticketSalesByTypeHandler(req, res);
+            return;
+        }   
+
+        if (req.method === "GET" && req.url === "/api/ticket-reports/daily") {
+            if (!requireDirector(req, res)) return;
+            await dailyTicketSalesHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/api/ticket-reports/visitors") {
+            if (!requireDirector(req, res)) return;
+            await visitorPurchaseSummaryHandler(req, res);
             return;
         }
 
