@@ -21,6 +21,11 @@ async function purchaseTicketHandler(req, res) {
     const name = typeof data.name === "string" ? data.name.trim() : "";
     const email = typeof data.email === "string" ? data.email.trim() : "";
     const ticketTypeId = Number(data.ticketTypeId);
+    const visitDate = data.visitDate;
+
+    if (!visitDate) {
+        throw new Error("Please select a visit date");
+    }
 
     if (!name || !email.includes("@") ||
         name.length > 100 || email.length > 150 ||
@@ -58,6 +63,7 @@ async function purchaseTicketHandler(req, res) {
             .input("email", sql.VarChar(150), email)
             .input("ticketTypeId", sql.Int, ticketTypeId)
             .input("price", sql.Decimal(10, 2), Number(price))
+            .input("visitDate", sql.VarChar(10), visitDate)
             .query(`
                 DECLARE @visitorId INT, @ticketId INT;
 
@@ -78,10 +84,11 @@ async function purchaseTicketHandler(req, res) {
                 FROM dbo.TICKET WITH (TABLOCKX, HOLDLOCK);
 
                 INSERT INTO dbo.TICKET
-                    (TicketID, TicketTypeID, Price, PurchaseDate, VisitorID)
+                    (TicketID, TicketTypeID, Price, PurchaseDate, VisitDate, VisitorID)
                 VALUES
                     (@ticketId, @ticketTypeId, @price,
-                     CAST(GETDATE() AS DATE), @visitorId);
+                    CAST(GETDATE() AS DATE),
+                    CONVERT(DATE, @visitDate, 23), @visitorId);
 
                 SELECT
                     @ticketId AS TicketID,

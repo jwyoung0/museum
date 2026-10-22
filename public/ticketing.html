@@ -2,511 +2,344 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MFAH - Purchase Tickets</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MFAH Tickets</title>
+<style>
+* { box-sizing: border-box; }
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+body {
+    margin: 0;
+    padding: 30px 15px;
+    background: #f1f2f5;
+    font: 16px Arial, sans-serif;
+}
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #f5f7fa;
-            color: #222;
-            margin: 0;
-            padding: 30px 15px;
-        }
+main {
+    max-width: 680px;
+    margin: auto;
+    padding: 30px;
+    background: #5c6578;
+    color: white;
+}
 
-        .container {
-            max-width: 650px;
-            margin: auto;
-            background: white;
-            padding: 35px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        }
+h1 { font-size: 30px; margin: 20px 0 30px; }
+h2 { font-size: 21px; margin-top: 30px; }
+a { color: white; }
 
-        h1 {
-            color: #193a60;
-            text-align: center;
-            margin-bottom: 10px;
-        }
+.ticket {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px;
+    margin: 10px 0;
+    background: white;
+    color: #263047;
+}
 
-        h2 {
-            color: #193a60;
-            margin-top: 30px;
-        }
+.price { width: 65px; }
+.name { flex: 1; }
 
-        .subtitle {
-            text-align: center;
-            color: #666;
-        }
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
 
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
+.controls button {
+    background: #5c6578;
+    color: white;
+    border: 0;
+    padding: 8px 12px;
+    cursor: pointer;
+}
 
-        input, select {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 15px;
-            background: white;
-        }
+input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0 18px;
+    border: 1px solid #ccc;
+    font: inherit;
+}
 
-        .ticket-box {
-            background: #f8f9fc;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 18px;
-            margin-bottom: 15px;
-        }
+label { display: block; margin-top: 15px; }
 
-        .ticket-box h3 {
-            color: #193a60;
-            margin-top: 0;
-        }
+.action, .login {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin-top: 15px;
+    border: none;
+    background: #177900;
+    color: white;
+    font: inherit;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
 
-        .ticket-box select {
-            margin-bottom: 0;
-        }
+.secondary, .login {
+    background: #e5e7eb;
+    color: #263047;
+}
 
-        .total-box {
-            background: #eef3f9;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+button:disabled { opacity: .5; cursor: not-allowed; }
 
-        .total-box h2 {
-            margin: 0;
-        }
+.summary {
+    border-top: 2px solid white;
+    padding-top: 20px;
+    margin-top: 30px;
+    white-space: pre-line;
+    line-height: 1.8;
+}
 
-        #totalPrice {
-            font-size: 26px;
-            font-weight: bold;
-            color: #193a60;
-        }
+#message { white-space: pre-line; line-height: 1.7; }
+[hidden] { display: none !important; }
 
-        button {
-            width: 100%;
-            padding: 15px;
-            background: #193a60;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        button:hover {
-            background: #28588a;
-        }
-
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .note {
-            font-size: 13px;
-            color: #777;
-            margin-top: 15px;
-        }
-
-        #confirmation {
-            margin-top: 20px;
-            padding: 15px;
-            border-radius: 8px;
-            background: #eef3f9;
-            white-space: pre-line;
-        }
-
-        #confirmation:empty {
-            display: none;
-        }
-    </style>
+@media (max-width: 550px) {
+    main { padding: 18px; }
+    .ticket { flex-wrap: wrap; }
+}
+</style>
 </head>
 
 <body>
+<main>
+<a href="/">← Back to Home</a>
+<h1>Museum Admission</h1>
 
-    <div class="container">
-        <a href="/">← Back to Home</a> |
-        <a href="/ticket-history">My Tickets</a> |
-        <a href="/visitor-profile">My Profile</a>
+<section id="choose">
+    <h2>Select Tickets</h2>
 
-        
-        <h1>Museum Ticket Purchase</h1>
+    <label for="visitDate">Date of Visit</label>
+    <input type="date" id="visitDate" required>
 
-        <p class="subtitle">
-            Welcome to the Museum of Fine Arts Houston!
-        </p>
+    <div id="ticketTypes">Loading tickets...</div>
 
-        <form id="ticketForm">
-
-            <!-- VISITOR INFORMATION -->
-
-            <h2>Visitor Information</h2>
-
-            <label for="name">Full Name:</label>
-            <input
-                type="text"
-                id="name"
-                placeholder="Enter your full name"
-                required
-            >
-
-            <label for="email">Email Address:</label>
-            <input
-                type="email"
-                id="email"
-                placeholder="Enter your email"
-                required
-            >
-
-
-            <!-- NUMBER OF TICKETS -->
-
-            <h2>Select Your Tickets</h2>
-
-            <label for="ticketQuantity">
-                How many tickets would you like?
-            </label>
-
-            <select id="ticketQuantity" required>
-                <option value="1">1 Ticket</option>
-                <option value="2">2 Tickets</option>
-                <option value="3">3 Tickets</option>
-                <option value="4">4 Tickets</option>
-                <option value="5">5 Tickets</option>
-                <option value="6">6 Tickets</option>
-                <option value="7">7 Tickets</option>
-                <option value="8">8 Tickets</option>
-                <option value="9">9 Tickets</option>
-                <option value="10">10 Tickets</option>
-            </select>
-
-
-            <!-- DYNAMIC TICKET DROPDOWNS -->
-
-            <div id="ticketSelections"></div>
-
-
-            <!-- TOTAL PRICE -->
-
-            <div class="total-box">
-                <h2>Total:</h2>
-                <span id="totalPrice">$0.00</span>
-            </div>
-
-            <p class="note">
-                Students must present a valid student ID.
-                Children 12 and under receive free admission.
-            </p>
-
-
-            <!-- PURCHASE BUTTON -->
-
-            <button type="submit" id="purchaseButton" disabled>
-                Loading Ticket Types...
-            </button>
-
-        </form>
-
-        <div id="confirmation" role="status" aria-live="polite"></div>
-
+    <div class="summary">
+        Total: <strong id="total">$0.00</strong>
     </div>
 
+    <button class="action" id="next" disabled>Next</button>
+</section>
 
-    <script>
+<section id="account" hidden>
+    <h2>Log In for Account Access</h2>
+    <p>Already have an account?</p>
 
-        // TICKET DATA FROM AZURE SQL
+    <a class="login" href="/auth-visitor">Log In</a>
+    <button class="action" id="skip">Skip for Now</button>
+    <button class="action secondary" onclick="show('choose')">Back</button>
+</section>
 
-        let ticketTypes = [];
+<section id="review" hidden>
+    <h2>Review Your Tickets</h2>
 
-        const quantityDropdown =
-            document.getElementById("ticketQuantity");
+    <div class="summary" id="summary"></div>
 
-        const ticketSelections =
-            document.getElementById("ticketSelections");
+    <form id="form">
+        <label for="name">Full Name</label>
+        <input id="name" maxlength="100" required>
 
-        const totalPrice =
-            document.getElementById("totalPrice");
+        <label for="email">Email Address</label>
+        <input id="email" type="email" maxlength="150" required>
 
-        const purchaseButton =
-            document.getElementById("purchaseButton");
+        <button class="action" id="buy" type="submit">
+            Confirm Purchase
+        </button>
+    </form>
 
-        const confirmation =
-            document.getElementById("confirmation");
+    <button class="action secondary" onclick="show('choose')">Back</button>
+</section>
 
+<p id="message" role="status"></p>
+</main>
 
-        // LOAD TICKET TYPES
+<script>
+const $ = id => document.getElementById(id);
+let types = [];
+let quantities = {};
 
-        async function loadTicketTypes() {
-            try {
-                const response = await fetch("/api/ticket-types");
+const age = {
+    Adult: "Adult (19+)",
+    Student: "Student (Valid ID)",
+    Senior: "Senior (65+)",
+    Youth: "Youth (13–18)",
+    Child: "Child (12 & Under)"
+};
 
-                if (!response.ok) {
-                    throw new Error("Unable to load ticket types");
-                }
+const money = n => Number(n) === 0
+    ? "FREE" : "$" + Number(n).toFixed(2);
 
-                ticketTypes = await response.json();
+const count = () => Object.values(quantities)
+    .reduce((sum, n) => sum + n, 0);
 
-                if (ticketTypes.length === 0) {
-                    throw new Error("No ticket types available");
-                }
+const total = () => types.reduce((sum, t) =>
+    sum + Number(t.Price) * (quantities[t.TicketTypeID] || 0), 0);
 
-                createTicketDropdowns();
+const now = new Date();
+const today = new Date(now - now.getTimezoneOffset() * 60000)
+    .toISOString().slice(0, 10);
 
-                purchaseButton.disabled = false;
-                purchaseButton.textContent = "Purchase Tickets";
+$("visitDate").min = today;
+$("visitDate").value = today;
 
-            } catch (error) {
-                console.error(error);
+function show(page) {
+    ["choose", "account", "review"].forEach(id =>
+        $(id).hidden = id !== page
+    );
+    $("message").textContent = "";
+}
 
-                purchaseButton.disabled = true;
-                purchaseButton.textContent =
-                    "Tickets Unavailable";
+function update() {
+    types.forEach(t => {
+        $("qty-" + t.TicketTypeID).textContent =
+            quantities[t.TicketTypeID] || 0;
+    });
 
-                confirmation.textContent = error.message;
-            }
-        }
+    $("total").textContent = "$" + total().toFixed(2);
+    $("next").disabled = count() === 0 || !$("visitDate").value;
+}
 
+// Load ticket prices from SQL Server
+async function loadTickets() {
+    try {
+        const res = await fetch("/api/ticket-types");
+        if (!res.ok) throw Error("Unable to load tickets");
 
-        // CREATE TICKET DROPDOWNS
+        types = await res.json();
+        if (!types.length) throw Error("No tickets available");
 
-        function createTicketDropdowns() {
-            const quantity = Number(quantityDropdown.value);
+        $("ticketTypes").innerHTML = "";
 
-            const previousSelections = Array.from(
-                ticketSelections.querySelectorAll(".ticketType")
-            ).map(select => select.value);
+        types.forEach(t => {
+            const row = document.createElement("div");
+            row.className = "ticket";
 
-            ticketSelections.innerHTML = "";
+            const price = document.createElement("strong");
+            price.className = "price";
+            price.textContent = money(t.Price);
 
-            for (let i = 0; i < quantity; i++) {
+            const name = document.createElement("span");
+            name.className = "name";
+            name.textContent = age[t.TicketTypeName] || t.TicketTypeName;
 
-                const ticketBox = document.createElement("div");
-                ticketBox.className = "ticket-box";
+            const controls = document.createElement("div");
+            controls.className = "controls";
 
-                const heading = document.createElement("h3");
-                heading.textContent = `Ticket ${i + 1}`;
+            const minus = document.createElement("button");
+            minus.textContent = "−";
 
-                const label = document.createElement("label");
-                label.textContent = "Choose Ticket Type:";
+            const qty = document.createElement("span");
+            qty.id = "qty-" + t.TicketTypeID;
+            qty.textContent = "0";
 
-                const dropdown = document.createElement("select");
-                dropdown.className = "ticketType";
-                dropdown.required = true;
+            const plus = document.createElement("button");
+            plus.textContent = "+";
 
-                const placeholder = document.createElement("option");
-                placeholder.value = "";
-                placeholder.textContent = "Select Ticket Type";
+            minus.onclick = () => change(t.TicketTypeID, -1);
+            plus.onclick = () => change(t.TicketTypeID, 1);
 
-                dropdown.appendChild(placeholder);
+            controls.append(minus, qty, plus);
+            row.append(price, name, controls);
+            $("ticketTypes").appendChild(row);
+        });
 
-                ticketTypes.forEach(ticket => {
+        update();
+    } catch (error) {
+        $("ticketTypes").textContent = error.message;
+    }
+}
 
-                    const option = document.createElement("option");
+function change(id, amount) {
+    const current = quantities[id] || 0;
+    const next = current + amount;
 
-                    option.value = ticket.TicketTypeID;
+    if (next < 0 || next > 10) return;
+    if (amount > 0 && count() >= 10) return;
 
-                    let labelText = ticket.TicketTypeName;
+    quantities[id] = next;
+    update();
+}
 
-                    if (ticket.TicketTypeName === "Student") {
-                        labelText = "Student (Valid Student ID)";
-                    }
+$("visitDate").onchange = update;
 
-                    if (ticket.TicketTypeName === "Child") {
-                        labelText = "Child (12 & Under)";
-                    }
+$("next").onclick = () => {
+    if (!$("visitDate").reportValidity() || !count()) return;
+    show("account");
+};
 
-                    const price = Number(ticket.Price);
-
-                    const priceText = price === 0
-                        ? "FREE"
-                        : `$${price.toFixed(2)}`;
-
-                    option.textContent =
-                        `${labelText} - ${priceText}`;
-
-                    dropdown.appendChild(option);
-                });
-
-                dropdown.value = previousSelections[i] || "";
-
-                dropdown.addEventListener(
-                    "change",
-                    calculateTotal
-                );
-
-                ticketBox.appendChild(heading);
-                ticketBox.appendChild(label);
-                ticketBox.appendChild(dropdown);
-
-                ticketSelections.appendChild(ticketBox);
-            }
-
-            calculateTotal();
-        }
-
-
-        // CALCULATE TOTAL PRICE
-
-        function calculateTotal() {
-            let total = 0;
-
-            const dropdowns =
-                document.querySelectorAll(".ticketType");
-
-            dropdowns.forEach(dropdown => {
-
-                const selectedTicket = ticketTypes.find(
-                    ticket =>
-                        String(ticket.TicketTypeID) === dropdown.value
-                );
-
-                if (selectedTicket) {
-                    total += Number(selectedTicket.Price);
-                }
-            });
-
-            totalPrice.textContent = "$" + total.toFixed(2);
-        }
-
-
-        // CHANGE NUMBER OF TICKETS
-
-        quantityDropdown.addEventListener(
-            "change",
-            createTicketDropdowns
+// Review tickets
+$("skip").onclick = () => {
+    const tickets = types.filter(t => quantities[t.TicketTypeID])
+        .map(t =>
+            `${quantities[t.TicketTypeID]} x ` +
+            `${age[t.TicketTypeName] || t.TicketTypeName} - ` +
+            `${money(Number(t.Price) * quantities[t.TicketTypeID])}`
         );
 
+    $("summary").textContent =
+        `Visit Date: ${$("visitDate").value}\n\n` +
+        tickets.join("\n") +
+        `\n\nTotal: $${total().toFixed(2)}`;
 
-        // PURCHASE TICKETS
+    show("review");
+};
 
-        document.getElementById("ticketForm")
-            .addEventListener("submit", async function(event) {
+// Confirm purchase
+$("form").onsubmit = async e => {
+    e.preventDefault();
 
-                event.preventDefault();
+    const ids = types.flatMap(t =>
+        Array(quantities[t.TicketTypeID] || 0).fill(t.TicketTypeID)
+    );
 
-                const name =
-                    document.getElementById("name").value.trim();
+    $("buy").disabled = true;
+    $("buy").textContent = "Saving...";
 
-                const email =
-                    document.getElementById("email").value.trim();
+    const saved = [];
 
-                const dropdowns =
-                    document.querySelectorAll(".ticketType");
-
-                const selectedTickets =
-                    Array.from(dropdowns).map(dropdown =>
-                        Number(dropdown.value)
-                    );
-
-                if (selectedTickets.some(id => !id)) {
-                    alert("Please select every ticket type.");
-                    return;
-                }
-
-                purchaseButton.disabled = true;
-                purchaseButton.textContent = "Processing Tickets...";
-
-                confirmation.textContent = "";
-
-                const purchasedTickets = [];
-                let purchaseError = null;
-
-                // The current backend saves one ticket per request.
-
-                for (const ticketTypeId of selectedTickets) {
-
-                    try {
-                        const response = await fetch("/api/tickets", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                name,
-                                email,
-                                ticketTypeId
-                            })
-                        });
-
-                        const result = await response.json();
-
-                        if (!response.ok) {
-                            throw new Error(
-                                result.error || "Purchase failed"
-                            );
-                        }
-
-                        purchasedTickets.push(result);
-
-                    } catch (error) {
-                        purchaseError = error;
-                        console.error(error);
-                        break;
-                    }
-                }
-
-                // SHOW PURCHASE CONFIRMATION
-
-                if (!purchaseError) {
-
-                    const total = purchasedTickets.reduce(
-                        (sum, ticket) =>
-                            sum + Number(ticket.Price),
-                        0
-                    );
-
-                    const ticketIds = purchasedTickets.map(
-                        ticket => ticket.TicketID
-                    ).join(", ");
-
-                    confirmation.textContent =
-                        "Tickets Purchased Successfully!\n" +
-                        "Tickets: " + purchasedTickets.length + "\n" +
-                        "Ticket IDs: " + ticketIds + "\n" +
-                        "Total: $" + total.toFixed(2);
-
-                    purchaseButton.textContent = "Purchase Complete";
-
-                } else {
-
-                    const savedIds = purchasedTickets.map(
-                        ticket => ticket.TicketID
-                    ).join(", ");
-
-                    confirmation.textContent =
-                        "Purchase was not fully completed.\n" +
-                        "Confirmed tickets: " +
-                        purchasedTickets.length + "\n" +
-                        "Saved Ticket IDs: " +
-                        (savedIds || "None") + "\n" +
-                        "Error: " + purchaseError.message + "\n" +
-                        "Please check saved tickets before trying again.";
-
-                    purchaseButton.textContent = "Purchase Incomplete";
-                }
-
+    try {
+        for (const ticketTypeId of ids) {
+            const res = await fetch("/api/tickets", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: $("name").value.trim(),
+                    email: $("email").value.trim(),
+                    ticketTypeId,
+                    visitDate: $("visitDate").value
+                })
             });
 
+            const result = await res.json();
+            if (!res.ok) throw Error(result.error || "Purchase failed");
 
-        loadTicketTypes();
+            saved.push(result);
+        }
 
-    </script>
+        $("message").textContent =
+            `Tickets Purchased Successfully!\n` +
+            `Visit Date: ${$("visitDate").value}\n` +
+            `Ticket IDs: ${saved.map(t => t.TicketID).join(", ")}\n` +
+            `Total: $${saved.reduce((sum, t) =>
+                sum + Number(t.Price), 0).toFixed(2)}`;
 
+        $("buy").textContent = "Purchase Complete";
+
+    } catch (error) {
+        $("message").textContent =
+            `Purchase Incomplete\n` +
+            `Saved Tickets: ${saved.length}\n` +
+            `Ticket IDs: ${saved.map(t => t.TicketID).join(", ") || "None"}\n` +
+            `Error: ${error.message}\n` +
+            `Check My Tickets before trying again.`;
+
+        $("buy").textContent = "Purchase Incomplete";
+    }
+};
+
+loadTickets();
+</script>
 </body>
 </html>
