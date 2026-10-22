@@ -40,13 +40,29 @@ const { createCollectionHandler,
         updateCollectionHandler,
         deleteCollectionHandler
 } = require("./handlers/curator/collections");
+const { createExhibitionHandler,
+    listExhibitionHandler,
+    readExhibitionHandler,
+    updateExhibitionHandler,
+    deleteExhibitionHandler
+} = require("./handlers/exhibitions");
+const { registerVisitorHandler } = require("./handlers/register-visitor");
+
+const { 
+    listPersonnelHandler,
+    createPersonnelHandler
+} = require("./handlers/director/personnel");
 
 async function router(req, res) {
     try {
-    
         // POST routing starts here
         if (req.method === "POST" && req.url === "/api/auth-visitor") {
             await authVisitorHandler(req, res);
+            return;
+        }
+
+        if (req.method === "POST" && req.url === "/api/register-visitor") {
+            await registerVisitorHandler(req, res);
             return;
         }
 
@@ -57,6 +73,12 @@ async function router(req, res) {
 
         if (req.method === "POST" && req.url === "/api/logout") {
             await logoutHandler(req, res);
+            return;
+        }
+
+        if (req.method === "POST" && req.url === "/api/director/personnel") {
+            if (!requireDirector(req, res)) return;
+            await createPersonnelHandler(req, res);
             return;
         }
 
@@ -79,6 +101,12 @@ async function router(req, res) {
             return;
         }
 
+        // if (req.method === "GET" && req.url === "/artwork-detail") {
+        //     sendVisitorPage(req, res, "artwork-detail.html");
+        //     // sendPage(res, "artwork.html", "text/html");
+        //     return;
+        // }        
+
         if (req.method === "GET" && req.url === "/api/artwork") {
             await listArtworkForVisitorHandler(req, res);
             return;
@@ -92,7 +120,6 @@ async function router(req, res) {
 
         if (req.method === "GET" && req.url === "/exhibitions") {
             sendVisitorPage(req, res, "exhibitions.html");            
-            // sendPage(res, "exhibitions.html", "text/html");
             return;
         }
 
@@ -165,8 +192,9 @@ async function router(req, res) {
             return;
         }
 
-        if (req.method === "GET" && req.url === "/auth-create-account") {
-            sendPage(res, "auth-create-account.html", "text/html");
+        if (req.method === "GET" &&
+            (req.url === "/register-visitor" || req.url === "/auth-create-account")) {
+            sendPage(res, "register-visitor.html", "text/html");
             return;
         }
 
@@ -213,15 +241,30 @@ async function router(req, res) {
         if (req.method === "GET" && req.url === "/js/auth-visitor.js") {
             sendPage(res, path.join("js", "auth-visitor.js"), "application/javascript");
             return;
-        }        
+        }
+        
+        if (req.method === "GET" && req.url === "/js/register-visitor.js") {
+            sendPage(res, path.join("js", "register-visitor.js"), "application/javascript");
+            return;
+        }
 
         if (req.method === "GET" && req.url === "/js/artwork.js") {
             sendPage(res, path.join("js", "artwork.js"), "application/javascript");
             return;
         }
 
+        if (req.method === "GET" && req.url === "/js/artwork-detail.js") {
+            sendPage(res, path.join("js", "artwork-detail.js"), "application/javascript");
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/js/collections.js") {
             sendPage(res, path.join("js", "collections.js"), "application/javascript");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/js/exhibitions.js") {
+            sendPage(res, path.join("js", "exhibitions.js"), "application/javascript");            
             return;
         }
 
@@ -241,6 +284,12 @@ async function router(req, res) {
         if (req.method === "GET" && req.url === "/js/curator-collections.js") {
             if (!requireCurator(req, res)) return;
             sendPage(res, path.join("js", "curator-collections.js"), "application/javascript");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/js/curator-exhibitions.js") {
+            if (!requireCurator(req, res)) return;
+            sendPage(res, path.join("js", "curator-exhibitions.js"), "application/javascript");
             return;
         }
 
@@ -298,15 +347,75 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" && req.url === "/api/collections") {
+            await listCollectionsHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/api/exhibitions") {
+            await listExhibitionHandler(req, res);
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/api/curator/collections") {
             if (!requireCurator(req, res)) return;
             await listCollectionsHandler(req, res);
             return;
         }
+
+/*        if (req.method === "GET" && req.url === "/api/collections") {
+            await listCollectionsHandler(req, res);
+            return;
+        }
+Duplicate listCollectionsHandler, first one isat line 277*/
+        if (req.method === "GET" && req.url === "/api/exhibitions") {
+            await listExhibitionHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/api/curator/exhibitions") {
+            if (!requireCurator(req, res)) return;
+            await listExhibitionHandler(req, res);
+            return;
+        }
         
+        if (req.method === "GET" && req.url === "/api/director/exhibitions") {
+            if (!requireDirector(req, res)) return;
+            await listExhibitionHandler(req, res);
+            return
+        }
+
+        if (req.method === "POST" && req.url === "/api/director/exhibitions") {
+            if (!requireDirector(req, res)) return;
+            await createExhibitionHandler(req, res);
+            return;
+        }     
+// Director personnel Dashboard routing starts here
         if (req.method === "GET" && req.url === "/director/dashboard") {
             if (!requireDirector(req, res)) return;
             sendPage(res, path.join("director", "dashboard.html"), "text/html");
+            return;
+        }
+        
+        if (req.method === "GET" && req.url === "/api/director/personnel") {
+            if (!requireDirector(req, res)) return;
+            await listPersonnelHandler(req, res);
+            return;
+        }
+
+//        if (req.method === "GET" && req.url === "/js/director-personnel.js") {
+//            sendPage(
+//                res,
+//                path.join("js", "director-personnel.js"),
+//                "application/javascript"
+//            );
+//            return;
+//        }
+
+
+        if (req.method === "GET" && req.url === "/js/director-personnel.js") {
+            if (!requireDirector(req, res)) return;
+            sendPage(res, path.join("js", "director-personnel.js"), "application/javascript");
             return;
         }
 
@@ -354,6 +463,21 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" &&
+            pathname.match(/^\/curator\/exhibitions\/\d+$/)
+        ) {
+            if (!requireCurator(req, res)) return;
+            sendPage(res, path.join("curator", "exhibition-detail.html"), "text/html");
+            return;
+        }
+
+        if (req.method === "GET" && 
+            pathname.match(/^\/artwork-detail\/\d+$/)
+        ) {
+            sendVisitorPage(req, res, "artwork-detail.html");
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/js/curator-artwork-detail.js") {
             if (!requireCurator(req, res)) return;
             sendPage(res, path.join("js", "curator-artwork-detail.js"), "application/javascript");
@@ -366,15 +490,25 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" && req.url === "/js/curator-exhibition-detail.js") {
+            if (!requireCurator(req, res)) return;
+            sendPage(res, path.join("js", "curator-exhibition-detail.js"), "application/javascript");
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/components/artwork-form.html") {
             if (!requireCurator(req, res)) return;
             sendPage(res, path.join("components", "artwork-form.html"), "text/html");
             return;
         }
 
+        // thinking about changing regex so that curator can be director or nothing
         const artistMatch = pathname.match(/^\/api\/curator\/artists\/(\d+)$/);
         const artworkMatch = pathname.match(/^\/api\/curator\/artwork\/(\d+)$/);
         const collectionMatch = pathname.match(/^\/api\/curator\/collections\/(\d+)$/);
+        const exhibitionMatch = pathname.match(/^\/api\/curator\/exhibitions\/(\d+)$/);
+        
+        const artworkMatchVisitor = pathname.match(/^\/api\/artwork-detail\/(\d+)$/);
 
         if (artistMatch && ["GET", "PUT", "DELETE"].includes(req.method)) {
             req.params = { id: artistMatch[1] };
@@ -400,9 +534,9 @@ async function router(req, res) {
                 await readArtworkHandler(req, res);
             } else if (req.method === "PUT") {
                 await updateArtworkHandler(req, res);
-            } else {
+            } else if (req.method === "DELETE") {
                 await deleteArtworkHandler(req, res);
-            }
+            } else return;
             return;
         }
 
@@ -415,11 +549,32 @@ async function router(req, res) {
                 await readCollectionHandler(req, res);
             } else if (req.method === "PUT") {
                 await updateCollectionHandler(req, res);
-            } else {
+            } else if (req.method === "DELETE"){
                 await deleteCollectionHandler(req, res);
-            }
+            } else return;
             return;
         }
+
+        if (exhibitionMatch && ["GET", "PUT", "DELETE"].includes(req.method)) {
+            req.params = { id: exhibitionMatch[1] };
+
+            if (!requireCurator(req, res)) return;
+
+            if (req.method === "GET") {
+                await readExhibitionHandler(req, res);
+            } else if (req.method === "PUT") { 
+                await updateExhibitionHandler(req, res);
+            } else if (req.method === "DELETE") {
+                await deleteExhibitionHandler(req, res);
+            } else return;
+            return;
+        }
+
+        if (artworkMatchVisitor && req.method === "GET") {
+            req.params = { id: artworkMatchVisitor[1] };
+            await readArtworkForVisitorHandler(req, res);
+            return;
+        }        
 
         // Images routing
         if (req.method === "GET" && req.url.startsWith("/images/")) {

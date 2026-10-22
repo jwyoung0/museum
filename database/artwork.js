@@ -20,7 +20,7 @@ async function listArtworkForVisitor() {
     return result.recordset;
 }
 
-async function readArtworkForVisitor(accessionId) {
+async function readArtworkForVisitor(accessionId, visitorId) {
     const pool = await getPool();
 
     const result = await pool.request()
@@ -29,7 +29,7 @@ async function readArtworkForVisitor(accessionId) {
             SELECT
                 a.*,
                 ar.fullName AS artist,
-                c.collectionName AS collection,
+                c.collectionName AS collection
             FROM dbo.ARTWORKS a
             INNER JOIN dbo.ARTISTS ar
                 ON a.artistId = ar.artistId
@@ -38,7 +38,19 @@ async function readArtworkForVisitor(accessionId) {
             WHERE a.accessionId = @accessionId;            
         `);
 
-    return result.recordset[0] || null;
+    const artwork = result.recordset[0] || null;
+
+    if (!artwork) {return null};
+
+    await pool.request()
+        .input("artworkId", sql.Int, accessionId)
+        .input("visitorId", sql.Int, visitorId)
+        .query(`
+            INSERT INTO dbo.ARTWORK_VIEW (ArtworkID, VisitorID)
+            VALUES (@artworkId, @visitorId);    
+        `);
+
+    return artwork;
 }
 
 module.exports = {

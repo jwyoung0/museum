@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,7 +13,7 @@ body {
     background: #f1f2f5;
     font: 16px Arial, sans-serif;
 }
-
+  
 main {
     max-width: 680px;
     margin: auto;
@@ -100,10 +99,32 @@ button:disabled { opacity: .5; cursor: not-allowed; }
     main { padding: 18px; }
     .ticket { flex-wrap: wrap; }
 }
+.site-header {
+    background: white;
+    padding: 20px;
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.site-header a {
+    color: #263047;
+    margin-right: 12px;
+}
+  
 </style>
 </head>
-
 <body>
+  <header class="site-header">
+    <a href="/">MFAH</a>
+    <nav>
+        <a href="/artwork">Artwork</a>
+        <a href="/membership">Membership</a>
+        <a href="/events">Events</a>
+        <a href="/ticketing">Tickets</a>
+        <a href="/shop">Shop</a>
+    </nav>
+</header>
 <main>
 <a href="/">← Back to Home</a>
 <h1>Museum Admission</h1>
