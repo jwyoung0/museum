@@ -16,8 +16,6 @@ const {
     getVisitorProfileHandler,
     updateVisitorProfileHandler
 } = require("./handlers/visitor-profile");
-const { listTicketTypesHandler, purchaseTicketHandler } = require("./handlers/tickets");
-
 const {
     listProductsHandler,
     createProductHandler,
