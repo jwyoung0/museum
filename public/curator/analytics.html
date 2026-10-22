@@ -6,6 +6,33 @@
     <meta name="theme-color" content="#2563eb">
     <title>Curator Dashboard</title>
     <link rel="stylesheet" href="/style">
+    <style>
+        .analytics-workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .analytics-table-container {
+            overflow-x: auto;
+        }
+
+        .analytics-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .analytics-table th,
+        .analytics-table td {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+        }
+
+        .analytics-table th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
     <header class="dashboard-header">
@@ -34,7 +61,7 @@
                 <table class="analytics-table">
                     <thead>
                         <tr>
-                            <th>Artist Name</th>
+                            <th>Top Artists</th>
                             <th>Distinct Visitors</th>
                         </tr>
                     </thead>
