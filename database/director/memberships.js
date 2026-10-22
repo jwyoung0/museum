@@ -57,7 +57,7 @@ async function listTiers() {
         .query(`
             SELECT *
             FROM dbo.Tier
-            ORDER BY TierPrice;
+            ORDER BY Price;
         `);
   
     return result.recordset;

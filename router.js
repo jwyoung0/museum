@@ -163,12 +163,6 @@ if (req.method === "PUT" && productUpdateMatch) {
             return;
         }
 
-        if (req.method === "GET" && req.url === "/admin-dashboard") {
-            if (!requireAdmin(req, res)) return;
-            sendPage(res, "admin-dashboard.html", "text/html");
-            return;
-        }
-
         if (req.method === "GET" && req.url === "/artwork") {
             sendVisitorPage(req, res, "artwork.html");
             return;
@@ -463,6 +457,12 @@ if (req.method === "PUT" && productUpdateMatch) {
             return;
         }
         
+        if (req.method === "GET" && req.url === "/director/memberships") {
+            if (!requireDirector(req, res)) return;
+            sendPage(res, path.join("director", "memberships.html"), "text/html");
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/api/director/personnel") {
             if (!requireDirector(req, res)) return;
             await listPersonnelHandler(req, res);
@@ -472,6 +472,12 @@ if (req.method === "PUT" && productUpdateMatch) {
         if (req.method === "GET" && req.url === "/js/director-personnel.js") {
             if (!requireDirector(req, res)) return;
             sendPage(res, path.join("js", "director-personnel.js"), "application/javascript");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/js/director-memberships.js") {
+            if (!requireDirector(req, res)) return;
+            sendPage(res, path.join("js", "director-memberships.js"), "application/javascript");
             return;
         }
 
