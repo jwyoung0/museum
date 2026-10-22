@@ -12,11 +12,11 @@ async function createTierHandler(req, res) {
     const body = await readJsonBody(req);  
 
     const tier = {
-        tierName: body.tierName,
-        price: body.price, 
-        isVIP: body.isVIP,
-        discountRate: body.discountRate,
-        description: body.description
+        TierName: body.TierName,
+        Price: body.Price,
+        IsVIP: body.IsVIP,
+        DiscountRate: body.DiscountRate,
+        Description: body.Description
     }; 
 
     const createdTier = await createTier(tier);
@@ -64,11 +64,11 @@ async function updateTierHandler(req, res) {
     const body = await readJsonBody(req);
 
     const tier = {
-        tierName: body.tierName,
-        price: body.price,
-        isVIP: body.isVIP,
-        discountRate: body.discountRate,
-        description: body.description
+        TierName: body.TierName,
+        Price: body.Price,
+        IsVIP: body.IsVIP,
+        DiscountRate: body.DiscountRate,
+        Description: body.Description
     };  
 
     const updatedTier = await updateTier(tierId, tier);

@@ -15,7 +15,7 @@ const { sql, getPool } = require("../connection");
 // [Price] decimal(10,2) NOT NULL,
 // [IsVIP] bit,
 // [DiscountRate] decimal(5,4) NOT NULL,
-// [Description] nvarchar(250) NOT NULL,
+// [Description] nvarchar(500) NOT NULL,
 // PRIMARY KEY ([TierID])
 // );
 
@@ -26,7 +26,7 @@ async function createTier({ TierName, Price, IsVIP, DiscountRate, Description })
         .input("Price", sql.Decimal(10, 2), Price)
         .input("IsVIP", sql.Bit, IsVIP || null)
         .input("DiscountRate", sql.Decimal(5, 4), DiscountRate)
-        .input("Description", sql.NVarChar(250), Description)
+        .input("Description", sql.NVarChar(500), Description)
         .query(`
             INSERT INTO dbo.Tier 
             (
@@ -93,7 +93,7 @@ async function updateTier(
         .input("Price", sql.Decimal(10, 2), Price)
         .input("IsVIP", sql.Bit, IsVIP || null)
         .input("DiscountRate", sql.Decimal(5, 4), DiscountRate)
-        .input("Description", sql.NVarChar(250), Description)
+        .input("Description", sql.NVarChar(500), Description)
         .query(`
             UPDATE dbo.Tier
             SET 

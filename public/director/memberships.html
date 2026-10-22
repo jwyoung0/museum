@@ -6,6 +6,77 @@
     <title>Museum Director Dashboard - Memberships</title>
     <link rel="stylesheet" href="/style">
     <script src="/js/director-memberships.js" defer></script>
+    <style>
+        .artists-table {
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .artists-table th:nth-child(1),
+        .artists-table td:nth-child(1) { width: 12%; }
+
+        .artists-table th:nth-child(2),
+        .artists-table td:nth-child(2) { width: 10%; }
+
+        .artists-table th:nth-child(3),
+        .artists-table td:nth-child(3) { width: 8%; }
+
+        .artists-table th:nth-child(4),
+        .artists-table td:nth-child(4) { width: 10%; }
+
+        .artists-table th:nth-child(5),
+        .artists-table td:nth-child(5) { width: 40%; }
+
+        .artists-table th:nth-child(6),
+        .artists-table td:nth-child(6) { width: 20%; }
+
+        .benefits-cell {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        #tier-form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        #tier-form[hidden] {
+            display: none;
+        }
+        
+        .tier-checkbox-row {
+            margin-top: -0.25rem;
+        }
+
+        .tier-checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.85rem;
+            color: #777;
+            font-weight: 400;
+            cursor: pointer;
+        }
+
+        .tier-checkbox-label input[type="checkbox"] {
+            width: 14px;
+            min-width: 14px;
+            height: 14px;
+            min-height: 14px;
+            padding: 0;
+            margin: 0;
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+
+        .tier-form-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+    </style>
 </head>
 <body>
     <header class="dashboard-header">
@@ -27,7 +98,36 @@
         <section class="artists-workspace" aria-labelledby="memberships-heading">
             <header class="workspace-header">
                 <h2 id="memberships-heading">Membership Tiers</h2>
+
             </header>
+
+            <form id="tier-form" hidden>
+                <h3 id="tier-form-heading">Add membership tier</h3>
+                <label>
+                    Tier name
+                    <input name="TierName" required maxlength="100">
+                </label>
+                <label>
+                    Price
+                    <input name="Price" type="number" min="0" step="0.01" required>
+                </label>
+                <label>
+                    Discount (%)
+                    <input name="DiscountRate" type="number" min="0" max="100" step="0.01" required>
+                </label>
+                <label>
+                    Benefits
+                    <textarea name="Description" rows="2"></textarea>
+                </label>
+                <label class="tier-checkbox-label">
+                    <input name="IsVIP" type="checkbox">
+                    <span>VIP access</span>
+                </label>
+                <div class="tier-form-actions">
+                    <button type="submit" id="tier-submit">Add tier</button>
+                    <button type="button" id="tier-cancel" hidden>Cancel</button>
+                </div>
+            </form>
 
             <div class="workspace-toolbar">
                 <input
@@ -39,6 +139,8 @@
                 <p id="memberships-message" role="status" aria-live="polite">
                     Loading membership tiers...
                 </p>
+
+                <button type="button" id="tier-add">+ Create tier</button>
             </div>
 
             <div class="artists-table-container">
@@ -50,17 +152,18 @@
                             <th scope="col">Discount</th>
                             <th scope="col">VIP Access</th>
                             <th scope="col">Benefits</th>
+                            <th scope="col">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="memberships-table-body">
                         <tr id="loading-state">
-                            <td colspan="5">Loading membership tiers...</td>
+                            <td colspan="6">Loading membership tiers...</td>
                         </tr>
                         <tr id="empty-state" hidden>
-                            <td colspan="5">No membership tiers match your search.</td>
+                            <td colspan="6">No membership tiers match your search.</td>
                         </tr>
                         <tr id="error-state" hidden>
-                            <td colspan="5">Unable to load membership tiers.</td>
+                            <td colspan="6">Unable to load membership tiers.</td>
                         </tr>
                     </tbody>
                 </table>
