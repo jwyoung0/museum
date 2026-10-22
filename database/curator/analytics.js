@@ -28,9 +28,9 @@ async function getTopArtists() {
 }
 
 module.exports = {
-    getTopArtists,
-    getTopStyles,
-    getTopPeriods,
-    getTopCollections,
-    getExhibitionRecommendations
+    getTopArtists
+    // getTopStyles,
+    // getTopPeriods,
+    // getTopCollections,
+    // getExhibitionRecommendations
 };

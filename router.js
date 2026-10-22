@@ -66,6 +66,7 @@ const {
     updateTierHandler,
     deleteTierHandler
 } = require("./handlers/director/memberships");
+const { getTopArtistsHandler } = require("./handlers/curator/analytics");
 
 async function router(req, res) {
     try {
@@ -370,6 +371,18 @@ if (req.method === "PUT" && productUpdateMatch) {
             return;
         }
 
+        if (req.method === "GET" && req.url === "/curator/analytics") {
+            if (!requireCurator(req, res)) return;
+            sendPage(res, path.join("curator", "analytics.html"), "text/html");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/js/curator-analytics.js") {
+            if (!requireCurator(req, res)) return;
+            sendPage(res, path.join("js", "curator-analytics.js"), "application/javascript");
+            return;
+        }
+
         if (req.method === "POST" && req.url === "/api/curator/artists") {
             if (!requireCurator(req, res)) return;
             await createArtistHandler(req, res);
@@ -449,7 +462,15 @@ if (req.method === "PUT" && productUpdateMatch) {
             if (!requireDirector(req, res)) return;
             await createExhibitionHandler(req, res);
             return;
-        }     
+        }
+        
+        if (req.method === "GET" && req.url === "/api/curator/analytics") {
+            if (!requireCurator(req, res)) return;
+            await getTopArtistsHandler(req, res);
+            return;
+        }
+
+
 // Director personnel Dashboard routing starts here
         if (req.method === "GET" && req.url === "/director/dashboard") {
             if (!requireDirector(req, res)) return;
