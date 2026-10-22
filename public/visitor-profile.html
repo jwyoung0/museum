@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Visitor Profile</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <h1>My Profile</h1>
+    <p id="message">Loading...</p>
+
+    <form id="profileForm" hidden>
+        <label>Name:</label>
+        <input type="text" id="name" maxlength="50" required>
+
+        <label>Email:</label>
+        <input type="email" id="email" readonly>
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <a href="/ticket-history">My Tickets</a>
+
+    <script>
+        const form = document.getElementById("profileForm");
+        const message = document.getElementById("message");
+
+        async function loadProfile() {
+            try {
+                const res = await fetch("/api/visitor-profile");
+
+                if (!res.ok) {
+                    message.textContent = res.status === 401
+                        ? "Please sign in first."
+                        : "Profile not found.";
+                    return;
+                }
+
+                const visitor = await res.json();
+                document.getElementById("name").value = visitor.Name;
+                document.getElementById("email").value = visitor.Email;
+                form.hidden = false;
+                message.textContent = "";
+            } catch (err) {
+                message.textContent = "Could not load profile.";
+            }
+        }
+
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            try {
+                const res = await fetch("/api/visitor-profile", {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        name: document.getElementById("name").value
+                    })
+                });
+
+                message.textContent = res.ok
+                    ? "Profile updated!"
+                    : "Could not update profile.";
+            } catch (err) {
+                message.textContent = "Could not update profile.";
+            }
+        });
+
+        loadProfile();
+    </script>
+</body>
+</html>
