@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Museum Director Dashboard</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <h1 class="dashboard-title">Museum Director Dashboard</h1>
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
+    </header>
+
+    <main>
+        <nav aria-label="Director sections">
+            <button type="button" data-tab="personnel">Personnel</button>
+            <a href="/director/memberships" data-tab="memberships">Memberships</a>
+            <button type="button" data-tab="events">Events</button>
+            <button type="button" disabled>Ticket Revenue — Coming Soon</button>
+        </nav>
+
+        <section id="personnel">
+            <h2>Personnel Management</h2>
+
+            <p id="personnel-message" role="status">
+                Loading personnel records...
+            </p>
+
+            <button type="button" id="refresh-personnel">
+                Refresh Personnel
+            </button>
+
+            
+            <h3>Current Personnel</h3>
+
+            <div class="personnel-table-container">
+                <table class="personnel-table">
+                    <thead>
+                        <tr>
+                            <th>First Name</th>
+                            <th>Middle Name</th>
+                            <th>Last Name</th>
+                            <th>Position</th>
+                            <th>Phone Number</th>
+                            <th>Email</th>
+                            <th>Employment Status</th>
+                            <th>Date of Birth</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>SSN</th>
+                        </tr>
+                    </thead>
+                    <tbody id="personnel-table-body">
+                        <tr>
+                            <td colspan="11">Loading personnel records...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <h3>Personnel Actions</h3>
+
+            <button type="button" id="show-add-personnel">
+                Add Personnel
+            </button>
+
+            <section id="add-personnel-panel" hidden>
+                <h3>Add New Personnel</h3>
+
+                <form id="personnel-form">
+                    <div>
+                        <label for="personnel-fname">First Name*</label>
+                        <input
+                            type="text"
+                            id="personnel-fname"
+                            name="fname"
+                            maxlength="50"
+                            required
+                        >
+                    </div>
+                    <div>
+                        <label for = "personnel-mname">Middle Name</label>
+                        <input
+                            type="text"
+                            id="personnel-mname"
+                            name="mname"
+                            maxlength="50"
+                        >
+                    </div>
+                    <div>
+                        <label for="personnel-lname">Last Name*</label>
+                        <input
+                            type="text"
+                            id="personnel-lname"
+                            name="lname"
+                            maxlength="50"
+                            required
+                        >
+                    </div>
+
+                    <div>
+                        <label for="personnel-email">Email</label>
+                        <input
+                            type="email"
+                            id="personnel-email"
+                            name="email"
+                            maxlength="50"
+                            required
+                        >
+                    </div>
+
+                    <div>
+                        <label for="personnel-phone">Phone Number</label>
+                        <input
+                            type="tel"
+                            id="personnel-phone"
+                            name="phoneNumber"
+                            maxlength="10"
+                            pattern="[0-9]{10}"
+                            placeholder="10 digits"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="date-of-birth">Date of Birth</label>
+                        <input
+                            type="date"
+                            id="date-of-birth"
+                            name="dateOfBirth"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="start-date">Start Date*</label>
+                        <input
+                            type="date"
+                            id="start-date"
+                            name="startDate"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="end-date">End Date</label>
+                        <input
+                            type="date"
+                            id="end-date"
+                            name="endDate"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="position-id">Position ID</label>
+                        <input
+                            type="number"
+                            id="position-id"
+                            name="positionID"
+                            min="1"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="employment-status">Employment Status</label>
+                        <select
+                            id="employment-status"
+                            name="employmentStatus"
+                            required
+                        >
+                            <option value="1">Active</option>
+                            <option value="0">Inactive</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="ssn">SSN</label>
+                        <input
+                            type="text"
+                            id="ssn"
+                            name="ssn"
+                            pattern="([0-9]{9}|[0-9]{3}-[0-9]{2}-[0-9]{4})"
+                            title="Enter 9 digits, with or without hyphens."
+                            required
+                        >
+                    </div>
+
+                    <button type="submit">Save Personnel</button>
+                    <button type="button" id="cancel-add-personnel">
+                        Cancel
+                    </button>
+                </form>
+            </section>
+        </section>
+
+        <section id="memberships" hidden>
+            <h2>Memberships</h2>
+            <p>Membership management will appear here.</p>
+        </section>
+
+        <section id="events" hidden>
+            <h2>Events</h2>
+            <p>Event management will appear here.</p>
+        </section>
+    </main>
+
+    <script>
+        document.querySelectorAll("[data-tab]").forEach(button => {
+            button.addEventListener("click", () => {
+                document.querySelectorAll("main > section").forEach(section => {
+                    section.hidden = section.id !== button.dataset.tab;
+                });
+            });
+        });
+    </script>
+
+    <script src="/js/director-personnel.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>Gift Shop Products</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <h1 class="dashboard-title">Gift Shop Dashboard</h1>
+
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
+    </header>
+
+    <main>
+        <nav aria-label="Gift Shop navigation">
+            <a href="/gift-shop/products" aria-current="page">Products</a>
+            <a href="/gift-shop/inventory">Inventory</a>
+            <a href="/gift-shop/sales">Sales</a>
+        </nav>
+
+        <section class="artists-workspace">
+            <header class="workspace-header">
+                <h2>Products</h2>
+            </header>
+
+            <div class="workspace-toolbar">
+                <input
+                    type="search"
+                    id="product-search"
+                    placeholder="Search products..."
+                    aria-label="Search products"
+                >
+
+                <button type="button" id="add-product-button">
+                    + Add Product
+                </button>
+            </div>
+
+            <div class="artists-table-container">
+                <table class="artists-table">
+                    <thead>
+                        <tr>
+                            <th>Product ID</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Quantity in Stock</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="products-table-body">
+                        <tr>
+                            <td colspan="6" style="text-align: center;">
+                                Loading products...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="product-form-container" hidden>
+            <h2 id="product-form-title">Add Product</h2>
+
+            <form id="product-form">
+                <p>
+                    <label for="product-id">Product ID</label>
+                    <input
+                        id="product-id"
+                        name="ProductID"
+                        type="number"
+                        min="1"
+                        max="2147483647"
+                        step="1"
+                        required
+                    >
+                </p>
+
+                <p>
+                    <label for="product-name">Product Name</label>
+                    <input
+                        id="product-name"
+                        name="ProductName"
+                        type="text"
+                        maxlength="100"
+                        required
+                    >
+                </p>
+
+                <p>
+                    <label for="product-category">Category</label>
+                    <input
+                        id="product-category"
+                        name="Category"
+                        type="text"
+                        maxlength="50"
+                        required
+                    >
+                </p>
+
+                <p>
+                    <label for="product-price">Price ($)</label>
+                    <input
+                        id="product-price"
+                        name="Price"
+                        type="number"
+                        min="0"
+                        max="99999999.99"
+                        step="0.01"
+                        required
+                    >
+                </p>
+
+                <p>
+                    <label for="product-stock">Quantity in Stock</label>
+                    <input
+                        id="product-stock"
+                        name="QuantityInStock"
+                        type="number"
+                        min="0"
+                        max="2147483647"
+                        step="1"
+                        required
+                    >
+                </p>
+
+                <p id="product-form-message" role="status"></p>
+
+                <button type="submit" id="save-product-button">
+                    Save Product
+                </button>
+
+                <button type="button" id="cancel-product-button">
+                    Cancel
+                </button>
+            </form>
+        </section>
+    </main>
+
+    <script src="/js/gift-shop-products.js"></script>
+</body>
+</html>

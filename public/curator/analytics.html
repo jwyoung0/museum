@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>Curator Dashboard</title>
+    <link rel="stylesheet" href="/style">
+    <style>
+        .analytics-workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .analytics-table-container {
+            overflow-x: auto;
+        }
+
+        .analytics-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .analytics-table th,
+        .analytics-table td {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+        }
+
+        .analytics-table th {
+            background-color: #f2f2f2;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <h1 class="dashboard-title">Curator Dashboard</h1>
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
+    </header>
+
+    <main>
+        <nav aria-label="Curator navigation">
+            <a href="/curator/artwork">Artwork</a>
+            <a href="/curator/artists">Artists</a>
+            <a href="/curator/collections">Collections</a>
+            <a href="/curator/exhibitions">Exhibitions</a>
+            <a href="/curator/analytics" aria-current="page">Analytics</a>
+        </nav>
+
+        <section class="analytics-workspace">
+            <header class="workspace-header">
+                <h2>Analytics</h2>
+            </header>
+
+            <div class="analytics-table-container">
+                <table class="analytics-table">
+                    <thead>
+                        <tr>
+                            <th>Top Artists</th>
+                            <th>Distinct Visitors</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="analytics-table-body">
+                        <tr id="search-empty-state" hidden>
+                            <td colspan="2">No artists found.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        
+    </main>
+    <script type="module" src="/js/curator-analytics.js"></script>
+</body>
+</html>
