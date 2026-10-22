@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>Gift Shop Inventory</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <h1 class="dashboard-title">Gift Shop Dashboard</h1>
+
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
+    </header>
+
+    <main>
+        <nav aria-label="Gift Shop navigation">
+            <a href="/gift-shop/products">Products</a>
+            <a href="/gift-shop/inventory" aria-current="page">Inventory</a>
+            <a href="/gift-shop/sales">Sales</a>
+        </nav>
+
+        <section class="artists-workspace">
+            <header class="workspace-header">
+                <h2>Inventory</h2>
+            </header>
+
+            <p id="inventory-summary" role="status">
+                Loading inventory...
+            </p>
+
+            <div class="workspace-toolbar">
+                <input
+                    type="search"
+                    id="inventory-search"
+                    placeholder="Search inventory..."
+                    aria-label="Search inventory"
+                >
+
+                <label>
+                    <input type="checkbox" id="low-stock-only">
+                    Show only stock of 5 or fewer
+                </label>
+            </div>
+
+            <div class="artists-table-container">
+                <table class="artists-table">
+                    <thead>
+                        <tr>
+                            <th>Product ID</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Quantity in Stock</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="inventory-table-body">
+                        <tr>
+                            <td colspan="5">
+                                Loading inventory...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>
+                To change stock quantities, edit the product on the
+                <a href="/gift-shop/products">Products page</a>.
+            </p>
+        </section>
+    </main>
+
+    <script src="/js/gift-shop-inventory.js"></script>
+</body>
+</html>

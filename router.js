@@ -4,6 +4,7 @@ const { authVisitorHandler } = require("./handlers/auth-visitor");
 const { loginHandler } = require("./handlers/login");
 const { listTicketTypesHandler, purchaseTicketHandler } = require("./handlers/tickets");
 
+const { listSalesHandler } = require("./handlers/gift-shop/sales");
 const {
     listProductsHandler,
     createProductHandler,
@@ -130,6 +131,54 @@ if (req.method === "PUT" && productUpdateMatch) {
     };
 
     await updateProductHandler(req, res);
+    return;
+}
+if (req.method === "GET" && req.url === "/gift-shop/inventory") {
+    if (!requireGiftShopManager(req, res)) return;
+
+    sendPage(
+        res,
+        path.join("gift-shop", "inventory.html"),
+        "text/html"
+    );
+    return;
+}
+
+if (req.method === "GET" && req.url === "/js/gift-shop-inventory.js") {
+    if (!requireGiftShopManager(req, res)) return;
+
+    sendPage(
+        res,
+        path.join("js", "gift-shop-inventory.js"),
+        "application/javascript"
+    );
+    return;
+}
+if (req.method === "GET" && req.url === "/api/gift-shop/sales") {
+    if (!requireGiftShopManager(req, res)) return;
+
+    await listSalesHandler(req, res);
+    return;
+}
+if (req.method === "GET" && req.url === "/gift-shop/sales") {
+    if (!requireGiftShopManager(req, res)) return;
+
+    sendPage(
+        res,
+        path.join("gift-shop", "sales.html"),
+        "text/html"
+    );
+    return;
+}
+
+if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
+    if (!requireGiftShopManager(req, res)) return;
+
+    sendPage(
+        res,
+        path.join("js", "gift-shop-sales.js"),
+        "application/javascript"
+    );
     return;
 }
         if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
