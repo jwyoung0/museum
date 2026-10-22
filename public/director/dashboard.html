@@ -21,7 +21,7 @@
             <a href="/director/dashboard" data-tab="personnel" aria-current="page">Personnel</a>
             <a href="/director/memberships" data-tab="memberships">Memberships</a>
             <a href="/director/events" data-tab="events">Events</a>
-            <a href="/director/report/tickets">Ticket Revenue — Coming Soon</a>
+            <button type="button" data-tab="revenue">Ticket Revenue</button>
         </nav>
 
         <section id="personnel">
@@ -205,6 +205,18 @@
             <h2>Events</h2>
             <p>Event management will appear here.</p>
         </section>
+        <section id="revenue" hidden>
+            <h2>Ticket Revenue</h2>
+
+            <h3>Sales by Ticket Type</h3>
+            <table id="sales"></table>
+
+            <h3>Daily Ticket Sales</h3>
+            <table id="daily"></table>
+
+            <h3>Visitor Purchases</h3>
+            <table id="visitors"></table>
+        </section>
     </main>
 
     <script>
@@ -215,6 +227,46 @@
                 });
             });
         });
+    async function loadReport(id, url) {
+    const table = document.getElementById(id);
+
+    try {
+        const res = await fetch(url);
+        if (!res.ok) throw Error("Failed to load");
+
+        const data = await res.json();
+        table.innerHTML = "";
+
+        if (!data.length) {
+            table.textContent = "No records found";
+            return;
+        }
+
+        const keys = Object.keys(data[0]);
+        const header = table.insertRow();
+
+        keys.forEach(key => {
+            const th = document.createElement("th");
+            th.textContent = key;
+            header.append(th);
+        });
+
+        data.forEach(item => {
+            const row = table.insertRow();
+            keys.forEach(key => {
+                row.insertCell().textContent = item[key] ?? "";
+            });
+        });
+    } catch {
+        table.textContent = "Could not load report";
+    }
+}
+
+document.querySelector('[data-tab="revenue"]').onclick = () => {
+    loadReport("sales", "/api/ticket-reports/sales");
+    loadReport("daily", "/api/ticket-reports/daily");
+    loadReport("visitors", "/api/ticket-reports/visitors");
+};
     </script>
 
     <script src="/js/director-personnel.js" defer></script>
