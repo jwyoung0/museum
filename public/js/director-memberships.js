@@ -113,7 +113,6 @@ function displayTiers(tiers) {
     const filteredTiers = tiers.filter((tier) =>
         [
             tier.TierName,
-            tier.Description,
             tier.Price,
             tier.DiscountRate,
             ...tier.Benefits.map((benefit) => benefit.BenefitName)
@@ -140,7 +139,6 @@ function displayTiers(tiers) {
                 : "—"
         );
         addCell(row, Number.isFinite(discount) ? `${(discount * 100).toFixed(0)}%` : "—");
-        addCell(row, tier.Description ?? "—");
         const benefits = tier.Benefits.map((benefit) =>
             benefit.Quantity == null
                 ? benefit.BenefitName
