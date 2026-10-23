@@ -175,8 +175,15 @@ if (req.method === "PUT" && productUpdateMatch) {
             return;
         }
 
+
+
         if (req.method === "GET" && req.url === "/collections") {
             sendVisitorPage(req, res, "collections.html");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/membership") {
+            sendVisitorPage(req, res, "memberships.html");
             return;
         }
 
@@ -346,6 +353,11 @@ if (req.method === "PUT" && productUpdateMatch) {
             return;
         }
 
+        if (req.method === "GET" && req.url === "/js/memberships.js") {
+            sendPage(res, path.join("js", "memberships.js"), "application/javascript");
+            return;
+        }   
+
         // Curator dashboard routing starts here
         if (req.method === "GET" && req.url === "/js/curator-artists.js") {
             if (!requireCurator(req, res)) return;
@@ -439,6 +451,11 @@ if (req.method === "PUT" && productUpdateMatch) {
 
         if (req.method === "GET" && req.url === "/api/collections") {
             await listCollectionsHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/api/memberships/tiers") {
+            await listTiersHandler(req, res);
             return;
         }
 
