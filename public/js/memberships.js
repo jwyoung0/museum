@@ -20,19 +20,12 @@ async function loadMembershipTiers() {
         for (const row of rows) {
             if (!tiers.has(row.TierID)) {
                 tiers.set(row.TierID, {
+                    TierID: row.TierID,
                     name: row.TierName,
                     price: row.Price,
                     description: row.Description
-                    // benefits: []
                 });
             }
-
-            // if (row.BenefitName) {
-            //     tiers.get(row.TierID).benefits.push({
-            //         name: row.BenefitName,
-            //         quantity: row.Quantity
-            //     });
-            // }
         }
 
         container.replaceChildren();
@@ -46,25 +39,20 @@ async function loadMembershipTiers() {
             const card = document.createElement("article");
             card.className = "membership-card";
 
-            addTextElement(card, "h3", tier.name);
+            const heading = document.createElement("h3");
+
+            const link = document.createElement("a");
+            link.href = `/membership/${tier.TierID}`;
+            link.textContent = tier.name;
+
+            heading.appendChild(link);
+            card.appendChild(heading);
+
             addTextElement(card, "p", `$${Number(tier.price).toFixed(2)}`);
 
             if (tier.description) {
                 addTextElement(card, "p", tier.description);
             }
-
-            // if (tier.benefits.length) {
-            //     const list = document.createElement("ul");
-
-            //     for (const benefit of tier.benefits) {
-            //         const quantity = benefit.quantity == null
-            //             ? ""
-            //             : ` (${benefit.quantity})`;
-            //         addTextElement(list, "li", `${benefit.name}${quantity}`);
-            //     }
-
-            //     card.appendChild(list);
-            // }
 
             container.appendChild(card);
         }
