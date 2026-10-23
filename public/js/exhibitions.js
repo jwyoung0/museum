@@ -117,7 +117,7 @@ function displayExhibitions(exhibitions) {
 
         const date = document.createElement("p");
         date.textContent =
-            exhibition.date || "Date unavailable";
+            String(exhibition.startDate) || "Date unavailable";
 
         const status = document.createElement("p");
         status.textContent =
