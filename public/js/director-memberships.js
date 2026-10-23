@@ -38,8 +38,7 @@ function displayTiers(tiers) {
             tier.TierName,
             tier.Description,
             tier.Price,
-            tier.DiscountRate,
-            tier.IsVIP ? "vip" : "non-vip"
+            tier.DiscountRate
         ].some((value) => String(value ?? "").toLowerCase().includes(searchTerm))
     );
 
@@ -63,7 +62,6 @@ function displayTiers(tiers) {
                 : "—"
         );
         addCell(row, Number.isFinite(discount) ? `${(discount * 100).toFixed(0)}%` : "—");
-        addCell(row, tier.IsVIP ? "Yes" : "No");
         addCell(row, tier.Description ?? "—");
 
         const actionsCell = document.createElement("td");
@@ -121,7 +119,6 @@ tierForm.addEventListener("submit", async (event) => {
         Price: Number(formData.get("Price")),
         DiscountRate: Number(formData.get("DiscountRate")) / 100,
         Description: formData.get("Description").trim(),
-        IsVIP: formData.has("IsVIP")
     };
 
     const url = editingTierId === null
@@ -160,7 +157,6 @@ tableBody.addEventListener("click", async (event) => {
         tierForm.elements.Price.value = tier.Price ?? "";
         tierForm.elements.DiscountRate.value = Number(tier.DiscountRate ?? 0) * 100;
         tierForm.elements.Description.value = tier.Description ?? "";
-        tierForm.elements.IsVIP.checked = Boolean(tier.IsVIP);
         formHeading.textContent = "Edit membership tier";
         submitButton.textContent = "Save changes";
         tierForm.elements.TierName.focus();

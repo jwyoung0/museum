@@ -13,26 +13,23 @@ const { sql, getPool } = require("../connection");
 // [TierID] int NOT NULL IDENTITY(1,1),
 // [TierName] nvarchar(50) NOT NULL,
 // [Price] decimal(10,2) NOT NULL,
-// [IsVIP] bit,
 // [DiscountRate] decimal(5,4) NOT NULL,
 // [Description] nvarchar(500) NOT NULL,
 // PRIMARY KEY ([TierID])
 // );
 
-async function createTier({ TierName, Price, IsVIP, DiscountRate, Description }) {
+async function createTier({ TierName, Price, DiscountRate, Description }) {
     const pool = await getPool();
     const result = await pool.request()
         .input("TierName", sql.NVarChar(50), TierName)
         .input("Price", sql.Decimal(10, 2), Price)
-        .input("IsVIP", sql.Bit, IsVIP || null)
         .input("DiscountRate", sql.Decimal(5, 4), DiscountRate)
         .input("Description", sql.NVarChar(500), Description)
         .query(`
             INSERT INTO dbo.Tier 
             (
                 TierName, 
-                Price, 
-                IsVIP, 
+                Price,  
                 DiscountRate,
                 Description
             ) 
@@ -41,7 +38,6 @@ async function createTier({ TierName, Price, IsVIP, DiscountRate, Description })
             (
                 @TierName, 
                 @Price, 
-                @IsVIP, 
                 @DiscountRate,
                 @Description
             ); 
@@ -81,7 +77,6 @@ async function updateTier(
     TierID, { 
         TierName, 
         Price, 
-        IsVIP, 
         DiscountRate,
         Description 
     }
@@ -91,7 +86,6 @@ async function updateTier(
         .input("TierID", sql.Int, TierID)
         .input("TierName", sql.NVarChar(50), TierName)
         .input("Price", sql.Decimal(10, 2), Price)
-        .input("IsVIP", sql.Bit, IsVIP || null)
         .input("DiscountRate", sql.Decimal(5, 4), DiscountRate)
         .input("Description", sql.NVarChar(500), Description)
         .query(`
@@ -99,7 +93,6 @@ async function updateTier(
             SET 
                 TierName = @TierName,
                 Price = @Price,
-                IsVIP = @IsVIP,
                 DiscountRate = @DiscountRate,
                 Description = @Description
             OUTPUT INSERTED.*   
