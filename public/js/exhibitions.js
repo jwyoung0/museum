@@ -115,15 +115,18 @@ function displayExhibitions(exhibitions) {
 
         link.appendChild(title);
 
-        const date = document.createElement("p");
-        date.textContent =
-            String(exhibition.startDate) || "Date unavailable";
-
+        const dates = document.createElement("p");
+        if (exhibition.startDate && exhibition.endDate) {
+            const startDate = new Date(exhibition.startDate).toLocaleDateString();
+            const endDate = new Date(exhibition.endDate).toLocaleDateString();
+            dates.textContent = `${startDate} - ${endDate}`;
+        }
+            
         const status = document.createElement("p");
         status.textContent =
             exhibition.status || "Status unavailable";
 
-        card.append(link, date, status);
+        card.append(link, dates, status);
 
         results.append(card);
     }
