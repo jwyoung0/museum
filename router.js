@@ -62,6 +62,7 @@ const {
 const {
     createTierHandler,
     listTiersHandler,
+    listBenefitsHandler,
     readTierHandler,
     updateTierHandler,
     deleteTierHandler
@@ -245,6 +246,12 @@ if (req.method === "PUT" && productUpdateMatch) {
         if (req.method === "GET" && req.url === "/api/director/memberships/tiers") {
             if (!requireDirector(req, res)) return;
             await listTiersHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/api/director/memberships/benefits") {
+            if (!requireDirector(req, res)) return;
+            await listBenefitsHandler(req, res);
             return;
         }
 
