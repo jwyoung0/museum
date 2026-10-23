@@ -356,6 +356,11 @@ if (req.method === "PUT" && productUpdateMatch) {
         if (req.method === "GET" && req.url === "/js/memberships.js") {
             sendPage(res, path.join("js", "memberships.js"), "application/javascript");
             return;
+        }
+        
+        if (req.method === "GET" && req.url === "/js/membership-detail.js") {
+            sendPage(res, path.join("js", "membership-detail.js"), "application/javascript");
+            return;
         }   
 
         // Curator dashboard routing starts here
@@ -533,6 +538,11 @@ if (req.method === "PUT" && productUpdateMatch) {
 
         const pathname = new URL(req.url, "http://localhost").pathname;
 
+        if (req.method === "GET" && pathname.match(/^\/membership\/\d+$/)) {
+            sendVisitorPage(req, res, "membership-detail.html");
+            return;
+        }
+
         if (req.method === "GET" &&
             pathname.match(/^\/curator\/artists\/\d+$/)
         ) {
@@ -622,6 +632,7 @@ if (req.method === "PUT" && productUpdateMatch) {
         const artworkMatchVisitor = pathname.match(/^\/api\/artwork-detail\/(\d+)$/);
 
         const tierMatch = pathname.match(/^\/api\/director\/memberships\/tiers\/(\d+)$/);
+        const tierMatchVisitor = pathname.match(/^\/api\/membership-detail\/(\d+)$/);
 
         if (artistMatch && ["GET", "PUT", "DELETE"].includes(req.method)) {
             req.params = { id: artistMatch[1] };
@@ -701,6 +712,12 @@ if (req.method === "PUT" && productUpdateMatch) {
             } else if (req.method === "DELETE") {
                 await deleteTierHandler(req, res);
             } else return;
+            return;
+        }
+
+        if (tierMatchVisitor && req.method === "GET") {
+            req.params = { id: tierMatchVisitor[1] };
+            await readTierHandler(req, res);
             return;
         }
 

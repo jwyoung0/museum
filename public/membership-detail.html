@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>Artwork Detail - Visitor</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <header class="site-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="/artwork" aria-current="page">Artwork</a>
+            <a href="/membership">Membership</a>
+            <a href="/events">Events</a>
+            <a href="/ticketing">Tickets</a>
+            <a href="/shop">Shop</a>
+        </nav>
+    
+        <!-- VISITOR_AUTH -->
+
+    </header>
+
+    <main>
+        <h2>Membership Tier Details</h2>
+        <section class="artwork-detail-workspace">
+        <a href="/membership">
+            ← Back to Membership Tiers
+        </a>
+            <header class="workspace-header">
+                <h2 id="artwork-name">Loading...</h2>
+            </header>
+        <div class="artwork-detail-content">
+            <dl class="artwork-detail-grid">
+                <dt>Tier Name</dt>
+                <dd id="TierName"></dd>
+
+                <dt>Tier Price</dt>
+                <dd id="Price"></dd>
+
+                <dt>Description</dt>
+                <dd id="Description"></dd>           
+            </dl>
+        </div>
+
+        
+            
+            <div id="detail-error" hidden>
+                Unable to load membership tier.
+            </div>
+        </section>
+        
+    </main>
+    <script src="/js/membership-detail.js"></script>
+</body>
+</html>

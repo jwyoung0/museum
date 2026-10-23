@@ -57,10 +57,7 @@ registerForm.addEventListener("submit", async (event) => {
             );
         }
 
-        registerMessage.style.color = "var(--ink)";
-        registerMessage.textContent =
-            "Account created. You can now sign in.";
-        registerForm.reset();
+        window.location.assign(result.redirectTo || "/");
     } catch (error) {
         registerMessage.style.color = "#dc2626";
         registerMessage.textContent =

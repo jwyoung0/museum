@@ -1,5 +1,6 @@
 const { registerVisitorAccount } = require("../database/auth-visitor");
 const { readJsonBody } = require("../utils/http");
+const { createSession } = require("../utils/sessions");
 
 async function registerVisitorHandler(req, res) {
     const body = await readJsonBody(req);
@@ -22,12 +23,20 @@ async function registerVisitorHandler(req, res) {
         password: password
     });
 
+    const sessionId = createSession({
+        email: email,
+        userType: "visitor",
+        visitorId: account.visitorId
+    });
+
     res.writeHead(201, {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Set-Cookie": `sessionId=${sessionId}; HttpOnly; Path=/; SameSite=Strict`
     });
     res.end(JSON.stringify({
         message: "Account created",
-        visitorId: account.visitorId
+        visitorId: account.visitorId,
+        redirectTo: "/"
     }));
 }
 
