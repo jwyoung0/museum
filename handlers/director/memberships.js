@@ -15,7 +15,6 @@ async function createTierHandler(req, res) {
     const tier = {
         TierName: body.TierName,
         Price: body.Price,
-        DiscountRate: body.DiscountRate,
         Description: body.Description,
         Benefits: body.Benefits || []
     };
@@ -79,7 +78,6 @@ async function updateTierHandler(req, res) {
     const tier = {
         TierName: body.TierName,
         Price: body.Price,
-        DiscountRate: body.DiscountRate,
         Description: body.Description,
         Benefits: body.Benefits || []
     };

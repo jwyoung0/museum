@@ -13,19 +13,19 @@
         }
 
         .artists-table th:nth-child(1),
-        .artists-table td:nth-child(1) { width: 24%; }
+        .artists-table td:nth-child(1) { width: 20%; }
 
         .artists-table th:nth-child(2),
-        .artists-table td:nth-child(2) { width: 14%; }
+        .artists-table td:nth-child(2) { width: 15%; }
 
         .artists-table th:nth-child(3),
-        .artists-table td:nth-child(3) { width: 14%; }
+        .artists-table td:nth-child(3) { width: 45%; }
 
         .artists-table th:nth-child(4),
-        .artists-table td:nth-child(4) { width: 30%; }
+        .artists-table td:nth-child(4) { width: 20%; }
 
-        .artists-table th:nth-child(5),
-        .artists-table td:nth-child(5) { width: 18%; }
+        /* .artists-table th:nth-child(5),
+        .artists-table td:nth-child(5) { width: 18%; } */
 
         .benefits-cell {
             overflow: hidden;
@@ -118,10 +118,6 @@
                     <input name="Price" type="number" min="0" step="0.01" required>
                 </label>
                 <label>
-                    Discount (%)
-                    <input name="DiscountRate" type="number" min="0" max="100" step="0.01" required>
-                </label>
-                <label>
                     Description
                     <textarea name="Description" maxlength="500" rows="2"></textarea>
                 </label>
@@ -158,20 +154,19 @@
                         <tr>
                             <th scope="col">Tier Name</th>
                             <th scope="col">Price</th>
-                            <th scope="col">Shop Discount</th>
                             <th scope="col">Benefits</th>
                             <th scope="col">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="memberships-table-body">
                         <tr id="loading-state">
-                            <td colspan="5">Loading membership tiers...</td>
+                            <td colspan="4">Loading membership tiers...</td>
                         </tr>
                         <tr id="empty-state" hidden>
-                            <td colspan="5">No membership tiers match your search.</td>
+                            <td colspan="4">No membership tiers match your search.</td>
                         </tr>
                         <tr id="error-state" hidden>
-                            <td colspan="5">Unable to load membership tiers.</td>
+                            <td colspan="4">Unable to load membership tiers.</td>
                         </tr>
                     </tbody>
                 </table>

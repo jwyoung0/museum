@@ -3,7 +3,6 @@ const { sql, getPool } = require("../connection");
 async function createTier({
     TierName,
     Price,
-    DiscountRate,
     Description,
     Benefits = []
 }) {
@@ -16,14 +15,12 @@ async function createTier({
         const tierResult = await new sql.Request(transaction)
             .input("TierName", sql.NVarChar(50), TierName)
             .input("Price", sql.Decimal(10, 2), Price)
-            .input("DiscountRate", sql.Decimal(5, 4), DiscountRate)
             .input("Description", sql.NVarChar(500), Description)
             .query(`
                 INSERT INTO dbo.Tier
                 (
                     TierName,
                     Price,
-                    DiscountRate,
                     Description
                 )
                 OUTPUT INSERTED.TierID
@@ -31,7 +28,6 @@ async function createTier({
                 (
                     @TierName,
                     @Price,
-                    @DiscountRate,
                     @Description
                 );
             `);
@@ -48,7 +44,7 @@ async function createTier({
                     (
                         TierID,
                         BenefitID,
-                        Quantity
+                        BenefitValue
                     )
                     VALUES
                     (
@@ -77,11 +73,10 @@ async function listTiers() {
                 t.TierID,
                 t.TierName,
                 t.Price,
-                t.DiscountRate,
                 t.Description,
                 b.BenefitID,
                 b.BenefitName,
-                tb.Quantity
+                tb.BenefitValue AS Quantity
             FROM dbo.Tier t
             LEFT JOIN dbo.TIER_BENEFIT tb
                 ON t.TierID = tb.TierID
@@ -131,7 +126,7 @@ async function readTier(TierID) {
             SELECT
                 b.BenefitID,
                 b.BenefitName,
-                tb.Quantity
+                tb.BenefitValue AS Quantity
             FROM dbo.TIER_BENEFIT tb
             INNER JOIN dbo.BENEFIT b
                 ON tb.BenefitID = b.BenefitID
@@ -149,7 +144,6 @@ async function updateTier(
     {
         TierName,
         Price,
-        DiscountRate,
         Description,
         Benefits = []
     }
@@ -164,14 +158,12 @@ async function updateTier(
             .input("TierID", sql.Int, TierID)
             .input("TierName", sql.NVarChar(50), TierName)
             .input("Price", sql.Decimal(10, 2), Price)
-            .input("DiscountRate", sql.Decimal(5, 4), DiscountRate)
             .input("Description", sql.NVarChar(500), Description)
             .query(`
                 UPDATE dbo.Tier
                 SET
                     TierName = @TierName,
                     Price = @Price,
-                    DiscountRate = @DiscountRate,
                     Description = @Description
                 WHERE TierID = @TierID;
             `);
@@ -193,7 +185,7 @@ async function updateTier(
                     (
                         TierID,
                         BenefitID,
-                        Quantity
+                        BenefitValue
                     )
                     VALUES
                     (

@@ -87,7 +87,6 @@ function normalizeTiers(rows) {
                 TierID: row.TierID,
                 TierName: row.TierName,
                 Price: row.Price,
-                DiscountRate: row.DiscountRate,
                 Description: row.Description,
                 Benefits: []
             };
@@ -114,7 +113,6 @@ function displayTiers(tiers) {
         [
             tier.TierName,
             tier.Price,
-            tier.DiscountRate,
             ...tier.Benefits.map((benefit) => benefit.BenefitName)
         ].some((value) => String(value ?? "").toLowerCase().includes(searchTerm))
     );
@@ -124,9 +122,7 @@ function displayTiers(tiers) {
     for (const tier of filteredTiers) {
         const row = document.createElement("tr");
         row.className = "tier-row";
-
         const price = Number(tier.Price);
-        const discount = Number(tier.DiscountRate);
 
         addCell(row, tier.TierName ?? "—");
         addCell(
@@ -138,7 +134,6 @@ function displayTiers(tiers) {
                 }).format(price)
                 : "—"
         );
-        addCell(row, Number.isFinite(discount) ? `${(discount * 100).toFixed(0)}%` : "—");
         const benefits = tier.Benefits.map((benefit) =>
             benefit.Quantity == null
                 ? benefit.BenefitName
@@ -230,7 +225,6 @@ tierForm.addEventListener("submit", async (event) => {
     const payload = {
         TierName: formData.get("TierName").trim(),
         Price: Number(formData.get("Price")),
-        DiscountRate: Number(formData.get("DiscountRate")) / 100,
         Description: formData.get("Description").trim(),
         Benefits: Array.from(benefitOptions.querySelectorAll("[data-benefit-id]:checked"))
             .map((checkbox) => {
@@ -279,7 +273,6 @@ tableBody.addEventListener("click", async (event) => {
 
         tierForm.elements.TierName.value = tier.TierName ?? "";
         tierForm.elements.Price.value = tier.Price ?? "";
-        tierForm.elements.DiscountRate.value = Number(tier.DiscountRate ?? 0) * 100;
         tierForm.elements.Description.value = tier.Description ?? "";
         formHeading.textContent = "Edit membership tier";
         submitButton.textContent = "Save changes";
