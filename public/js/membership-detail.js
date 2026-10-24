@@ -14,6 +14,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         currentTier = tier;
 
+        document.getElementById("TierName-Header").textContent = tier.TierName;
+
         document.getElementById("TierName").textContent = 
             tier.TierName;
 
@@ -39,6 +41,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
         }
 
+        document.getElementById("continue-button").addEventListener("click", () => {
+            window.location.href = `/auth-visitor?tierId=${TierId}`;
+        });
     } catch (error) {
         document.getElementById("detail-error").hidden = false;
     }
