@@ -5,7 +5,8 @@ const { loginHandler } = require("./handlers/login");
 const {
     listTicketTypesHandler,
     purchaseTicketHandler,
-    listMyTicketsHandler
+    listMyTicketsHandler,
+    membershipStatusHandler
 } = require("./handlers/tickets");
 const {
     ticketSalesByTypeHandler,
@@ -186,7 +187,7 @@ if (req.method === "PUT" && productUpdateMatch) {
         }
 
         if (req.method === "GET" && req.url === "/ticketing") {
-            sendPage(res, "ticketing.html", "text/html");
+            sendVisitorPage(req, res, "ticketing.html");
             return;
         }
 
@@ -202,6 +203,11 @@ if (req.method === "PUT" && productUpdateMatch) {
 
         if (req.method === "GET" && req.url === "/api/ticket-types") {
             await listTicketTypesHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/api/membership-status") {
+            await membershipStatusHandler(req, res);
             return;
         }
 
