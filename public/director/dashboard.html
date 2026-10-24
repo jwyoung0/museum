@@ -6,6 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Museum Director Dashboard</title>
     <link rel="stylesheet" href="/style">
+<style>
+    #revenue table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 30px;
+    }
+
+    #revenue th, #revenue td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ccc;
+    }
+</style>
 </head>
 <body>
     <header class="dashboard-header">
@@ -254,7 +267,12 @@
         data.forEach(item => {
             const row = table.insertRow();
             keys.forEach(key => {
-                row.insertCell().textContent = item[key] ?? "";
+        const value = item[key];
+
+        row.insertCell().textContent =
+            key === "PurchaseDate" && value
+                ? new Date(value).toLocaleDateString("en-US", { timeZone: "UTC" })
+                : (value ?? "");
             });
         });
     } catch {
