@@ -15,13 +15,29 @@ document.addEventListener("DOMContentLoaded", async () => {
         currentTier = tier;
 
         document.getElementById("TierName").textContent = 
-            tier.name;
+            tier.TierName;
 
         document.getElementById("Price").textContent =
-            tier.price;
+            tier.Price;
 
         document.getElementById("Description").textContent =
-            tier.description;
+            tier.Description;
+
+        const benefitsList = document.getElementById("Benefits");
+        benefitsList.innerHTML = "";
+
+        if (tier.Benefits?.length) {
+            tier.Benefits.forEach(benefit => {
+                const li = document.createElement("li");
+
+                li.textContent =
+                    benefit.Quantity > 1
+                        ? `${benefit.BenefitName} (${benefit.Quantity})`
+                        : benefit.BenefitName;
+
+                benefitsList.appendChild(li);
+            });
+        }
 
     } catch (error) {
         document.getElementById("detail-error").hidden = false;

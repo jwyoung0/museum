@@ -6,6 +6,17 @@
     <meta name="theme-color" content="#2563eb">
     <title>Artwork Detail - Visitor</title>
     <link rel="stylesheet" href="/style">
+    <style>
+        .membership-benefits {
+            border-left: 1px solid #ddd;
+            padding-left: 1.5rem;
+        }
+
+        .membership-benefits ul {
+            margin: 0;
+            padding-left: 1.25rem;
+        }
+    </style>
 </head>
 <body>
     <header class="site-header">
@@ -29,7 +40,7 @@
             ← Back to Membership Tiers
         </a>
             <header class="workspace-header">
-                <h2 id="artwork-name">Loading...</h2>
+                <h2 id="TierName">Loading...</h2>
             </header>
         <div class="artwork-detail-content">
             <dl class="artwork-detail-grid">
@@ -42,9 +53,12 @@
                 <dt>Description</dt>
                 <dd id="Description"></dd>           
             </dl>
-        </div>
-
-        
+            
+            <div class="membership-benefits">
+                <h3>Benefits</h3>
+                <ul id="Benefits"></ul>
+            </div>
+        </div>        
             
             <div id="detail-error" hidden>
                 Unable to load membership tier.
