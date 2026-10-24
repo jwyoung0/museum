@@ -271,12 +271,6 @@ async function router(req, res) {
             return;
         }
 
-        if (req.method === "GET" &&
-            (req.url === "/register-visitor" || req.url === "/auth-create-account")) {
-            sendPage(res, "register-visitor.html", "text/html");
-            return;
-        }
-
         if (req.method === "GET" && req.url === "/auth-staff") {
             sendPage(res, "auth-staff.html", "text/html");
             return;
@@ -570,6 +564,11 @@ async function router(req, res) {
 
         if (req.method === "GET" && pathname === "/auth-visitor") {
             sendPage(res, "auth-visitor.html", "text/html");
+            return;
+        }
+
+        if (req.method === "GET" && pathname === "/register-visitor") {
+            sendPage(res, "register-visitor.html", "text/html");
             return;
         }
 

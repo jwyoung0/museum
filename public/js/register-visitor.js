@@ -57,7 +57,8 @@ registerForm.addEventListener("submit", async (event) => {
             );
         }
 
-        window.location.assign(result.redirectTo || "/");
+        window.location.assign(getPostLoginRedirect(result));
+
     } catch (error) {
         registerMessage.style.color = "#dc2626";
         registerMessage.textContent =
@@ -69,3 +70,16 @@ registerForm.addEventListener("submit", async (event) => {
         submitButton.textContent = "Create Account";
     }
 });
+
+
+// helper for redirects upon successfull registration 
+function getPostLoginRedirect(result) {
+    const params = new URLSearchParams(window.location.search);
+    const tierId = params.get('tierId');
+
+    if (tierId && /^\d+$/.test(tierId)) {
+        return `/membership/${tierId}`;
+    }
+
+    return result.redirectTo;
+}
