@@ -34,7 +34,9 @@ loginForm.addEventListener(`submit`, async (event) => {
             throw new Error(result.error || 'Unable to authenticate user')
         } 
 
-        window.location.assign(result.redirectTo);
+    window.location.assign(
+        sessionStorage.getItem("ticketDraft") ? "/ticketing" : result.redirectTo
+    );
 
     } catch (error) {
         loginMessage.style.color = '#dc2626';

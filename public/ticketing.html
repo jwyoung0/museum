@@ -13,7 +13,7 @@ body {
     background: #f1f2f5;
     font: 16px Arial, sans-serif;
 }
-  
+
 main {
     max-width: 680px;
     margin: auto;
@@ -111,7 +111,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
     color: #263047;
     margin-right: 12px;
 }
-  
+
 </style>
 </head>
 <body>
@@ -124,10 +124,13 @@ button:disabled { opacity: .5; cursor: not-allowed; }
         <a href="/ticketing">Tickets</a>
         <a href="/shop">Shop</a>
     </nav>
+    <!-- VISITOR_AUTH -->
 </header>
 <main>
-<a href="/">← Back to Home</a>
+<a href="/">✕ Exit Ticketing</a>
 <h1>Museum Admission</h1>
+
+<p id="membership">Membership: Checking...</p>
 
 <section id="choose">
     <h2>Select Tickets</h2>
@@ -148,7 +151,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
     <h2>Log In for Account Access</h2>
     <p>Already have an account?</p>
 
-    <a class="login" href="/auth-visitor">Log In</a>
+    <a class="login" href="/auth-visitor" id="ticketLogin">Log In</a>
     <button class="action" id="skip">Skip for Now</button>
     <button class="action secondary" onclick="show('choose')">Back</button>
 </section>
@@ -157,6 +160,14 @@ button:disabled { opacity: .5; cursor: not-allowed; }
     <h2>Review Your Tickets</h2>
 
     <div class="summary" id="summary"></div>
+    <div id="freeOption" hidden>
+    <label>
+        <span id="freeLabel">Free Guest Tickets Available:</span>
+        <span id="freeCount">0</span>
+    </label>
+    <label for="freeTickets">How many do you want to use?</label>
+    <input type="number" id="freeTickets" min="0" value="0">
+</div>
 
     <form id="form">
         <label for="name">Full Name</label>
@@ -180,6 +191,13 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 const $ = id => document.getElementById(id);
 let types = [];
 let quantities = {};
+let signedIn = false;
+$("ticketLogin").onclick = () => {
+    sessionStorage.setItem("ticketDraft", JSON.stringify({
+        quantities,
+        visitDate: $("visitDate").value
+    }));
+};
 
 const age = {
     Adult: "Adult (19+)",
@@ -204,6 +222,15 @@ const today = new Date(now - now.getTimezoneOffset() * 60000)
 
 $("visitDate").min = today;
 $("visitDate").value = today;
+
+const draft = JSON.parse(sessionStorage.getItem("ticketDraft") || "null");
+
+if (draft) {
+    quantities = draft.quantities;
+    $("visitDate").value = draft.visitDate;
+    sessionStorage.removeItem("ticketDraft");
+}
+
 
 function show(page) {
     ["choose", "account", "review"].forEach(id =>
@@ -287,7 +314,12 @@ $("visitDate").onchange = update;
 
 $("next").onclick = () => {
     if (!$("visitDate").reportValidity() || !count()) return;
-    show("account");
+
+    if (signedIn) {
+        $("skip").click();
+    } else {
+        show("account");
+    }
 };
 
 // Review tickets
@@ -304,7 +336,24 @@ $("skip").onclick = () => {
         tickets.join("\n") +
         `\n\nTotal: $${total().toFixed(2)}`;
 
+    $("freeTickets").max = Math.min(
+        Number($("freeCount").textContent), count()
+    );
     show("review");
+    $("freeTickets").oninput();
+};
+$("freeTickets").oninput = () => {
+    const prices = types.flatMap(t =>
+        Array(quantities[t.TicketTypeID] || 0).fill(Number(t.Price))
+    ).filter(p => p > 0);
+
+    const n = Math.min(Number($("freeTickets").value) || 0, prices.length);
+    const discount = prices.slice(0, n).reduce((a, b) => a + b, 0);
+
+    $("summary").textContent = $("summary").textContent.replace(
+        /Total: \$[\d.]+$/,
+        `Total: $${(total() - discount).toFixed(2)}`
+    );
 };
 
 // Confirm purchase
@@ -315,13 +364,27 @@ $("form").onsubmit = async e => {
         Array(quantities[t.TicketTypeID] || 0).fill(t.TicketTypeID)
     );
 
+    const freeAmount = Number($("freeTickets").value);
+    const paidCount = ids.filter(id =>
+        Number(types.find(t => t.TicketTypeID === id)?.Price) > 0
+    ).length;
+
+    if (!Number.isInteger(freeAmount) ||
+        freeAmount < 0 ||
+        freeAmount > Math.min(Number($("freeCount").textContent), paidCount)) {
+        $("message").textContent = "Invalid free ticket quantity";
+        return;
+    }
     $("buy").disabled = true;
     $("buy").textContent = "Saving...";
 
     const saved = [];
+    let freeLeft = Number($("freeTickets").value) || 0;
 
     try {
         for (const ticketTypeId of ids) {
+            const useFreeTicket = freeLeft > 0 &&
+                Number(types.find(t => t.TicketTypeID === ticketTypeId)?.Price) > 0;
             const res = await fetch("/api/tickets", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -329,7 +392,8 @@ $("form").onsubmit = async e => {
                     name: $("name").value.trim(),
                     email: $("email").value.trim(),
                     ticketTypeId,
-                    visitDate: $("visitDate").value
+                    visitDate: $("visitDate").value,
+                    useFreeTicket
                 })
             });
 
@@ -337,6 +401,7 @@ $("form").onsubmit = async e => {
             if (!res.ok) throw Error(result.error || "Purchase failed");
 
             saved.push(result);
+            if (useFreeTicket) freeLeft--;
         }
 
         $("message").textContent =
@@ -360,7 +425,43 @@ $("form").onsubmit = async e => {
     }
 };
 
-loadTickets();
+async function start() {
+    await loadTickets();
+
+    try {
+        const res = await fetch("/api/membership-status");
+        if (!res.ok) throw Error("Membership unavailable");
+
+        const member = await res.json();
+        const remaining = member.unlimitedTickets
+            ? 10 : Number(member.remainingTickets) || 0;
+
+        $("freeCount").textContent = remaining;
+        $("freeTickets").max = remaining;
+        $("freeOption").hidden = remaining === 0;
+        $("freeLabel").textContent = member.unlimitedTickets
+            ? "Unlimited Guest Admission (max per order):"
+            : "Free Guest Tickets Available:";
+
+        signedIn = !!member.email;
+
+        $("membership").textContent =
+            "Membership: " + (member.tier || "None");
+
+        if (signedIn) {
+            $("email").value = member.email;
+            $("email").readOnly = true;
+        }
+
+        if (draft && signedIn && count() && types.length) {
+            $("skip").click();
+        }
+    } catch {
+        $("membership").textContent = "Membership: Unable to check";
+    }
+}
+
+start();
 </script>
 </body>
 </html>

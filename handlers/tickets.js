@@ -22,6 +22,7 @@ async function purchaseTicketHandler(req, res) {
     const email = typeof data.email === "string" ? data.email.trim() : "";
     const ticketTypeId = Number(data.ticketTypeId);
     const visitDate = data.visitDate;
+    const useFreeTicket = data.useFreeTicket === true;
 
     if (!visitDate) {
         throw new Error("Please select a visit date");
@@ -58,15 +59,53 @@ async function purchaseTicketHandler(req, res) {
             throw error;
         }
 
+    let membershipId = null;
+
+    if (useFreeTicket) {
+        if (!req.user?.visitorId ||
+            req.user.email?.toLowerCase() !== email.toLowerCase()) {
+            throw new Error("Please log in as the member");
+        }
+
+        const check = await new sql.Request(transaction)
+            .input("id", sql.Int, req.user.visitorId)
+            .query(`
+                SELECT TOP 1 M.MembershipID
+                FROM dbo.Membership M WITH (UPDLOCK, HOLDLOCK)
+                JOIN dbo.TIER_BENEFIT TB ON M.TierID = TB.TierID
+                JOIN dbo.BENEFIT B ON TB.BenefitID = B.BenefitID
+                WHERE M.VisitorID = @id
+                AND GETDATE() BETWEEN M.StartDate AND M.EndDate
+                AND B.BenefitName = 'Guest Admission'
+                AND (
+                    TB.BenefitValue >
+                        (SELECT COUNT(*) FROM dbo.MEMBERSHIP_TICKET_USAGE U
+                        WHERE U.MembershipID = M.MembershipID)
+                    OR EXISTS (
+                        SELECT 1
+                        FROM dbo.TIER_BENEFIT UB
+                        JOIN dbo.BENEFIT B2 ON UB.BenefitID = B2.BenefitID
+                        WHERE UB.TierID = M.TierID
+                            AND B2.BenefitName = 'Unlimited Guest Admission'
+                            AND UB.BenefitValue = 1
+                    )
+                )
+            `);
+
+        membershipId = check.recordset[0]?.MembershipID;
+
+        if (!membershipId || Number(price) === 0) {
+            throw new Error("No eligible free guest tickets available");
+        }
+    }
         const result = await new sql.Request(transaction)
             .input("name", sql.VarChar(100), name)
             .input("email", sql.VarChar(150), email)
             .input("ticketTypeId", sql.Int, ticketTypeId)
-            .input("price", sql.Decimal(10, 2), Number(price))
+            .input("price", sql.Decimal(10, 2), useFreeTicket ? 0 : Number(price))
             .input("visitDate", sql.VarChar(10), visitDate)
             .query(`
                 DECLARE @visitorId INT, @ticketId INT;
-
                 SELECT TOP (1) @visitorId = VisitorID
                 FROM dbo.VISITOR WITH (TABLOCKX, HOLDLOCK)
                 WHERE Email = @email
@@ -95,6 +134,17 @@ async function purchaseTicketHandler(req, res) {
                     @visitorId AS VisitorID,
                     @price AS Price;
             `);
+
+    if (useFreeTicket) {
+        await new sql.Request(transaction)
+            .input("memberId", sql.Int, membershipId)
+            .input("ticketId", sql.Int, result.recordset[0].TicketID)
+            .query(`
+                INSERT INTO dbo.MEMBERSHIP_TICKET_USAGE
+                (MembershipID, TicketID, UsedDate)
+                VALUES (@memberId, @ticketId, GETDATE())
+            `);
+    }
 
         await transaction.commit();
 
@@ -143,8 +193,65 @@ async function listMyTicketsHandler(req, res) {
     res.end(JSON.stringify(result.recordset));
 }
 
+async function membershipStatusHandler(req, res) {
+    let member = { email: req.user?.email || null, tier: null };
+
+    if (req.user?.visitorId) {
+        const pool = await getPool();
+
+        const result = await pool.request()
+            .input("id", sql.Int, req.user.visitorId)
+            .query(`
+                SELECT TOP 1 T.TierName
+                FROM dbo.Membership M
+                JOIN dbo.Tier T ON M.TierID = T.TierID
+                WHERE M.VisitorID = @id
+                AND (M.StartDate IS NULL OR CAST(M.StartDate AS DATE) <= CAST(GETDATE() AS DATE))
+                AND (M.EndDate IS NULL OR CAST(M.EndDate AS DATE) >= CAST(GETDATE() AS DATE))
+            `);
+
+        member.tier = result.recordset[0]?.TierName || null;
+        const balance = await pool.request()
+            .input("id", sql.Int, req.user.visitorId)
+            .query(`
+                SELECT TB.BenefitValue - COUNT(MTU.TicketID) AS Remaining
+                FROM dbo.Membership M
+                JOIN dbo.TIER_BENEFIT TB ON M.TierID = TB.TierID
+                JOIN dbo.BENEFIT B ON TB.BenefitID = B.BenefitID
+                LEFT JOIN dbo.MEMBERSHIP_TICKET_USAGE MTU
+                    ON MTU.MembershipID = M.MembershipID
+                WHERE M.VisitorID = @id
+                AND GETDATE() BETWEEN M.StartDate AND M.EndDate
+                AND B.BenefitName = 'Guest Admission'
+                GROUP BY M.MembershipID, TB.BenefitValue
+            `);
+
+        member.remainingTickets = Math.max(
+            0, Number(balance.recordset[0]?.Remaining || 0)
+        );
+        const unlimited = await pool.request()
+            .input("id", sql.Int, req.user.visitorId)
+            .query(`
+                SELECT 1
+                FROM dbo.Membership M
+                JOIN dbo.TIER_BENEFIT TB ON M.TierID = TB.TierID
+                JOIN dbo.BENEFIT B ON TB.BenefitID = B.BenefitID
+                WHERE M.VisitorID = @id
+                AND GETDATE() BETWEEN M.StartDate AND M.EndDate
+                AND B.BenefitName = 'Unlimited Guest Admission'
+                AND TB.BenefitValue = 1
+            `);
+
+        member.unlimitedTickets = unlimited.recordset.length > 0;
+    }
+
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(member));
+}
+
 module.exports = {
     listTicketTypesHandler,
     purchaseTicketHandler,
-    listMyTicketsHandler
+    listMyTicketsHandler,
+    membershipStatusHandler
 };
