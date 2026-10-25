@@ -53,6 +53,7 @@ const { createExhibitionHandler,
     deleteExhibitionHandler
 } = require("./handlers/exhibitions");
 const { registerVisitorHandler } = require("./handlers/register-visitor");
+const { purchaseMembershipHandler } = require("./handlers/membership-purchase");
 
 const { 
     listPersonnelHandler,
@@ -79,6 +80,11 @@ async function router(req, res) {
 
         if (req.method === "POST" && req.url === "/api/register-visitor") {
             await registerVisitorHandler(req, res);
+            return;
+        }
+
+        if (req.method === "POST" && req.url === "/api/membership-purchase") {
+            await purchaseMembershipHandler(req, res);
             return;
         }
 
@@ -576,10 +582,7 @@ async function router(req, res) {
             pathname === "/membership-checkout"
         ) {
             if (!requireRegisteredUser(req, res)) return;
-
-            sendPage(res, "membership-checkout.html",
-                    "text/html"
-            );
+            sendVisitorPage(req, res, "membership-checkout.html");
             return;
         }
 
@@ -756,7 +759,8 @@ async function router(req, res) {
                 authenticated: true,
                 user: {
                     id: req.user.id,
-                    userType: req.user.userType
+                    userType: req.user.userType,
+                    VisitorID: req.user.VisitorID
                 }
         }));
 

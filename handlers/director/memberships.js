@@ -130,11 +130,31 @@ async function deleteTierHandler(req, res) {
     res.end(JSON.stringify(deletedTier));
 }
 
+async function createMembershipHandler(req, res) {
+    const body = await readJsonBody(req);
+
+    const tier = {
+        TierID: body.TierName,
+        Price: body.Price,
+        Description: body.Description,
+        Benefits: body.Benefits || []
+    };
+
+    const createdTier = await createTier(tier);
+
+    res.writeHead(201, {
+        "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify(createdTier));
+}
+
 module.exports = {
     createTierHandler,
     listTiersHandler,
     listBenefitsHandler,
     readTierHandler,
     updateTierHandler,
-    deleteTierHandler
+    deleteTierHandler,
+    createMembershipHandler
 };
