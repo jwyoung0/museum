@@ -72,14 +72,18 @@ registerForm.addEventListener("submit", async (event) => {
 });
 
 
-// helper for redirects upon successfull registration 
+// helper for redirect upon successfull registration 
 function getPostLoginRedirect(result) {
     const params = new URLSearchParams(window.location.search);
-    const tierId = params.get('tierId');
+    const returnTo = params.get("returnTo");
 
-    if (tierId && /^\d+$/.test(tierId)) {
-        return `/membership/${tierId}`;
+    if (
+        returnTo &&
+        returnTo.startsWith("/") &&
+        !returnTo.startsWith("//")
+    ) {
+        return returnTo;
     }
 
-    return result.redirectTo;
+    return result.redirectTo || "/";
 }

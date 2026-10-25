@@ -572,6 +572,17 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" &&
+            pathname === "/membership-checkout"
+        ) {
+            if (!requireRegisteredUser(req, res)) return;
+
+            sendPage(res, "membership-checkout.html",
+                    "text/html"
+            );
+            return;
+        }
+
         if (req.method === "GET" && 
             pathname.match(/^\/curator\/artwork\/\d+$/)
         ) {
@@ -724,6 +735,34 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" && pathname === "/api/me") {
+            if (!req.user) {
+                res.writeHead(401, {
+                    "Content-Type": "application/json"
+                });
+
+                res.end(JSON.stringify({
+                    authenticated: false
+                }));
+
+                return;
+            }
+
+            res.writeHead(200, {
+                "Content-Type": "application/json"
+            });
+
+            res.end(JSON.stringify({
+                authenticated: true,
+                user: {
+                    id: req.user.id,
+                    userType: req.user.userType
+                }
+        }));
+
+    return;
+}
+
         // Images routing
         if (req.method === "GET" && req.url.startsWith("/images/")) {
             const filename = path.basename(req.url);
@@ -808,6 +847,19 @@ function requireDirector(req, res) {
 }
 function requireGiftShopManager(req, res) {
     if (!req.user || req.user.role !== "gift_shop_manager") {
+        res.writeHead(302, {
+            "Location": "/",
+            "Content-Length": 0
+        });
+        res.end();
+        return false;
+    }
+
+    return true;
+}
+
+function requireRegisteredUser(req, res) {
+    if (!req.user || !["visitor", "member"].includes(req.user.userType)) {
         res.writeHead(302, {
             "Location": "/",
             "Content-Length": 0

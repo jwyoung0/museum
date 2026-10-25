@@ -41,8 +41,21 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
         }
 
-        document.getElementById("continue-button").addEventListener("click", () => {
-            window.location.href = `/auth-visitor?tierId=${TierId}`;
+        document.getElementById("continue-button").addEventListener("click", 
+            async () => {
+                try {
+                    const response = await fetch("/api/me");
+
+                    if(response.ok) {
+                        window.location.href = `/membership-checkout?tierId=${TierId}`;
+                    } else {
+                        const returnTo = `/membership-checkout?tierId=${TierId}`;
+                        window.location.href = `/auth-visitor?returnTo=${encodeURIComponent(returnTo)}`;
+                    }
+                } catch (error) {
+                    console.error("Failed to check authentication status:", error);
+                }
+           
         });
     } catch (error) {
         document.getElementById("detail-error").hidden = false;

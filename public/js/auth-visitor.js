@@ -4,11 +4,13 @@ const submitButton  = loginForm.querySelector(`button[type="submit"]`);
 
 const params = new URLSearchParams(window.location.search);
 const tierId = params.get('tierId');
+const returnTo = params.get('returnTo');
 
 // redirecting logic if registering account
 const registerLink = document.querySelector('#register-link');
-if (tierId && /^\d+$/.test(tierId)) {
-    registerLink.href = `/register-visitor?tierId=${encodeURIComponent(tierId)}`;
+if (returnTo) {
+    registerLink.href =
+        `/register-visitor?returnTo=${encodeURIComponent(returnTo)}`;
 }
 
 // sign-in logic upon submit
@@ -57,10 +59,17 @@ loginForm.addEventListener(`submit`, async (event) => {
 
 // redirecting logic if signing in
 function getPostLoginRedirect(result) {
-
+    if (
+        returnTo &&
+        returnTo.startsWith("/") &&
+        !returnTo.startsWith("//")
+    ) {
+        return returnTo;
+    }
+    
     if (tierId && /^\d+$/.test(tierId)) {
-        return `/membership/${tierId}`;
+        return `/membership-checkout?tierId=${encodeURIComponent(tierId)}`;
     }
 
-    return result.redirectTo;
+    return result.redirectTo || "/";
 }
