@@ -286,6 +286,21 @@ async function getExhibitionRecommendations(filters = {}) {
     return result.recordset;
 }
 
+async function getTiersForReport() {
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .query(`
+        SELECT
+            TierID,
+            TierName
+        FROM dbo.Tier
+        ORDER BY Price;
+    `);
+
+    return result.recordset;
+}
+
 module.exports = {
     getTopArtworks,
     getTopArtists,
@@ -297,5 +312,6 @@ module.exports = {
     getMonthlyEngagement,
     getSessionEngagement,
     getTopSessions,
-    getExhibitionRecommendations
+    getExhibitionRecommendations,
+    getTiersForReport
 };

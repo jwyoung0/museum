@@ -4,7 +4,19 @@ document.addEventListener("DOMContentLoaded", async () => {
     const accessionId = window.location.pathname.split("/").pop();
 
     try {    
-        const response = await fetch(`/api/artwork-detail/${accessionId}`);
+        const key = "artworkAnalyticsSessionId";
+        let analyticsSessionId = sessionStorage.getItem(key);
+
+        if (!analyticsSessionId) {
+            analyticsSessionId = crypto.randomUUID();
+            sessionStorage.setItem(key, analyticsSessionId);
+        }
+
+        const response = await fetch(`/api/artwork-detail/${accessionId}`, {
+            headers: {
+                "X-Analytics-Session-Id": analyticsSessionId
+            }
+        });
 
         if (!response.ok) {
             throw new Error("Failed to load artwork");

@@ -9,7 +9,8 @@ const {
     getMonthlyEngagement,
     getSessionEngagement,
     getTopSessions,
-    getExhibitionRecommendations
+    getExhibitionRecommendations,
+    getTiersForReport
 } = require("../../database/curator/analytics");
 
 function getFilters(req) {
@@ -79,6 +80,16 @@ async function getExhibitionRecommendationsHandler(req, res) {
     await sendJson(res, getExhibitionRecommendations, getFilters(req));
 }
 
+async function getTiersForReportHandler(req, res) {
+    const tiers = await getTiersForReport();
+
+    res.writeHead(200, {
+        "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify(tiers));
+};
+
 module.exports = {
     getTopArtworksHandler,
     getTopArtistsHandler,
@@ -90,5 +101,6 @@ module.exports = {
     getMonthlyEngagementHandler,
     getSessionEngagementHandler,
     getTopSessionsHandler,
-    getExhibitionRecommendationsHandler
+    getExhibitionRecommendationsHandler,
+    getTiersForReportHandler
 };

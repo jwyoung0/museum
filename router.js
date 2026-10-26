@@ -69,7 +69,20 @@ const {
     updateTierHandler,
     deleteTierHandler
 } = require("./handlers/director/memberships");
-const { getTopArtistsHandler } = require("./handlers/curator/analytics");
+const { 
+    getTopArtworksHandler,
+    getTopArtistsHandler,
+    getTopStylesHandler,
+    getTopPeriodsHandler,
+    getTopCollectionsHandler,
+    getArtworkInterestByTierHandler,
+    getArtistInterestByTierHandler,
+    getMonthlyEngagementHandler,
+    getSessionEngagementHandler,
+    getTopSessionsHandler,
+    getExhibitionRecommendationsHandler,
+    getTiersForReportHandler
+} = require("./handlers/curator/analytics");
 
 async function router(req, res) {
     try {
@@ -640,6 +653,68 @@ async function router(req, res) {
             return;
         }
 
+        // curator analytics routing
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/artworks")) {
+            if (!requireCurator(req, res)) return;
+            return getTopArtworksHandler(req, res);
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/artists")) {
+            if (!requireCurator(req, res)) return;
+            return getTopArtistsHandler(req, res);
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/styles")) {
+            if (!requireCurator(req, res)) return;
+            return getTopStylesHandler(req, res);
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/periods")) {
+            if (!requireCurator(req, res)) return;
+            return getTopPeriodsHandler(req, res);
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/collections")) {
+            if (!requireCurator(req, res)) return;
+            return getTopCollectionsHandler(req, res);
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/artwork-by-tier")) {
+            if (!requireCurator(req, res)) return;
+            return getArtworkInterestByTierHandler(req, res);
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/artist-by-tier")) {
+            if (!requireCurator(req, res)) return;
+            return getArtistInterestByTierHandler(req, res);
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/monthly-engagement")) {
+            if (!requireCurator(req, res)) return;
+            return getMonthlyEngagementHandler(req, res);
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/session-engagement")) {
+            if (!requireCurator(req, res)) return;
+            return getSessionEngagementHandler(req, res);
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/top-sessions")) {
+            if (!requireCurator(req, res)) return;
+            return getTopSessionsHandler(req, res);
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/recommendations")) {
+            if (!requireCurator(req, res)) return;
+            return getExhibitionRecommendationsHandler(req, res);
+        }
+
+        if (req.method === "GET" && req.url === "/api/curator/analytics/tiers") {
+            if(!requireCurator(req, res)) return;
+            return getTiersForReportHandler(req, res);
+        }
+
         const artistMatch = pathname.match(/^\/api\/curator\/artists\/(\d+)$/);
         const artworkMatch = pathname.match(/^\/api\/curator\/artwork\/(\d+)$/);
         const collectionMatch = pathname.match(/^\/api\/curator\/collections\/(\d+)$/);
@@ -761,67 +836,10 @@ async function router(req, res) {
                     userType: req.user.userType,
                     VisitorID: req.user.VisitorID
                 }
-        }));
+            }));
 
-        // curator analytics routing
-
-        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/artworks")) {
-            if (!requireCurator(req, res)) return;
-            return getTopArtworksHandler(req, res);
+            return;
         }
-
-        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/artists")) {
-            if (!requireCurator(req, res)) return;
-            return getTopArtistsHandler(req, res);
-        }
-
-        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/styles")) {
-            if (!requireCurator(req, res)) return;
-            return getTopStylesHandler(req, res);
-        }
-
-        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/periods")) {
-            if (!requireCurator(req, res)) return;
-            return getTopPeriodsHandler(req, res);
-        }
-
-        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/collections")) {
-            if (!requireCurator(req, res)) return;
-            return getTopCollectionsHandler(req, res);
-        }
-
-        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/artwork-by-tier")) {
-            if (!requireCurator(req, res)) return;
-            return getArtworkInterestByTierHandler(req, res);
-        }
-
-        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/artist-by-tier")) {
-            if (!requireCurator(req, res)) return;
-            return getArtistInterestByTierHandler(req, res);
-        }
-
-        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/monthly-engagement")) {
-            if (!requireCurator(req, res)) return;
-            return getMonthlyEngagementHandler(req, res);
-        }
-
-        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/session-engagement")) {
-            if (!requireCurator(req, res)) return;
-            return getSessionEngagementHandler(req, res);
-        }
-
-        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/top-sessions")) {
-            if (!requireCurator(req, res)) return;
-            return getTopSessionsHandler(req, res);
-        }
-
-        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/recommendations")) {
-            if (!requireCurator(req, res)) return;
-            return getExhibitionRecommendationsHandler(req, res);
-        }
-
-    return;
-}
 
         // Images routing
         if (req.method === "GET" && req.url.startsWith("/images/")) {
