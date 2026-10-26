@@ -55,11 +55,19 @@ const { createExhibitionHandler,
 } = require("./handlers/exhibitions");
 const { registerVisitorHandler } = require("./handlers/register-visitor");
 const { purchaseMembershipHandler } = require("./handlers/membership-purchase");
-
+//Director-Personnel
 const { 
     listPersonnelHandler,
-    createPersonnelHandler
+    createPersonnelHandler,
+    deactivatePersonnelHandler,
+    reactivatePersonnelHandler
 } = require("./handlers/director/personnel");
+
+//Director-Positions
+const {
+    listPositionsHandler,
+    createPositionHandler
+} = require("./handlers/director/positions");
 
 const {
     createTierHandler,
@@ -98,7 +106,7 @@ async function router(req, res) {
             await logoutHandler(req, res);
             return;
         }
-
+        //Director-Personnel POST routing start
         if (req.method === "POST" && req.url === "/api/director/personnel") {
             if (!requireDirector(req, res)) return;
             await createPersonnelHandler(req, res);
@@ -108,6 +116,18 @@ async function router(req, res) {
         if (req.method === "POST" && req.url === "/api/director/memberships/tiers") {
             if (!requireDirector(req, res)) return;
             await createTierHandler(req, res);
+            return;
+        }
+
+        if(req.method ==="POST" && req.url === "/api/director/personnel/deactivate"){
+            if(!requireDirector(req, res)) return;
+            await deactivatePersonnelHandler(req, res);
+            return;
+        }
+
+        if (req.method === "POST" && req.url === "/api/director/personnel/reactivate") {
+            if (!requireDirector(req, res)) return;
+            await reactivatePersonnelHandler(req, res);
             return;
         }
 
@@ -535,9 +555,29 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" && req.url === "/js/director-positions.js") {
+            if (!requireDirector(req, res)) return;
+            sendPage(res, path.join("js", "director-positions.js"), "application/javascript");
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/js/director-memberships.js") {
             if (!requireDirector(req, res)) return;
             sendPage(res, path.join("js", "director-memberships.js"), "application/javascript");
+            return;
+        }
+
+
+        //Director Positions Starts Here
+        if (req.method === "GET" && req.url === "/api/director/positions") {
+            if (!requireDirector(req, res)) return;
+            await listPositionsHandler(req, res);
+            return;
+        }
+
+        if (req.method === "POST" && req.url === "/api/director/positions") {
+            if (!requireDirector(req, res)) return;
+            await createPositionHandler(req, res);
             return;
         }
 
