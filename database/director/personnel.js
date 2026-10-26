@@ -135,7 +135,100 @@ async function listPersonnel() {
     return result.recordset;
 }
 
+async function deactivatePersonnel(personnelIDs){
+    if(
+        !Array.isArray(personnelIDs) ||
+        personnelIDs.length === 0 ||
+        !personnelIDs.every(
+            id => Number.isInteger(id) && id > 0
+        )
+    ){
+        throw new TypeError("Invalid Personnel IDs");
+    }
+
+    const uniqueIDs = [...new Set(personnelIDs)];
+    const pool = await getPool();
+    const transaction = new sql.Transaction(pool);
+
+    await transaction.begin();
+
+    try{
+        const request = new sql.Request(transaction);
+
+        const parameters = uniqueIDs.map((id, index) => {
+            request.input(`id${index}`, sql.Int, id);
+            return `@id${index}`;
+        });
+        
+        const result = await request.query(`
+            UPDATE dbo.Personnel
+            SET 
+                EmploymentStatus = 0,
+                EndDate = CAST(GETDATE() AS DATE)
+            WHERE EmploymentStatus = 1
+                AND PersonnelID IN (${parameters.join(",")});
+        `);
+
+        await transaction.commit();
+
+        return result.rowsAffected[0];
+    }
+    
+    catch (error){
+        await transaction.rollback();
+        throw error;
+    }
+
+}
+
+async function reactivatePersonnel(personnelIDs) {
+    if (
+        !Array.isArray(personnelIDs) ||
+        personnelIDs.length === 0 ||
+        !personnelIDs.every(
+            id => Number.isInteger(id) && id > 0
+        )
+    ) {
+        throw new TypeError("Invalid Personnel IDs");
+    }
+
+    const uniqueIDs = [...new Set(personnelIDs)];
+    const pool = await getPool();
+    const transaction = new sql.Transaction(pool);
+
+    await transaction.begin();
+
+    try {
+        const request = new sql.Request(transaction);
+
+        const parameters = uniqueIDs.map((id, index) => {
+            request.input(`id${index}`, sql.Int, id);
+            return `@id${index}`;
+        });
+
+        const result = await request.query(`
+            UPDATE dbo.Personnel
+            SET 
+                EmploymentStatus = 1,
+                EndDate = NULL
+            WHERE EmploymentStatus = 0
+                AND PersonnelID IN (${parameters.join(",")});
+        `);
+
+        await transaction.commit();
+
+        return result.rowsAffected[0];
+    } catch (error) {
+        await transaction.rollback();
+        throw error;
+    }
+}
+
+
+
 module.exports = {
     createPersonnel,
-    listPersonnel
+    listPersonnel,
+    deactivatePersonnel,
+    reactivatePersonnel
 };
