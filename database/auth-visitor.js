@@ -37,30 +37,66 @@ async function registerVisitorAccount({ name, email, password }) {
 
     try {
         const result = await new sql.Request(transaction)
-            .input("name", sql.VarChar(100), name)
-            .input("email", sql.NVarChar(100), email)
+            .input("name", sql.NVarChar(100), name)
+            .input("email", sql.NVarChar(50), email)
             .input("password", sql.NVarChar(20), password)
             .query(`
-                DECLARE @newVisitor TABLE (VisitorID int);
-                DECLARE @visitorId int;
-
-                INSERT INTO dbo.VISITOR (Name, Email)
-                OUTPUT INSERTED.VisitorID INTO @newVisitor (VisitorID)
-                VALUES (@name, @email);
+                DECLARE @visitorId INT;
 
                 SELECT @visitorId = VisitorID
-                FROM @newVisitor;
+                FROM dbo.VISITOR
+                WHERE Email = @email;
+
+                IF @visitorId IS NULL
+                BEGIN
+                    INSERT INTO dbo.VISITOR
+                    (
+                        Name,
+                        Email
+                    )
+                    VALUES
+                    (
+                        @name,
+                        @email
+                    );
+
+                    SET @visitorId = SCOPE_IDENTITY();
+                END
+
+                IF EXISTS
+                (
+                    SELECT 1
+                    FROM dbo.VISITOR_ACCOUNTS
+                    WHERE LinkedVisitorID = @visitorId
+                )
+                BEGIN
+                    THROW 50001, 'An account already exists for this email address.', 1;
+                END
 
                 INSERT INTO dbo.VISITOR_ACCOUNTS
-                    (email, password, userType, LinkedVisitorID)
+                (
+                    LinkedVisitorID,
+                    email,
+                    password,
+                    userType
+                )
                 VALUES
-                    (@email, @password, N'visitor', @visitorId);
+                (
+                    @visitorId,
+                    @email,
+                    @password,
+                    N'visitor'
+                );
 
                 SELECT @visitorId AS visitorId;
             `);
 
         await transaction.commit();
-        return result.recordset[0];
+
+        return {
+            success: true,
+            visitorId: result.recordset[0].visitorId
+        };
     } catch (error) {
         try {
             await transaction.rollback();
