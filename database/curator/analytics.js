@@ -1,14 +1,38 @@
-const { getPool } = require("../connection");
+const { sql, getPool } = require("../connection");
 
-async function getTopArtworks(limit = 20) {
+function applyCommonFilters(request, filters = {}) {
+    return request
+        .input("startDate", sql.Date, filters.startDate || null)
+        .input("endDate", sql.Date, filters.endDate || null)
+        .input("tier", sql.NVarChar(50), filters.tier || null)
+        .input("style", sql.NVarChar(100), filters.style || null)
+        .input("period", sql.NVarChar(100), filters.period || null)
+        .input("collection", sql.NVarChar(100), filters.collection || null);
+}
+
+const commonWhere = `
+WHERE
+    (@startDate IS NULL OR ViewDate >= @startDate)
+    AND (@endDate IS NULL OR ViewDate <= @endDate)
+    AND (@tier IS NULL OR TierName = @tier)
+    AND (@style IS NULL OR StyleName = @style)
+    AND (@period IS NULL OR PeriodName = @period)
+    AND (@collection IS NULL OR CollectionName = @collection)
+`;
+
+async function getTopArtworks(filters = {}) {
     const pool = await getPool();
 
-    const result = await pool.request().query(`
-        SELECT TOP (${limit})
+    const result = await applyCommonFilters(
+        pool.request(),
+        filters
+    ).query(`
+        SELECT TOP (20)
             ArtworkID,
             ArtworkTitle,
             COUNT(*) AS Views
         FROM dbo.vw_ArtworkEngagement
+        ${commonWhere}
         GROUP BY
             ArtworkID,
             ArtworkTitle
@@ -18,15 +42,19 @@ async function getTopArtworks(limit = 20) {
     return result.recordset;
 }
 
-async function getTopArtists(limit = 20) {
+async function getTopArtists(filters = {}) {
     const pool = await getPool();
 
-    const result = await pool.request().query(`
-        SELECT TOP (${limit})
+    const result = await applyCommonFilters(
+        pool.request(),
+        filters
+    ).query(`
+        SELECT TOP (20)
             ArtistID,
             ArtistName,
             COUNT(*) AS Views
         FROM dbo.vw_ArtworkEngagement
+        ${commonWhere}
         GROUP BY
             ArtistID,
             ArtistName
@@ -36,15 +64,19 @@ async function getTopArtists(limit = 20) {
     return result.recordset;
 }
 
-async function getTopStyles(limit = 20) {
+async function getTopStyles(filters = {}) {
     const pool = await getPool();
 
-    const result = await pool.request().query(`
-        SELECT TOP (${limit})
+    const result = await applyCommonFilters(
+        pool.request(),
+        filters
+    ).query(`
+        SELECT TOP (20)
             StyleID,
             StyleName,
             COUNT(*) AS Views
         FROM dbo.vw_ArtworkEngagement
+        ${commonWhere}
         GROUP BY
             StyleID,
             StyleName
@@ -54,15 +86,19 @@ async function getTopStyles(limit = 20) {
     return result.recordset;
 }
 
-async function getTopPeriods(limit = 20) {
+async function getTopPeriods(filters = {}) {
     const pool = await getPool();
 
-    const result = await pool.request().query(`
-        SELECT TOP (${limit})
+    const result = await applyCommonFilters(
+        pool.request(),
+        filters
+    ).query(`
+        SELECT TOP (20)
             PeriodID,
             PeriodName,
             COUNT(*) AS Views
         FROM dbo.vw_ArtworkEngagement
+        ${commonWhere}
         GROUP BY
             PeriodID,
             PeriodName
@@ -72,15 +108,19 @@ async function getTopPeriods(limit = 20) {
     return result.recordset;
 }
 
-async function getTopCollections(limit = 20) {
+async function getTopCollections(filters = {}) {
     const pool = await getPool();
 
-    const result = await pool.request().query(`
-        SELECT TOP (${limit})
+    const result = await applyCommonFilters(
+        pool.request(),
+        filters
+    ).query(`
+        SELECT TOP (20)
             CollectionID,
             CollectionName,
             COUNT(*) AS Views
         FROM dbo.vw_ArtworkEngagement
+        ${commonWhere}
         GROUP BY
             CollectionID,
             CollectionName
@@ -90,11 +130,15 @@ async function getTopCollections(limit = 20) {
     return result.recordset;
 }
 
-async function getArtworkInterestByTier() {
+async function getArtworkInterestByTier(filters = {}) {
     const pool = await getPool();
 
-    const result = await pool.request().query(`
-        WITH RankedArtwork AS (
+    const result = await applyCommonFilters(
+        pool.request(),
+        filters
+    ).query(`
+        WITH RankedArtwork AS
+        (
             SELECT
                 TierName,
                 ArtworkID,
@@ -105,17 +149,13 @@ async function getArtworkInterestByTier() {
                     ORDER BY COUNT(*) DESC
                 ) AS rn
             FROM dbo.vw_ArtworkEngagement
-            WHERE TierName IS NOT NULL
+            ${commonWhere}
             GROUP BY
                 TierName,
                 ArtworkID,
                 ArtworkTitle
         )
-        SELECT
-            TierName,
-            ArtworkID,
-            ArtworkTitle,
-            Views
+        SELECT *
         FROM RankedArtwork
         WHERE rn = 1
         ORDER BY TierName;
@@ -124,11 +164,15 @@ async function getArtworkInterestByTier() {
     return result.recordset;
 }
 
-async function getArtistInterestByTier() {
+async function getArtistInterestByTier(filters = {}) {
     const pool = await getPool();
 
-    const result = await pool.request().query(`
-        WITH RankedArtist AS (
+    const result = await applyCommonFilters(
+        pool.request(),
+        filters
+    ).query(`
+        WITH RankedArtist AS
+        (
             SELECT
                 TierName,
                 ArtistID,
@@ -139,17 +183,13 @@ async function getArtistInterestByTier() {
                     ORDER BY COUNT(*) DESC
                 ) AS rn
             FROM dbo.vw_ArtworkEngagement
-            WHERE TierName IS NOT NULL
+            ${commonWhere}
             GROUP BY
                 TierName,
                 ArtistID,
                 ArtistName
         )
-        SELECT
-            TierName,
-            ArtistID,
-            ArtistName,
-            Views
+        SELECT *
         FROM RankedArtist
         WHERE rn = 1
         ORDER BY TierName;
@@ -158,15 +198,19 @@ async function getArtistInterestByTier() {
     return result.recordset;
 }
 
-async function getMonthlyEngagement() {
+async function getMonthlyEngagement(filters = {}) {
     const pool = await getPool();
 
-    const result = await pool.request().query(`
+    const result = await applyCommonFilters(
+        pool.request(),
+        filters
+    ).query(`
         SELECT
             YEAR(ViewDate) AS YearViewed,
             MONTH(ViewDate) AS MonthViewed,
             COUNT(*) AS TotalViews
         FROM dbo.vw_ArtworkEngagement
+        ${commonWhere}
         GROUP BY
             YEAR(ViewDate),
             MONTH(ViewDate)
@@ -178,10 +222,13 @@ async function getMonthlyEngagement() {
     return result.recordset;
 }
 
-async function getSessionEngagement() {
+async function getSessionEngagement(filters = {}) {
     const pool = await getPool();
 
-    const result = await pool.request().query(`
+    const result = await applyCommonFilters(
+        pool.request(),
+        filters
+    ).query(`
         SELECT
             AVG(CAST(SessionViews AS FLOAT)) AS AvgViewsPerSession
         FROM
@@ -190,23 +237,26 @@ async function getSessionEngagement() {
                 SessionID,
                 COUNT(*) AS SessionViews
             FROM dbo.vw_ArtworkEngagement
-            WHERE SessionID IS NOT NULL
+            ${commonWhere}
             GROUP BY SessionID
-        ) AS S;
+        ) S;
     `);
 
     return result.recordset[0];
 }
 
-async function getTopSessions(limit = 20) {
+async function getTopSessions(filters = {}) {
     const pool = await getPool();
 
-    const result = await pool.request().query(`
-        SELECT TOP (${limit})
+    const result = await applyCommonFilters(
+        pool.request(),
+        filters
+    ).query(`
+        SELECT TOP (20)
             SessionID,
             COUNT(*) AS Views
         FROM dbo.vw_ArtworkEngagement
-        WHERE SessionID IS NOT NULL
+        ${commonWhere}
         GROUP BY SessionID
         ORDER BY Views DESC;
     `);
@@ -214,16 +264,19 @@ async function getTopSessions(limit = 20) {
     return result.recordset;
 }
 
-async function getExhibitionRecommendations() {
+async function getExhibitionRecommendations(filters = {}) {
     const pool = await getPool();
 
-    const result = await pool.request().query(`
-        SELECT TOP 10
+    const result = await applyCommonFilters(
+        pool.request(),
+        filters
+    ).query(`
+        SELECT TOP (10)
             StyleID,
             StyleName,
             COUNT(*) AS Views
         FROM dbo.vw_ArtworkEngagement
-        WHERE ViewDate >= DATEADD(MONTH, -6, GETDATE())
+        ${commonWhere}
         GROUP BY
             StyleID,
             StyleName
