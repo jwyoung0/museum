@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>Collection | MFAH Portal</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <header class="site-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="/artwork" aria-current="page">Artwork</a>
+            <a href="/membership">Membership</a>
+            <!-- <a href="/events">Events</a> -->
+            <a href="/ticketing">Tickets</a>
+            <a href="/shop">Shop</a>
+        </nav>
+
+        <!-- VISITOR_AUTH -->
+    </header>
+    <main>
+        <nav aria-label="Artwork navigation">
+            <a href="/artwork">Search</a>
+            <a href="/collections" aria-current="page">Collections</a>
+            <a href="/exhibitions">Now on View</a>
+        </nav>
+
+        <section class="artwork-workspace">
+            <a href="/collections">Back to Collections</a>
+            <header class="workspace-header">
+                <h2 id="collection-name">Loading collection...</h2>
+                <p id="collection-description"></p>
+            </header>
+
+            <div class="field-bar">
+                <input
+                    id="collection-artwork-search"
+                    name="collection-artwork-search"
+                    type="search"
+                    placeholder="Search artwork"
+                    aria-label="Search artwork"
+                >
+                <select
+                    id="search-artwork-field"
+                    name="search-artwork-field"
+                    aria-label="Search artwork by"
+                >
+                    <option value="" selected>All fields</option>
+                    <option value="title">Title</option>
+                    <option value="artist">Artist</option>
+                </select>
+                <button type="button" id="search-artwork-button">
+                    Search
+                </button>
+            </div>
+
+            <p id="collection-artwork-empty-state" hidden>
+                No artwork in this collection matches your search.
+            </p>
+            <p id="collection-detail-error" role="alert" hidden>
+                Unable to load this collection. Please try again later.
+            </p>
+
+            <div id="artwork-results"></div>
+        </section>
+    </main>
+    <footer>
+        <a class="header-auth" href="/auth-staff">Staff Portal</a>
+    </footer>
+    <script src="/js/collection-detail.js"></script>
+</body>
+</html>

@@ -7,6 +7,7 @@ async function listArtworkForVisitor() {
         .query(`
             SELECT
                 a.accessionId,
+                a.collectionId,
                 a.title,
                 ar.fullName AS artist,
                 a.creationDate,

@@ -221,6 +221,13 @@ async function router(req, res) {
             return;
         }
 
+        const visitorCollectionMatch =
+            req.url.match(/^\/collections\/(\d+)(?:\?.*)?$/);
+        if (req.method === "GET" && visitorCollectionMatch) {
+            sendVisitorPage(req, res, "collection-detail.html");
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/membership") {
             sendVisitorPage(req, res, "memberships.html");
             return;
@@ -386,6 +393,11 @@ async function router(req, res) {
             return;
         }
 
+        if (req.method === "GET" && req.url === "/js/collection-detail.js") {
+            sendPage(res, path.join("js", "collection-detail.js"), "application/javascript");
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/js/exhibitions.js") {
             sendPage(res, path.join("js", "exhibitions.js"), "application/javascript");            
             return;
@@ -494,6 +506,14 @@ async function router(req, res) {
 
         if (req.method === "GET" && req.url === "/api/collections") {
             await listCollectionsHandler(req, res);
+            return;
+        }
+
+        const visitorCollectionApiMatch =
+            req.url.match(/^\/api\/collections\/(\d+)(?:\?.*)?$/);
+        if (req.method === "GET" && visitorCollectionApiMatch) {
+            req.params = { id: visitorCollectionApiMatch[1] };
+            await readCollectionHandler(req, res);
             return;
         }
 
