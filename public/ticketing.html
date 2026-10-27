@@ -4,17 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MFAH Tickets</title>
+<link rel="stylesheet" href="/style">
 <style>
 * { box-sizing: border-box; }
 
-body {
+/* body {
     margin: 0;
     padding: 30px 15px;
     background: #f1f2f5;
     font: 16px Arial, sans-serif;
-}
+} */
 
-main {
+.ticketing-main {
+    width: 100%;
     max-width: 680px;
     margin: auto;
     padding: 30px;
@@ -99,7 +101,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
     main { padding: 18px; }
     .ticket { flex-wrap: wrap; }
 }
-.site-header {
+/* .site-header {
     background: white;
     padding: 20px;
     display: flex;
@@ -110,81 +112,87 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .site-header a {
     color: #263047;
     margin-right: 12px;
-}
+} */
 
 </style>
 </head>
 <body>
-  <header class="site-header">
-    <a href="/">MFAH</a>
-    <nav>
-        <a href="/artwork">Artwork</a>
-        <a href="/membership">Membership</a>
-        <!-- <a href="/events">Events</a> -->
-        <a href="/ticketing">Tickets</a>
-        <a href="/shop">Shop</a>
-    </nav>
-    <!-- VISITOR_AUTH -->
-</header>
+    <header class="site-header">
+        <h1 class="site-title">
+            <a href="/">MFAH</a>
+        </h1>
+
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="/artwork">Artwork</a>
+            <a href="/membership">Membership</a>
+            <a href="/ticketing" aria-current="page">Tickets</a>
+            <a href="/shop">Shop</a>
+        </nav>
+
+        <!-- VISITOR_AUTH -->
+    </header>
 <main>
-<a href="/">✕ Exit Ticketing</a>
-<h1>Museum Admission</h1>
+    <section class="ticketing-main">
+        <a href="/">✕ Exit Ticketing</a>
+        <h1>Museum Admission</h1>
 
-<p id="membership">Membership: Checking...</p>
+        <p id="membership">Membership: Checking...</p>
 
-<section id="choose">
-    <h2>Select Tickets</h2>
+        <section id="choose">
+            <h2>Select Tickets</h2>
 
-    <label for="visitDate">Date of Visit</label>
-    <input type="date" id="visitDate" required>
+            <label for="visitDate">Date of Visit</label>
+            <input type="date" id="visitDate" required>
 
-    <div id="ticketTypes">Loading tickets...</div>
+            <div id="ticketTypes">Loading tickets...</div>
 
-    <div class="summary">
-        Total: <strong id="total">$0.00</strong>
-    </div>
+            <div class="summary">
+                Total: <strong id="total">$0.00</strong>
+            </div>
 
-    <button class="action" id="next" disabled>Next</button>
-</section>
+            <button class="action" id="next" disabled>Next</button>
+        </section>
 
-<section id="account" hidden>
-    <h2>Log In for Account Access</h2>
-    <p>Already have an account?</p>
+        <section id="account" hidden>
+            <h2>Log In for Account Access</h2>
+            <p>Already have an account?</p>
 
-    <a class="login" href="/auth-visitor" id="ticketLogin">Log In</a>
-    <button class="action" id="skip">Skip for Now</button>
-    <button class="action secondary" onclick="show('choose')">Back</button>
-</section>
+            <a class="login" href="/auth-visitor" id="ticketLogin">Log In</a>
+            <button class="action" id="skip">Skip for Now</button>
+            <button class="action secondary" onclick="show('choose')">Back</button>
+        </section>
 
-<section id="review" hidden>
-    <h2>Review Your Tickets</h2>
+        <section id="review" hidden>
+            <h2>Review Your Tickets</h2>
 
-    <div class="summary" id="summary"></div>
-    <div id="freeOption" hidden>
-    <label>
-        <span id="freeLabel">Free Guest Tickets Available:</span>
-        <span id="freeCount">0</span>
-    </label>
-    <label for="freeTickets">How many do you want to use?</label>
-    <input type="number" id="freeTickets" min="0" value="0">
-</div>
+            <div class="summary" id="summary"></div>
+            <div id="freeOption" hidden>
+            <label>
+                <span id="freeLabel">Free Guest Tickets Available:</span>
+                <span id="freeCount">0</span>
+            </label>
+            <label for="freeTickets">How many do you want to use?</label>
+            <input type="number" id="freeTickets" min="0" value="0">
+        </div>
 
-    <form id="form">
-        <label for="name">Full Name</label>
-        <input id="name" maxlength="100" required>
+            <form id="form">
+                <label for="name">Full Name</label>
+                <input id="name" maxlength="100" required>
 
-        <label for="email">Email Address</label>
-        <input id="email" type="email" maxlength="150" required>
+                <label for="email">Email Address</label>
+                <input id="email" type="email" maxlength="150" required>
 
-        <button class="action" id="buy" type="submit">
-            Confirm Purchase
-        </button>
-    </form>
+                <button class="action" id="buy" type="submit">
+                    Confirm Purchase
+                </button>
+            </form>
 
-    <button class="action secondary" onclick="show('choose')">Back</button>
-</section>
+            <button class="action secondary" onclick="show('choose')">Back</button>
+        </section>
 
-<p id="message" role="status"></p>
+        <p id="message" role="status"></p>
+    </section>
+
 </main>
 
 <script>
