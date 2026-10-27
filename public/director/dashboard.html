@@ -40,6 +40,57 @@
         <section id="personnel">
             <h2>Personnel Management</h2>
 
+                       <div class="personnel-filters">
+                <div>
+                    <label for="personnel-name-search">Search by Name</label>
+                    <input
+                        type="search"
+                        id="personnel-name-search"
+                        placeholder="Search first, middle, or last name..."
+                    >
+                </div>
+
+                <div>
+                    <label for="personnel-start-date-from">Start Date From</label>
+                    <input
+                        type="date"
+                        id="personnel-start-date-from"
+                    >
+                </div>
+
+                <div>
+                    <label for="personnel-start-date-to">Start Date To</label>
+                    <input
+                        type="date"
+                        id="personnel-start-date-to"
+                    >
+                </div>
+
+                <div>
+                    <label for="personnel-employment-filter">Employment Status</label>
+                    <select id="personnel-employment-filter">
+                        <option value="all">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="personnel-sort-order">Sort by Last Name</label>
+                    <select id="personnel-sort-order">
+                        <option value="asc">Ascending (A–Z)</option>
+                        <option value="desc">Descending (Z–A)</option>
+                    </select>
+                </div>
+
+                <button type="button" id="clear-personnel-filters">
+                    Clear Filters
+                </button>
+            </div>
+
+
+
+
             <p id="personnel-message" role="status">
                 Loading personnel records...
             </p>
@@ -151,9 +202,16 @@
                     </div>
 
                     <div>
-                        <label for="position-id">Position ID</label>
-                        <input type="number" id="position-id"
-                            name="positionID" min="1">
+                        <label for="position-id">Position*</label>
+                        <select
+                            id="position-id"
+                            name="positionID"
+                            required
+                        >
+                            <option value="" selected disabled>
+                                Loading positions...
+                            </option>
+                        </select>
                     </div>
 
                     <div>

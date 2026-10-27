@@ -109,7 +109,7 @@ async function createPersonnel({
 
     return result.recordset[0];
 }
-
+/*
 async function listPersonnel() {
     const pool = await getPool();
 
@@ -133,7 +133,36 @@ async function listPersonnel() {
         `);
 
     return result.recordset;
+}*/
+
+async function listPersonnel() {
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .query(`
+            SELECT
+                p.PersonnelID,
+                p.PositionID,
+                pos.PositionName,
+                p.Email,
+                p.EmploymentStatus,
+                p.DateOfBirth,
+                p.StartDate,
+                p.EndDate,
+                p.SSN,
+                p.PhoneNumber,
+                p.Fname,
+                p.Mname,
+                p.Lname
+            FROM dbo.Personnel AS p
+            LEFT JOIN dbo.POSITION AS pos
+                ON p.PositionID = pos.PositionID
+            ORDER BY p.Lname, p.Fname;
+        `);
+
+    return result.recordset;
 }
+
 
 async function deactivatePersonnel(personnelIDs){
     if(

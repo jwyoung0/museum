@@ -9,7 +9,18 @@ const cancelAddPersonnelButton = document.getElementById("cancel-add-personnel")
 const deactivatePersonnelButton = document.getElementById("deactivate-personnel");
 const reactivatePersonnelButton = document.getElementById("reactivate-personnel");
 const selectAllPersonnelCheckbox = document.getElementById("select-all-personnel");
+const positionSelect = document.getElementById("position-id");
 
+//Personnel Filtering Elements Start Here
+
+const personnelNameSearch = document.getElementById("personnel-name-search");
+const startDateFromInput = document.getElementById("personnel-start-date-from");
+const startDateToInput = document.getElementById("personnel-start-date-to");
+const employmentStatusFilter = document.getElementById("personnel-employment-filter");
+const personnelSortOrder = document.getElementById("personnel-sort-order");
+const clearPersonnelFiltersButton = document.getElementById("clear-personnel-filters");
+
+let allPersonnel = [];
 if (
     !personnelTableBody ||
     !personnelMessage ||
@@ -17,7 +28,14 @@ if (
     !refreshPersonnelButton ||
     !addPersonnelButton ||
     !addPersonnelPanel ||
-    !cancelAddPersonnelButton
+    !cancelAddPersonnelButton ||
+    !positionSelect ||
+    !personnelNameSearch ||
+    !startDateFromInput ||
+    !startDateToInput ||
+    !employmentStatusFilter ||
+    !personnelSortOrder ||
+    !clearPersonnelFiltersButton
 ) {
     console.error(
         "Director personnel script: One or more required HTML elements are missing."
@@ -91,8 +109,268 @@ if (
                 getSelectedInactivePersonnelIDs().length === 0;
         }
     }
+// load avaiable positions from backend
+    async function loadPositionOptions() {
+        positionSelect.disabled = true;
+
+        try {
+            const response = await fetch("/api/director/positions");
+
+            if (!response.ok) {
+                throw new Error(
+                    `Unable to load positions (HTTP ${response.status}).`
+                );
+            }
+
+            const positions = await response.json();
+
+            if (!Array.isArray(positions)) {
+                throw new Error(
+                    "The server returned an invalid positions response."
+                );
+            }
+
+            positionSelect.replaceChildren();
+
+            const placeholder = document.createElement("option");
+            placeholder.value = "";
+            placeholder.textContent = positions.length > 0
+                ? "Select a position"
+                : "No positions available";
+            placeholder.disabled = true;
+            placeholder.selected = true;
+
+            positionSelect.appendChild(placeholder);
+
+            positions.forEach(position => {
+                const option = document.createElement("option");
+
+                option.value = position.PositionID;
+                option.textContent = position.PositionName;
+
+                positionSelect.appendChild(option);
+            });
+
+            positionSelect.disabled = positions.length === 0;
+
+            if (positions.length === 0) {
+                personnelMessage.textContent =
+                    "No positions exist. Add a position before adding personnel.";
+            }
+        } catch (error) {
+            console.error("Failed to load positions:", error);
+
+            positionSelect.replaceChildren();
+
+            const option = document.createElement("option");
+            option.value = "";
+            option.textContent = "Failed to load positions";
+            option.disabled = true;
+            option.selected = true;
+
+            positionSelect.appendChild(option);
+            positionSelect.disabled = true;
+
+            personnelMessage.textContent = error.message;
+        }
+    }
+
 
     // Load personnel records from the backend.
+
+// Check whether a personnel record is active.
+    function isPersonnelActive(person) {
+        return (
+            person.EmploymentStatus === true ||
+            person.EmploymentStatus === 1 ||
+            person.EmploymentStatus === "1"
+        );
+    }
+
+    // Convert a date to YYYY-MM-DD for consistent comparisons.
+    function getDateOnly(value) {
+        return value ? String(value).slice(0, 10) : "";
+    }
+
+    // Filter and sort the full personnel list.
+    function applyPersonnelFilters() {
+        const nameQuery = personnelNameSearch.value
+            .trim()
+            .toLocaleLowerCase();
+
+        const startDateFrom = startDateFromInput.value;
+        const startDateTo = startDateToInput.value;
+        const selectedStatus = employmentStatusFilter.value;
+        const sortOrder = personnelSortOrder.value;
+
+        // Check the date range is valid.
+        if (
+            startDateFrom &&
+            startDateTo &&
+            startDateFrom > startDateTo
+        ) {
+            renderPersonnel([]);
+
+            personnelMessage.textContent =
+                "Start Date From cannot be later than Start Date To.";
+
+            return;
+        }
+
+        // Apply all active filters.
+        const filteredPersonnel = allPersonnel.filter(person => {
+            const nameMatches =
+                !nameQuery ||
+                [person.Fname, person.Mname, person.Lname].some(name =>
+                    String(name ?? "")
+                        .toLocaleLowerCase()
+                        .includes(nameQuery)
+                );
+
+            const startDate = getDateOnly(person.StartDate);
+
+            const startDateMatches =
+                (!startDateFrom ||
+                    (startDate && startDate >= startDateFrom)) &&
+                (!startDateTo ||
+                    (startDate && startDate <= startDateTo));
+
+            const isActive = isPersonnelActive(person);
+
+            const statusMatches =
+                selectedStatus === "all" ||
+                (selectedStatus === "active" && isActive) ||
+                (selectedStatus === "inactive" && !isActive);
+
+            return (
+                nameMatches &&
+                startDateMatches &&
+                statusMatches
+            );
+        });
+
+        // Sort by last name, then first name A-Z.
+        filteredPersonnel.sort((a, b) => {
+            const lastNameComparison = String(a.Lname ?? "").localeCompare(
+                String(b.Lname ?? ""),
+                undefined,
+                { sensitivity: "base" }
+            );
+
+            if (lastNameComparison !== 0) {
+                return sortOrder === "desc"
+                    ? -lastNameComparison
+                    : lastNameComparison;
+            }
+
+            const firstNameComparison = String(a.Fname ?? "").localeCompare(
+                String(b.Fname ?? ""),
+                undefined,
+                { sensitivity: "base" }
+            );
+
+            if (firstNameComparison !== 0) {
+                return firstNameComparison;
+            }
+
+            const middleNameComparison = String(a.Mname ?? "").localeCompare(
+                String(b.Mname ?? ""),
+                undefined,
+                { sensitivity: "base" }
+            );
+
+            if (middleNameComparison !== 0) {
+                return middleNameComparison;
+            }
+
+            return Number(a.PersonnelID) - Number(b.PersonnelID);
+        });
+
+        renderPersonnel(filteredPersonnel);
+    }
+
+    // Draw the supplied personnel records in the existing table.
+    function renderPersonnel(personnel) {
+        personnelTableBody.replaceChildren();
+
+        // Clear selections when the displayed rows change.
+        if (selectAllPersonnelCheckbox) {
+            selectAllPersonnelCheckbox.checked = false;
+            selectAllPersonnelCheckbox.indeterminate = false;
+        }
+
+        if (personnel.length === 0) {
+            const row = document.createElement("tr");
+            const cell = document.createElement("td");
+
+            cell.colSpan = 12;
+            cell.textContent = allPersonnel.length === 0
+                ? "No personnel records found."
+                : "No personnel match your search criteria.";
+
+            row.appendChild(cell);
+            personnelTableBody.appendChild(row);
+        } else {
+            personnel.forEach(person => {
+                const row = document.createElement("tr");
+                const isActive = isPersonnelActive(person);
+
+                // Add a checkbox for every employee.
+                const checkboxCell = document.createElement("td");
+                const checkbox = document.createElement("input");
+
+                checkbox.type = "checkbox";
+                checkbox.className = "personnel-checkbox";
+                checkbox.value = person.PersonnelID;
+                checkbox.dataset.active = String(isActive);
+
+                checkbox.setAttribute(
+                    "aria-label",
+                    `Select ${isActive ? "active" : "inactive"} personnel ${person.PersonnelID}`
+                );
+
+                checkboxCell.appendChild(checkbox);
+                row.appendChild(checkboxCell);
+
+                // Keep the existing Personnel table column order.
+                const values = [
+                    person.Fname ?? "",
+                    person.Mname ?? "",
+                    person.Lname ?? "",
+                    person.PositionName ?? "",
+                    person.PhoneNumber ?? "",
+                    person.Email ?? "",
+                    isActive ? "Active" : "Inactive",
+                    getDateOnly(person.DateOfBirth),
+                    getDateOnly(person.StartDate),
+                    getDateOnly(person.EndDate),
+                    person.SSN ?? ""
+                ];
+
+                values.forEach(value => {
+                    const cell = document.createElement("td");
+                    cell.textContent = value;
+                    row.appendChild(cell);
+                });
+
+                personnelTableBody.appendChild(row);
+            });
+        }
+
+        updateSelectionControls();
+
+        if (personnel.length === 0 && allPersonnel.length > 0) {
+            personnelMessage.textContent =
+                "No personnel match your search criteria.";
+        } else if (allPersonnel.length === 0) {
+            personnelMessage.textContent = "No personnel records found.";
+        } else {
+            personnelMessage.textContent =
+                `Showing ${personnel.length} of ${allPersonnel.length} personnel record(s).`;
+        }
+    }
+
+    // Load the complete personnel list from the backend.
     async function loadPersonnel() {
         personnelMessage.textContent = "Loading personnel records...";
         refreshPersonnelButton.disabled = true;
@@ -122,86 +400,14 @@ if (
                 );
             }
 
-            personnelTableBody.replaceChildren();
+            allPersonnel = personnel;
 
-            if (selectAllPersonnelCheckbox) {
-                selectAllPersonnelCheckbox.checked = false;
-                selectAllPersonnelCheckbox.indeterminate = false;
-            }
-
-            if (personnel.length === 0) {
-                const row = document.createElement("tr");
-                const cell = document.createElement("td");
-
-                cell.colSpan = 12;
-                cell.textContent = "No personnel records found.";
-
-                row.appendChild(cell);
-                personnelTableBody.appendChild(row);
-            } else {
-                personnel.forEach(person => {
-                    const row = document.createElement("tr");
-
-                    const isActive =
-                        person.EmploymentStatus === true ||
-                        person.EmploymentStatus === 1 ||
-                        person.EmploymentStatus === "1";
-
-                    // Add a checkbox for every employee.
-                    const checkboxCell = document.createElement("td");
-                    const checkbox = document.createElement("input");
-
-                    checkbox.type = "checkbox";
-                    checkbox.className = "personnel-checkbox";
-                    checkbox.value = person.PersonnelID;
-                    checkbox.dataset.active = String(isActive);
-
-                    checkbox.setAttribute(
-                        "aria-label",
-                        `Select ${isActive ? "active" : "inactive"} personnel ${person.PersonnelID}`
-                    );
-
-                    checkboxCell.appendChild(checkbox);
-                    row.appendChild(checkboxCell);
-
-                    // Add personnel information in the table's column order.
-                    const values = [
-                        person.Fname ?? "",
-                        person.Mname ?? "",
-                        person.Lname ?? "",
-                        person.PositionID ?? "",
-                        person.PhoneNumber ?? "",
-                        person.Email ?? "",
-                        isActive ? "Active" : "Inactive",
-                        person.DateOfBirth
-                            ? String(person.DateOfBirth).slice(0, 10)
-                            : "",
-                        person.StartDate
-                            ? String(person.StartDate).slice(0, 10)
-                            : "",
-                        person.EndDate
-                            ? String(person.EndDate).slice(0, 10)
-                            : "",
-                        person.SSN ?? ""
-                    ];
-
-                    values.forEach(value => {
-                        const cell = document.createElement("td");
-                        cell.textContent = value;
-                        row.appendChild(cell);
-                    });
-
-                    personnelTableBody.appendChild(row);
-                });
-            }
-
-            updateSelectionControls();
-
-            personnelMessage.textContent =
-                `Loaded ${personnel.length} personnel record(s).`;
+            // Apply the current filters to the newly loaded records.
+            applyPersonnelFilters();
         } catch (error) {
             console.error("Failed to load personnel:", error);
 
+            allPersonnel = [];
             personnelMessage.textContent = error.message;
             personnelTableBody.replaceChildren();
 
@@ -222,7 +428,41 @@ if (
             refreshPersonnelButton.disabled = false;
             updateSelectionControls();
         }
-    }
+    }    
+
+
+    //Begining of event listeners for personnel management
+
+
+    // Update the table when the name search changes.
+    personnelNameSearch.addEventListener("input", applyPersonnelFilters);
+
+    // Update the table when the start-date range changes.
+    startDateFromInput.addEventListener("change", applyPersonnelFilters);
+    startDateToInput.addEventListener("change", applyPersonnelFilters);
+
+    // Update the table when employment status changes.
+    employmentStatusFilter.addEventListener(
+        "change",
+        applyPersonnelFilters
+    );
+
+    // Reorder the table when the sort order changes.
+    personnelSortOrder.addEventListener(
+        "change",
+        applyPersonnelFilters
+    );
+
+    // Clear the search and filters while preserving the selected sort order.
+    clearPersonnelFiltersButton.addEventListener("click", () => {
+        personnelNameSearch.value = "";
+        startDateFromInput.value = "";
+        startDateToInput.value = "";
+        employmentStatusFilter.value = "all";
+
+        applyPersonnelFilters();
+    });
+
 
     // Refresh personnel records.
     refreshPersonnelButton.addEventListener("click", loadPersonnel);
@@ -450,14 +690,18 @@ if (
         }
 
         const positionText = getText("positionID");
-        const positionID = positionText ? Number(positionText) : null;
+        const positionID = Number(positionText);
 
         if (
-            positionID !== null &&
-            (!Number.isInteger(positionID) || positionID <= 0)
+            !positionText ||
+            !Number.isInteger(positionID) ||
+            positionID <= 0 ||
+            !Array.from(positionSelect.options).some(
+                option => option.value === positionText && !option.disabled
+            )
         ) {
             personnelMessage.textContent =
-                "Please enter a valid Position ID.";
+                "Please select a valid position from the dropdown.";
             return;
         }
 
@@ -523,4 +767,5 @@ if (
 
     // Load personnel as soon as the script runs.
     loadPersonnel();
+    loadPositionOptions(); // Load available positions for the personnel form
 }
