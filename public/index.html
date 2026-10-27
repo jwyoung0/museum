@@ -78,6 +78,26 @@
             background: rgba(0, 0, 0, 0.45);
             z-index: 1;
         }
+
+        .site-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            margin-top: 4rem;
+            border-top: 1px solid var(--line);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .site-footer a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .site-footer a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -86,7 +106,7 @@
         <nav class="header-nav" aria-label="Main navigation">
             <a href="/artwork">Artwork</a>
             <a href="/membership">Membership</a>
-            <a href="/events">Events</a>
+            <!-- <a href="/events">Events</a> -->
             <a href="/ticketing">Tickets</a>
             <a href="/shop">Shop</a>
         </nav>
@@ -122,8 +142,9 @@
             </div>
         </section>
     </main>
-    <footer>
-        <a class="header-auth" href="/auth-staff">Staff Portal</a>
+    <footer class="site-footer">
+        <p>&copy; 2026 Museum of Fine Arts Houston</p>
+        <a href="/auth-staff">Staff Portal</a>
     </footer>    
     <script src="js/index.js"></script>
 </body>
