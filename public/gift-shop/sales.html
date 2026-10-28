@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gift Shop Sales</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <h1 class="dashboard-title">Gift Shop Dashboard</h1>
+
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
+    </header>
+
+    <main>
+        <nav aria-label="Gift Shop navigation">
+            <a href="/gift-shop/products">Products</a>
+            <a href="/gift-shop/inventory">Inventory</a>
+            <a href="/gift-shop/sales" aria-current="page">Sales</a>
+        </nav>
+
+        <section class="artists-workspace">
+            <header class="workspace-header">
+                <h2>Sales History</h2>
+            </header>
+
+            <p id="sales-summary" role="status">Loading sales...</p>
+
+            <div class="workspace-toolbar">
+                <input
+                    type="search"
+                    id="sales-search"
+                    placeholder="Search purchase ID, visitor ID, or product..."
+                    aria-label="Search sales"
+                >
+            </div>
+
+            <div class="artists-table-container">
+                <table class="artists-table">
+                    <thead>
+                        <tr>
+                            <th>Purchase ID</th>
+                            <th>Date</th>
+                            <th>Visitor ID</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Line Total</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="sales-table-body">
+                        <tr>
+                            <td colspan="7">Loading sales...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="/js/gift-shop-sales.js"></script>
+</body>
+</html>

@@ -9,7 +9,8 @@ async function listProducts() {
             ProductName,
             Category,
             Price,
-            QuantityInStock
+            QuantityInStock,
+            ImageURL
         FROM dbo.PRODUCTS
         ORDER BY ProductName;
     `);
@@ -23,7 +24,8 @@ function validateProduct(product) {
         ProductName,
         Category,
         Price,
-        QuantityInStock
+        QuantityInStock,
+        ImageURL
     } = product;
 
     if (
@@ -69,6 +71,31 @@ function validateProduct(product) {
     ) {
         throw new TypeError("Stock must be a nonnegative whole number.");
     }
+
+    if (
+        ImageURL != null &&
+        (typeof ImageURL !== "string" || ImageURL.trim().length > 500)
+    ) {
+        throw new TypeError(
+            "Image URL must be text with at most 500 characters."
+        );
+    }
+
+    if (typeof ImageURL === "string" && ImageURL.trim()) {
+        const imagePath = ImageURL.trim();
+
+        if (
+            !imagePath.startsWith("/images/") ||
+            imagePath.includes("..") ||
+            imagePath.includes("\\") ||
+            imagePath.includes("?") ||
+            imagePath.includes("#")
+        ) {
+            throw new TypeError(
+                "Use a local image path such as /images/shop/museum-mug.jpg."
+            );
+        }
+    }
 }
 
 async function createProduct(product) {
@@ -79,7 +106,8 @@ async function createProduct(product) {
         ProductName,
         Category,
         Price,
-        QuantityInStock
+        QuantityInStock,
+        ImageURL
     } = product;
 
     const pool = await getPool();
@@ -91,22 +119,41 @@ async function createProduct(product) {
             .input("Category", sql.NVarChar(50), Category.trim())
             .input("Price", sql.Decimal(10, 2), Price)
             .input("QuantityInStock", sql.Int, QuantityInStock)
+            .input("ImageURL", sql.NVarChar(500), ImageURL?.trim() || null)
             .query(`
+                DECLARE @createdProducts TABLE (
+                    ProductID int
+                );
+
                 INSERT INTO dbo.PRODUCTS (
                     ProductID,
                     ProductName,
                     Category,
                     Price,
-                    QuantityInStock
+                    QuantityInStock,
+                    ImageURL
                 )
-                OUTPUT INSERTED.*
+                OUTPUT INSERTED.ProductID
+                    INTO @createdProducts (ProductID)
                 VALUES (
                     @ProductID,
                     @ProductName,
                     @Category,
                     @Price,
-                    @QuantityInStock
+                    @QuantityInStock,
+                    @ImageURL
                 );
+
+                SELECT
+                    p.ProductID,
+                    p.ProductName,
+                    p.Category,
+                    p.Price,
+                    p.QuantityInStock,
+                    p.ImageURL
+                FROM dbo.PRODUCTS AS p
+                INNER JOIN @createdProducts AS c
+                    ON c.ProductID = p.ProductID;
             `);
 
         return result.recordset[0];
@@ -132,7 +179,8 @@ async function updateProduct(product) {
         ProductName,
         Category,
         Price,
-        QuantityInStock
+        QuantityInStock,
+        ImageURL
     } = product;
 
     const pool = await getPool();
@@ -143,15 +191,33 @@ async function updateProduct(product) {
         .input("Category", sql.NVarChar(50), Category.trim())
         .input("Price", sql.Decimal(10, 2), Price)
         .input("QuantityInStock", sql.Int, QuantityInStock)
+        .input("ImageURL", sql.NVarChar(500), ImageURL?.trim() || null)
         .query(`
+            DECLARE @updatedProducts TABLE (
+                ProductID int
+            );
+
             UPDATE dbo.PRODUCTS
             SET
                 ProductName = @ProductName,
                 Category = @Category,
                 Price = @Price,
-                QuantityInStock = @QuantityInStock
-            OUTPUT INSERTED.*
+                QuantityInStock = @QuantityInStock,
+                ImageURL = @ImageURL
+            OUTPUT INSERTED.ProductID
+                INTO @updatedProducts (ProductID)
             WHERE ProductID = @ProductID;
+
+            SELECT
+                p.ProductID,
+                p.ProductName,
+                p.Category,
+                p.Price,
+                p.QuantityInStock,
+                p.ImageURL
+            FROM dbo.PRODUCTS AS p
+            INNER JOIN @updatedProducts AS u
+                ON u.ProductID = p.ProductID;
         `);
 
     return result.recordset[0] || null;

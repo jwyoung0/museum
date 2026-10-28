@@ -1,0 +1,67 @@
+-- Gift shop low-stock alerts
+-- An active alert has ResolvedAt = NULL.
+-- Low stock means 5 units or fewer.
+-- Create the alert table if it does not already exist.
+IF OBJECT_ID(N'dbo.INVENTORY_ALERTS', N'U') IS NULL
+    BEGIN
+        CREATE TABLE dbo.INVENTORY_ALERTS (
+            AlertID         INT       IDENTITY (1, 1) PRIMARY KEY,
+            ProductID       INT       NOT NULL,
+            QuantityInStock INT       NOT NULL,
+            CreatedAt       DATETIME2 CONSTRAINT DF_INVENTORY_ALERTS_CreatedAt DEFAULT SYSUTCDATETIME() NOT NULL,
+            ResolvedAt      DATETIME2 NULL,
+            CONSTRAINT FK_INVENTORY_ALERTS_PRODUCT FOREIGN KEY (ProductID) REFERENCES dbo.PRODUCTS (ProductID)
+        );
+    END
+
+
+GO
+-- Allow only one active alert per product.
+IF NOT EXISTS (SELECT 1
+               FROM   sys.indexes
+               WHERE  object_id = OBJECT_ID(N'dbo.INVENTORY_ALERTS')
+                      AND name = N'UX_INVENTORY_ALERTS_OpenProduct')
+    BEGIN
+        CREATE UNIQUE INDEX UX_INVENTORY_ALERTS_OpenProduct
+            ON dbo.INVENTORY_ALERTS(ProductID) WHERE ResolvedAt IS NULL;
+    END
+
+
+GO
+-- Automatically maintain alerts after products are added or updated.
+CREATE OR ALTER TRIGGER dbo.trg_PRODUCTS_LowStock
+    ON dbo.PRODUCTS
+    AFTER INSERT, UPDATE
+    AS BEGIN
+           SET NOCOUNT ON;
+           -- Update active alerts and resolve them after restocking.
+           UPDATE alert
+           SET    QuantityInStock = product.QuantityInStock,
+                  ResolvedAt      = CASE WHEN product.QuantityInStock > 5 THEN SYSUTCDATETIME() ELSE NULL END
+           FROM   dbo.INVENTORY_ALERTS AS alert
+                  INNER JOIN
+                  inserted AS product
+                  ON product.ProductID = alert.ProductID
+           WHERE  alert.ResolvedAt IS NULL;
+           -- Create missing alerts for low-stock products.
+           INSERT INTO dbo.INVENTORY_ALERTS (
+               ProductID,
+               QuantityInStock
+           )
+           SELECT product.ProductID,
+                  product.QuantityInStock
+           FROM   inserted AS product
+           WHERE  product.QuantityInStock <= 5
+                  AND NOT EXISTS (SELECT 1
+                                  FROM   dbo.INVENTORY_ALERTS AS alert
+                                  WHERE  alert.ProductID = product.ProductID
+                                         AND alert.ResolvedAt IS NULL);
+       END
+
+
+GO
+-- Initialize alerts for existing low-stock products.
+-- Quantities remain unchanged; the update fires the trigger.
+UPDATE dbo.PRODUCTS
+SET    QuantityInStock = QuantityInStock
+WHERE  QuantityInStock <= 5;
