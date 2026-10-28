@@ -6,6 +6,34 @@
     <meta name="theme-color" content="#2563eb">
     <title>Gift Shop Inventory</title>
     <link rel="stylesheet" href="/style">
+
+    <style>
+        .inventory-alerts {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            border: 1px solid #d97706;
+            border-radius: 8px;
+            background: #fffbeb;
+            color: #713f12;
+        }
+
+        .inventory-alerts h2 {
+            color: inherit;
+        }
+
+        .inventory-alerts li {
+            margin: 0.75rem 0;
+        }
+
+        .inventory-low-stock {
+            background: #fff3cd;
+            color: #713f12;
+        }
+
+        .inventory-low-stock td:last-child {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <header class="dashboard-header">
@@ -23,6 +51,25 @@
             <a href="/gift-shop/inventory" aria-current="page">Inventory</a>
             <a href="/gift-shop/sales">Sales</a>
         </nav>
+
+        <section
+            class="inventory-alerts"
+            aria-labelledby="inventory-alerts-title"
+        >
+            <h2 id="inventory-alerts-title">Low Stock Alerts</h2>
+
+            <p id="inventory-alerts-message" role="status">
+                Loading alerts...
+            </p>
+
+            <ul id="inventory-alerts-list"></ul>
+
+            <p>
+                Restock products on the
+                <a href="/gift-shop/products">Products page</a>.
+                Alerts resolve automatically when stock rises above 5.
+            </p>
+        </section>
 
         <section class="artists-workspace">
             <header class="workspace-header">
@@ -45,25 +92,27 @@
                     <input type="checkbox" id="low-stock-only">
                     Show only stock of 5 or fewer
                 </label>
+
+                <button type="button" id="refresh-inventory-button">
+                    Refresh
+                </button>
             </div>
 
             <div class="artists-table-container">
                 <table class="artists-table">
                     <thead>
                         <tr>
-                            <th>Product ID</th>
-                            <th>Name</th>
-                            <th>Category</th>
-                            <th>Quantity in Stock</th>
-                            <th>Status</th>
+                            <th scope="col">Product ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Quantity in Stock</th>
+                            <th scope="col">Status</th>
                         </tr>
                     </thead>
 
                     <tbody id="inventory-table-body">
                         <tr>
-                            <td colspan="5">
-                                Loading inventory...
-                            </td>
+                            <td colspan="5">Loading inventory...</td>
                         </tr>
                     </tbody>
                 </table>

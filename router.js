@@ -31,6 +31,10 @@ const {
 } = require("./handlers/ticket-reports");
 
 const {
+    listInventoryAlertsHandler
+} = require("./handlers/gift-shop/inventory-alerts");
+
+const {
 
     checkoutContextHandler,
 
@@ -257,7 +261,15 @@ async function router(req, res) {
             return;
 
         }
+        if (
+    req.method === "GET" &&
+    req.url === "/api/gift-shop/inventory-alerts"
+) {
+    if (!requireGiftShopManager(req, res)) return;
 
+    await listInventoryAlertsHandler(req, res);
+    return;
+}
         if(req.method ==="POST" && req.url === "/api/director/personnel/deactivate"){
 
             if(!requireDirector(req, res)) return;
