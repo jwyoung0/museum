@@ -18,6 +18,117 @@
             text-align: left;
             border-bottom: 1px solid #ccc;
         }
+
+        /* Personnel table: keep columns readable instead of compressing them. */
+        #personnel .personnel-table-container {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            margin: 1rem 0 1.5rem;
+            border: 1px solid #d7dee8;
+            border-radius: 10px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(25, 40, 60, 0.06);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #personnel table.personnel-table {
+            width: 100%;
+            min-width: 1500px;
+            table-layout: fixed;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 0;
+        }
+
+        #personnel table.personnel-table th,
+        #personnel table.personnel-table td {
+            box-sizing: border-box;
+            padding: 12px 10px;
+            text-align: left;
+            vertical-align: middle;
+            line-height: 1.4;
+            border-bottom: 1px solid #e5eaf0;
+            overflow-wrap: break-word;
+            word-break: normal;
+        }
+
+        #personnel table.personnel-table th {
+            background: #eef3f8;
+            color: #27364a;
+            font-size: 0.84rem;
+            font-weight: 650;
+            white-space: normal;
+        }
+
+        /* Column proportions total 100%; Email and Position get extra space. */
+        #personnel table.personnel-table th:nth-child(1),
+        #personnel table.personnel-table td:nth-child(1) { width: 5%; }
+        #personnel table.personnel-table th:nth-child(2),
+        #personnel table.personnel-table td:nth-child(2) { width: 7%; }
+        #personnel table.personnel-table th:nth-child(3),
+        #personnel table.personnel-table td:nth-child(3) { width: 7.5%; }
+        #personnel table.personnel-table th:nth-child(4),
+        #personnel table.personnel-table td:nth-child(4) { width: 7%; }
+        #personnel table.personnel-table th:nth-child(5),
+        #personnel table.personnel-table td:nth-child(5) { width: 10%; }
+        #personnel table.personnel-table th:nth-child(6),
+        #personnel table.personnel-table td:nth-child(6) { width: 9%; }
+        #personnel table.personnel-table th:nth-child(7),
+        #personnel table.personnel-table td:nth-child(7) { width: 15%; }
+        #personnel table.personnel-table th:nth-child(8),
+        #personnel table.personnel-table td:nth-child(8) { width: 10%; }
+        #personnel table.personnel-table th:nth-child(9),
+        #personnel table.personnel-table td:nth-child(9) { width: 7.5%; }
+        #personnel table.personnel-table th:nth-child(10),
+        #personnel table.personnel-table td:nth-child(10) { width: 7.5%; }
+        #personnel table.personnel-table th:nth-child(11),
+        #personnel table.personnel-table td:nth-child(11) { width: 7.5%; }
+        #personnel table.personnel-table th:nth-child(12),
+        #personnel table.personnel-table td:nth-child(12) { width: 7%; }
+
+        #personnel table.personnel-table th:first-child,
+        #personnel table.personnel-table td:first-child {
+            text-align: center;
+        }
+
+        #personnel table.personnel-table td:nth-child(6),
+        #personnel table.personnel-table td:nth-child(9),
+        #personnel table.personnel-table td:nth-child(10),
+        #personnel table.personnel-table td:nth-child(11),
+        #personnel table.personnel-table td:nth-child(12) {
+            white-space: nowrap;
+        }
+
+        #personnel table.personnel-table td:nth-child(7) {
+            overflow-wrap: anywhere;
+        }
+
+        #personnel table.personnel-table tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        #personnel table.personnel-table tbody tr:hover {
+            background: #edf5ff;
+        }
+
+        #personnel table.personnel-table tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        #personnel table.personnel-table td[colspan] {
+            padding: 24px 12px;
+            text-align: center;
+            color: #596579;
+        }
+
+        @media (max-width: 700px) {
+            #personnel table.personnel-table th,
+            #personnel table.personnel-table td {
+                padding: 10px 8px;
+            }
+        }
     </style>
 </head>
 <body>
