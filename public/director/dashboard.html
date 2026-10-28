@@ -6,6 +6,19 @@
     <title>Museum Director Dashboard</title>
     <link rel="stylesheet" href="/style">
     <style>
+        
+        .select-all-personnel-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 12px;
+            margin-bottom: 20px;
+        }
+
+        .select-all-personnel-container label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
         #revenue table {
             width: 100%;
             border-collapse: collapse;
@@ -254,7 +267,7 @@
                 </button>
             </div>
 
-            <div>
+            <div class="select-all-personnel-container">
                 <label for="select-all-personnel">
                     <input type="checkbox" id="select-all-personnel">
                     Select All Active Personnel
