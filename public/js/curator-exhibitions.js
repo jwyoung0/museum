@@ -87,9 +87,11 @@ function renderExhibitions(exhibitions) {
 
         const datesCell = document.createElement("td");
         if (exhibition.startDate && exhibition.endDate) {
-            const startDate = new Date(exhibition.startDate).toLocaleDateString();
-            const endDate = new Date(exhibition.endDate).toLocaleDateString();
+            const startDate = exhibition.startDate.slice(0, 10);
+            const endDate = exhibition.endDate.slice(0, 10);
             datesCell.textContent = `${startDate} - ${endDate}`;
+        } else {
+            datesCell.textContent = "—";
         }
         
         const actionsCell = document.createElement("td");
@@ -107,7 +109,7 @@ function renderExhibitions(exhibitions) {
 
         actionsCell.append(viewButton, editButton);
         row.append(nameCell, statusCell, datesCell, actionsCell);
-        tableBody.appendChild(row, emptyState);
+        tableBody.insertBefore(row, emptyState);
 
         viewButton.addEventListener("click", () => {
             window.location.assign(
@@ -178,12 +180,10 @@ async function openExhibitionDrawerForEdit(exhibitionId) {
         const exhibition = await response.json();
         document.getElementById("exhibitionName").value =
             exhibition.exhibitionName ?? "";
-        document.getElementById("status").value =
-            exhibition.status ?? "";
         document.getElementById("startDate").value =
-            exhibition.startDate ?? "";
+            exhibition.startDate?.slice(0, 10) ?? "";
         document.getElementById("endDate").value =
-            exhibition.endDate ?? "";   
+            exhibition.endDate?.slice(0, 10) ?? "";
         document.getElementById("description").value =
             exhibition.description ?? "";
 
@@ -222,7 +222,6 @@ async function submitExhibitionForm(event) {
     const formData = new FormData(form);
     const exhibition = {
         exhibitionName: formData.get("exhibitionName").trim(),
-        status: formData.get("status").trim() || null,
         startDate: formData.get("startDate").trim() || null,
         endDate: formData.get("endDate").trim() || null,
         description: formData.get("description").trim() || null

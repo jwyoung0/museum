@@ -158,10 +158,95 @@ async function deleteExhibition(exhibitionId) {
     return result.recordset[0] || null;
 }
 
+async function listExhibitionArtworks(exhibitionId) {
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .input("exhibitionId", sql.Int, exhibitionId)
+        .query(`
+            SELECT
+                a.accessionId,
+                a.title,
+                ar.fullName AS artist,
+                c.collectionName AS collection
+            FROM dbo.EXHIBITION_ARTWORK ea
+            INNER JOIN dbo.ARTWORKS a
+                ON a.accessionId = ea.accessionId
+            INNER JOIN dbo.ARTISTS ar
+                ON ar.artistId = a.artistId
+            INNER JOIN dbo.COLLECTIONS c
+                ON c.collectionId = a.collectionId
+            WHERE ea.exhibitionId = @exhibitionId
+            ORDER BY a.title;
+        `);
+
+    return result.recordset;
+}
+
+async function addArtworkToExhibition(exhibitionId, accessionId) {
+    if (!Number.isInteger(exhibitionId) || !Number.isInteger(accessionId)) {
+        throw new TypeError("Valid exhibition and artwork IDs are required");
+    }
+
+    const pool = await getPool();
+    const result = await pool.request()
+        .input("exhibitionId", sql.Int, exhibitionId)
+        .input("accessionId", sql.Int, accessionId)
+        .query(`
+            IF NOT EXISTS (
+                SELECT 1
+                FROM dbo.EXHIBITIONS
+                WHERE exhibitionId = @exhibitionId
+            ) OR NOT EXISTS (
+                SELECT 1
+                FROM dbo.ARTWORKS
+                WHERE accessionId = @accessionId
+            )
+                SELECT 'notFound' AS result;
+            ELSE IF EXISTS (
+                SELECT 1
+                FROM dbo.EXHIBITION_ARTWORK
+                WHERE exhibitionId = @exhibitionId
+                  AND accessionId = @accessionId
+            )
+                SELECT 'alreadyAssigned' AS result;
+            ELSE
+            BEGIN
+                INSERT INTO dbo.EXHIBITION_ARTWORK (exhibitionId, accessionId)
+                VALUES (@exhibitionId, @accessionId);
+                SELECT 'added' AS result;
+            END;
+        `);
+
+    return result.recordset[0].result;
+}
+
+async function removeArtworkFromExhibition(exhibitionId, accessionId) {
+    if (!Number.isInteger(exhibitionId) || !Number.isInteger(accessionId)) {
+        throw new TypeError("Valid exhibition and artwork IDs are required");
+    }
+
+    const pool = await getPool();
+    const result = await pool.request()
+        .input("exhibitionId", sql.Int, exhibitionId)
+        .input("accessionId", sql.Int, accessionId)
+        .query(`
+            DELETE FROM dbo.EXHIBITION_ARTWORK
+            OUTPUT DELETED.*
+            WHERE exhibitionId = @exhibitionId
+              AND accessionId = @accessionId;
+        `);
+
+    return result.recordset[0] || null;
+}
+
 module.exports = {
     createExhibition,
     listExhibitions,
     readExhibition,
     updateExhibition,
-    deleteExhibition
+    deleteExhibition,
+    listExhibitionArtworks,
+    addArtworkToExhibition,
+    removeArtworkFromExhibition
 };

@@ -3,7 +3,10 @@ const {
     listExhibitions,
     readExhibition,
     updateExhibition,
-    deleteExhibition
+    deleteExhibition,
+    listExhibitionArtworks,
+    addArtworkToExhibition,
+    removeArtworkFromExhibition
 } = require("../database/exhibitions");
 
 const { readJsonBody } = require("../utils/http");
@@ -152,10 +155,70 @@ async function deleteExhibitionHandler(req, res) {
     }
 }
 
+async function listExhibitionArtworksHandler(req, res) {
+    const artworks = await listExhibitionArtworks(
+        Number(req.params.id)
+    );
+
+    res.writeHead(200, {
+        "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify(artworks));
+}
+
+async function addArtworkToExhibitionHandler(req, res) {
+    const body = await readJsonBody(req);
+    const result = await addArtworkToExhibition(
+        Number(req.params.id),
+        Number(body.accessionId)
+    );
+
+    if (result === "notFound") {
+        res.writeHead(404, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({
+            error: "Exhibition or artwork not found"
+        }));
+    }
+
+    if (result === "alreadyAssigned") {
+        res.writeHead(409, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({
+            error: "Artwork is already assigned to this exhibition"
+        }));
+    }
+
+    res.writeHead(201, {
+        "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify({ added: true }));
+}
+
+async function removeArtworkFromExhibitionHandler(req, res) {
+    const removed = await removeArtworkFromExhibition(
+        Number(req.params.id),
+        Number(req.params.accessionId)
+    );
+
+    if (!removed) {
+        res.writeHead(404, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({
+            error: "Exhibition artwork assignment not found"
+        }));
+    }
+
+    res.writeHead(204);
+    res.end();
+}
+
 module.exports = {
     createExhibitionHandler,
     listExhibitionHandler,
     readExhibitionHandler,
     updateExhibitionHandler,
-    deleteExhibitionHandler
-}
+    deleteExhibitionHandler,
+    listExhibitionArtworksHandler,
+    addArtworkToExhibitionHandler,
+    removeArtworkFromExhibitionHandler
+};

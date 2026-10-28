@@ -6,6 +6,16 @@
     <meta name="theme-color" content="#2563eb">
     <title>Exhibition Details | Curator Dashboard</title>
     <link rel="stylesheet" href="/style">
+    <style>
+        #artwork-search {
+            min-width: 300px;
+        }
+
+        #artwork-select {
+            width: 350px;
+            flex-shrink: 0;
+        }
+    </style>
 </head>
 <body>
     <header class="dashboard-header">
@@ -28,7 +38,7 @@
         <section class="artist-detail-workspace">
             <a href="/curator/exhibitions">← Back to Exhibitions</a>
             <header class="workspace-header">
-                <h2 id="exhibition-name">Loading...</h2>
+                <h2>Exhibition Details</h2>
             </header>
 
             <dl class="artist-detail-grid">
@@ -48,20 +58,63 @@
                 <dd id="description"></dd>
             </dl>
 
-            <div class="artist-actions">
-                <button
-                    id="delete-exhibition-button"
-                    class="button-danger"
-                    type="button"
-                    hidden
-                >
-                    Delete Exhibition
-                </button>
-            </div>
-
             <div id="detail-error" role="alert" hidden>
                 Unable to load exhibition.
             </div>
+        </section>
+
+        <section class="artists-workspace"
+            aria-labelledby="exhibition-artworks-title">
+
+            <header class="workspace-header">
+                <h2 id="exhibition-artworks-title">
+                    Exhibition Artwork
+                </h2>
+            </header>
+
+            <div class="workspace-toolbar">
+                <input
+                    type="search"
+                    id="artwork-search"
+                    placeholder="Search artworks..."
+                    aria-label="Search artworks"
+                >
+            </div>
+
+            <p id="artwork-message" role="status" aria-live="polite">
+                Start typing to search artwork.
+            </p>
+
+            <div id="artwork-search-results" class="artists-table-container">
+            </div>
+
+            <div class="artists-table-container">
+                <table class="artists-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Artist</th>
+                            <th>Collection</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="exhibition-artworks-table-body">
+                        <tr id="artworks-empty-state" hidden>
+                            <td colspan="4">
+                                No artwork assigned.
+                            </td>
+                        </tr>
+
+                        <tr id="artworks-error-state" hidden>
+                            <td colspan="4">
+                                Unable to load artwork.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
         </section>
     </main>
     <script src="/js/curator-exhibition-detail.js"></script>
