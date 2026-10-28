@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Museum Director Dashboard - Membership Revenue</title>
+    <link rel="stylesheet" href="/style">
+    <script src="/js/director-membership-revenue.js" defer></script>
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <h1 class="dashboard-title">Museum Director Dashboard</h1>
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
+    </header>
+
+    <main>
+        <nav aria-label="Director sections">
+            <a href="/director/dashboard">Personnel</a>
+            <a href="/director/memberships">Memberships</a>
+            <a href="/director/dashboard#revenue">Ticket Revenue</a>
+            <a href="/director/membership-revenue" aria-current="page">Membership Revenue</a>
+        </nav>
+
+        <section>
+            <h2>Membership Revenue</h2>
+            <p>
+                Revenue is estimated using each tier's current price, not its price
+                at the time of purchase.
+            </p>
+
+            <div>
+                <label for="membership-revenue-period">Report period</label>
+                <select id="membership-revenue-period">
+                    <option value="this-month">This month</option>
+                    <option value="this-year">This year</option>
+                    <option value="year">Select year</option>
+                </select>
+
+                <label for="membership-revenue-year" id="membership-revenue-year-label" hidden>
+                    Year
+                </label>
+                <input
+                    type="number"
+                    id="membership-revenue-year"
+                    min="1900"
+                    step="1"
+                    hidden
+                >
+                <button type="button" id="load-membership-revenue">
+                    View report
+                </button>
+            </div>
+
+            <p id="membership-revenue-message" role="status" aria-live="polite"></p>
+            <table id="membership-revenue-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Membership tier</th>
+                        <th scope="col">Memberships sold</th>
+                        <th scope="col">Estimated revenue</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+                <tfoot>
+                    <tr>
+                        <th scope="row">Total</th>
+                        <td id="membership-revenue-total-count">0</td>
+                        <td id="membership-revenue-total-amount">$0.00</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </section>
+    </main>
+</body>
+</html>

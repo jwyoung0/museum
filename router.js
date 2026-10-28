@@ -11,7 +11,8 @@ const {
 const {
     ticketSalesByTypeHandler,
     dailyTicketSalesHandler,
-    visitorPurchaseSummaryHandler
+    visitorPurchaseSummaryHandler,
+    membershipRevenueHandler
 } = require("./handlers/ticket-reports");
 const {
     getVisitorProfileHandler,
@@ -311,6 +312,15 @@ async function router(req, res) {
             return;
         }
 
+        if (
+            req.method === "GET" &&
+            /^\/api\/membership-reports\/revenue(?:\?|$)/.test(req.url)
+        ) {
+            if (!requireDirector(req, res)) return;
+            await membershipRevenueHandler(req, res);
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/api/director/memberships/tiers") {
             if (!requireDirector(req, res)) return;
             await listTiersHandler(req, res);
@@ -583,6 +593,12 @@ async function router(req, res) {
             sendPage(res, path.join("director", "dashboard.html"), "text/html");
             return;
         }
+
+        if (req.method === "GET" && req.url === "/director/membership-revenue") {
+            if (!requireDirector(req, res)) return;
+            sendPage(res, path.join("director", "membership-revenue.html"), "text/html");
+            return;
+        }
         
         if (req.method === "GET" && req.url === "/director/memberships") {
             if (!requireDirector(req, res)) return;
@@ -611,6 +627,12 @@ async function router(req, res) {
         if (req.method === "GET" && req.url === "/js/director-memberships.js") {
             if (!requireDirector(req, res)) return;
             sendPage(res, path.join("js", "director-memberships.js"), "application/javascript");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/js/director-membership-revenue.js") {
+            if (!requireDirector(req, res)) return;
+            sendPage(res, path.join("js", "director-membership-revenue.js"), "application/javascript");
             return;
         }
 

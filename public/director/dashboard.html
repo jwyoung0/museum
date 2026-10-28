@@ -154,10 +154,10 @@
 
     <main>
         <nav aria-label="Director sections">
-            <a href="/director/dashboard" data-tab="personnel" aria-current="page">Personnel</a>
+            <a href="/director/dashboard" data-tab="personnel">Personnel</a>
             <a href="/director/memberships" data-tab="memberships">Memberships</a>
-            <!-- <a href="/director/events" data-tab="events">Events</a> -->
-            <button type="button" data-tab="revenue">Ticket Revenue</button>
+            <a href="/director/dashboard#revenue" data-tab="revenue">Ticket Revenue</a>
+            <a href="/director/membership-revenue">Membership Revenue</a>
         </nav>
 
         <section id="personnel">
@@ -447,33 +447,10 @@
             <h3>Visitor Purchases</h3>
             <table id="visitors"></table>
         </section>
+
     </main>
 
     <script>
-        document.querySelectorAll("[data-tab]").forEach(tab => {
-            tab.addEventListener("click", event => {
-                const tabName = tab.dataset.tab;
-
-                if (tabName === "personnel") {
-                    event.preventDefault();
-
-                    document.querySelectorAll("main > section").forEach(section => {
-                        section.hidden =
-                            section.id !== "personnel" &&
-                            section.id !== "positions";
-                    });
-
-                    history.pushState({}, "", "/director/dashboard");
-
-                    document.querySelectorAll("[data-tab]").forEach(item => {
-                        item.removeAttribute("aria-current");
-                    });
-
-                    tab.setAttribute("aria-current", "page");
-                }
-            });
-        });
-
         async function loadReport(id, url) {
             const table = document.getElementById(id);
 
@@ -517,22 +494,36 @@
             }
         }
 
-        document.querySelector('[data-tab="revenue"]').onclick = () => {
+        function showDashboardSection() {
+            const showRevenue = window.location.hash === "#revenue";
+
             document.querySelectorAll("main > section").forEach(section => {
-                section.hidden = section.id !== "revenue";
+                section.hidden = showRevenue
+                    ? section.id !== "revenue"
+                    : section.id !== "personnel" && section.id !== "positions";
             });
 
-            document.querySelectorAll("[data-tab]").forEach(item => {
+            document.querySelectorAll("nav [data-tab]").forEach(item => {
                 item.removeAttribute("aria-current");
             });
 
-            document.querySelector('[data-tab="revenue"]')
+            document.querySelector(
+                showRevenue
+                    ? '[data-tab="revenue"]'
+                    : '[data-tab="personnel"]'
+            )
                 .setAttribute("aria-current", "page");
 
-            loadReport("sales", "/api/ticket-reports/sales");
-            loadReport("daily", "/api/ticket-reports/daily");
-            loadReport("visitors", "/api/ticket-reports/visitors");
-        };
+            if (showRevenue) {
+                loadReport("sales", "/api/ticket-reports/sales");
+                loadReport("daily", "/api/ticket-reports/daily");
+                loadReport("visitors", "/api/ticket-reports/visitors");
+            }
+        }
+
+        window.addEventListener("hashchange", showDashboardSection);
+        showDashboardSection();
+
     </script>
 
     <script src="/js/director-personnel.js" defer></script>
