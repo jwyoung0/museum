@@ -167,6 +167,8 @@ async function listExhibitionArtworks(exhibitionId) {
             SELECT
                 a.accessionId,
                 a.title,
+                a.creationDate,
+                a.imageURL,
                 ar.fullName AS artist,
                 c.collectionName AS collection
             FROM dbo.EXHIBITION_ARTWORK ea

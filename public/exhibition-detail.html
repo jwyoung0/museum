@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>Exhibition Details | MFAH</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <header class="site-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="/artwork">Artwork</a>
+            <a href="/membership">Membership</a>
+            <a href="/ticketing">Tickets</a>
+            <a href="/shop">Shop</a>
+        </nav>
+        <!-- VISITOR_AUTH -->
+    </header>
+
+    <main>
+        <nav aria-label="Artwork navigation">
+            <a href="/artwork">Search</a>
+            <a href="/collections">Collections</a>
+            <a href="/exhibitions" aria-current="page">Now on View</a>
+        </nav>
+
+        <section class="artwork-detail-workspace">
+            <a href="/exhibitions">← Back to Exhibitions</a>
+            <header class="workspace-header">
+                <h2 id="exhibition-name">Loading...</h2>
+            </header>
+
+            <dl class="artist-detail-grid">
+                <dt>Status</dt>
+                <dd id="exhibition-status"></dd>
+                <dt>Start Date</dt>
+                <dd id="exhibition-start-date"></dd>
+                <dt>End Date</dt>
+                <dd id="exhibition-end-date"></dd>
+                <dt>Description</dt>
+                <dd id="exhibition-description"></dd>
+            </dl>
+
+            <p id="exhibition-detail-error" role="alert" hidden>
+                Unable to load exhibition details.
+            </p>
+        </section>
+
+        <section class="artwork-workspace">
+            <header class="workspace-header">
+                <h2>Exhibition Artwork</h2>
+            </header>
+
+            <div class="workspace-toolbar">
+                <input
+                    type="search"
+                    id="exhibition-artwork-search"
+                    placeholder="Search artworks..."
+                    aria-label="Search exhibition artwork"
+                >
+            </div>
+
+            <p id="exhibition-artwork-empty-state" role="status" hidden>
+                No artwork matches your search.
+            </p>
+            <p id="exhibition-artwork-error" role="alert" hidden>
+                Unable to load exhibition artwork.
+            </p>
+            <div id="exhibition-artworks-results"></div>
+        </section>
+    </main>
+
+    <footer>
+        <a class="header-auth" href="/auth-staff">Staff Portal</a>
+    </footer>
+    <script src="/js/exhibition-detail.js"></script>
+</body>
+</html>

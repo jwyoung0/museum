@@ -241,6 +241,13 @@ async function router(req, res) {
             return;
         }
 
+        const visitorExhibitionPageMatch =
+            req.url.match(/^\/exhibition-detail\/\d+(?:\?.*)?$/);
+        if (req.method === "GET" && visitorExhibitionPageMatch) {
+            sendVisitorPage(req, res, "exhibition-detail.html");
+            return;
+        }
+
         if (req.method === "GET" && req.url === "/ticketing") {
             sendVisitorPage(req, res, "ticketing.html");
             return;
@@ -403,6 +410,11 @@ async function router(req, res) {
 
         if (req.method === "GET" && req.url === "/js/exhibitions.js") {
             sendPage(res, path.join("js", "exhibitions.js"), "application/javascript");            
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/js/exhibition-detail.js") {
+            sendPage(res, path.join("js", "exhibition-detail.js"), "application/javascript");
             return;
         }
 
@@ -802,6 +814,22 @@ async function router(req, res) {
         );
         
         const artworkMatchVisitor = pathname.match(/^\/api\/artwork-detail\/(\d+)$/);
+        const visitorExhibitionMatch =
+            pathname.match(/^\/api\/exhibitions\/(\d+)$/);
+        const visitorExhibitionArtworksMatch =
+            pathname.match(/^\/api\/exhibitions\/(\d+)\/artworks$/);
+
+        if (req.method === "GET" && visitorExhibitionMatch) {
+            req.params = { id: visitorExhibitionMatch[1] };
+            await readExhibitionHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && visitorExhibitionArtworksMatch) {
+            req.params = { id: visitorExhibitionArtworksMatch[1] };
+            await listExhibitionArtworksHandler(req, res);
+            return;
+        }
 
         if (exhibitionArtworksMatch && ["GET", "POST"].includes(req.method)) {
             req.params = { id: exhibitionArtworksMatch[1] };
