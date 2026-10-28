@@ -26,12 +26,16 @@ const {
 
     dailyTicketSalesHandler,
 
-    visitorPurchaseSummaryHandler
+    visitorPurchaseSummaryHandler,
+
+    membershipRevenueHandler
 
 } = require("./handlers/ticket-reports");
 
 const {
+
     listInventoryAlertsHandler
+
 } = require("./handlers/gift-shop/inventory-alerts");
 
 const {
@@ -116,7 +120,13 @@ const { createExhibitionHandler,
 
     updateExhibitionHandler,
 
-    deleteExhibitionHandler
+    deleteExhibitionHandler,
+
+    listExhibitionArtworksHandler,
+
+    addArtworkToExhibitionHandler,
+
+    removeArtworkFromExhibitionHandler
 
 } = require("./handlers/exhibitions");
 
@@ -261,15 +271,23 @@ async function router(req, res) {
             return;
 
         }
+
         if (
+
     req.method === "GET" &&
+
     req.url === "/api/gift-shop/inventory-alerts"
+
 ) {
+
     if (!requireGiftShopManager(req, res)) return;
 
     await listInventoryAlertsHandler(req, res);
+
     return;
+
 }
+
         if(req.method ==="POST" && req.url === "/api/director/personnel/deactivate"){
 
             if(!requireDirector(req, res)) return;
@@ -594,6 +612,18 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
 
         }
 
+        const visitorExhibitionPageMatch =
+
+            req.url.match(/^\/exhibition-detail\/\d+(?:\?.*)?$/);
+
+        if (req.method === "GET" && visitorExhibitionPageMatch) {
+
+            sendVisitorPage(req, res, "exhibition-detail.html");
+
+            return;
+
+        }
+
         if (req.method === "GET" && req.url === "/ticketing") {
 
             sendVisitorPage(req, res, "ticketing.html");
@@ -691,6 +721,22 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             if (!requireDirector(req, res)) return;
 
             await visitorPurchaseSummaryHandler(req, res);
+
+            return;
+
+        }
+
+        if (
+
+            req.method === "GET" &&
+
+            /^\/api\/membership-reports\/revenue(?:\?|$)/.test(req.url)
+
+        ) {
+
+            if (!requireDirector(req, res)) return;
+
+            await membershipRevenueHandler(req, res);
 
             return;
 
@@ -857,6 +903,14 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
         if (req.method === "GET" && req.url === "/js/exhibitions.js") {
 
             sendPage(res, path.join("js", "exhibitions.js"), "application/javascript");
+
+            return;
+
+        }
+
+        if (req.method === "GET" && req.url === "/js/exhibition-detail.js") {
+
+            sendPage(res, path.join("js", "exhibition-detail.js"), "application/javascript");
 
             return;
 
@@ -1096,6 +1150,16 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
 
         }
 
+        if (req.method === "POST" && req.url === "/api/curator/exhibitions") {
+
+            if (!requireCurator(req, res)) return;
+
+            await createExhibitionHandler(req, res);
+
+            return;
+
+        }
+
         if (req.method === "GET" && req.url === "/api/director/exhibitions") {
 
             if (!requireDirector(req, res)) return;
@@ -1123,6 +1187,16 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             if (!requireDirector(req, res)) return;
 
             sendPage(res, path.join("director", "dashboard.html"), "text/html");
+
+            return;
+
+        }
+
+        if (req.method === "GET" && req.url === "/director/membership-revenue") {
+
+            if (!requireDirector(req, res)) return;
+
+            sendPage(res, path.join("director", "membership-revenue.html"), "text/html");
 
             return;
 
@@ -1173,6 +1247,16 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             if (!requireDirector(req, res)) return;
 
             sendPage(res, path.join("js", "director-memberships.js"), "application/javascript");
+
+            return;
+
+        }
+
+        if (req.method === "GET" && req.url === "/js/director-membership-revenue.js") {
+
+            if (!requireDirector(req, res)) return;
+
+            sendPage(res, path.join("js", "director-membership-revenue.js"), "application/javascript");
 
             return;
 
@@ -1249,6 +1333,16 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             if (!requireCurator(req, res)) return;
 
             sendPage(res, path.join("components", "collection-form.html"), "text/html");
+
+            return;
+
+        }
+
+        if (req.method === "GET" && req.url === "/components/exhibition-form.html") {
+
+            if (!requireCurator(req, res)) return;
+
+            sendPage(res, path.join("components", "exhibition-form.html"), "text/html");
 
             return;
 
@@ -1484,7 +1578,85 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
 
         const exhibitionMatch = pathname.match(/^\/api\/curator\/exhibitions\/(\d+)$/);
 
+        const exhibitionArtworksMatch = pathname.match(
+
+            /^\/api\/curator\/exhibitions\/(\d+)\/artworks$/
+
+        );
+
+        const exhibitionArtworkMatch = pathname.match(
+
+            /^\/api\/curator\/exhibitions\/(\d+)\/artworks\/(\d+)$/
+
+        );
+
         const artworkMatchVisitor = pathname.match(/^\/api\/artwork-detail\/(\d+)$/);
+
+        const visitorExhibitionMatch =
+
+            pathname.match(/^\/api\/exhibitions\/(\d+)$/);
+
+        const visitorExhibitionArtworksMatch =
+
+            pathname.match(/^\/api\/exhibitions\/(\d+)\/artworks$/);
+
+        if (req.method === "GET" && visitorExhibitionMatch) {
+
+            req.params = { id: visitorExhibitionMatch[1] };
+
+            await readExhibitionHandler(req, res);
+
+            return;
+
+        }
+
+        if (req.method === "GET" && visitorExhibitionArtworksMatch) {
+
+            req.params = { id: visitorExhibitionArtworksMatch[1] };
+
+            await listExhibitionArtworksHandler(req, res);
+
+            return;
+
+        }
+
+        if (exhibitionArtworksMatch && ["GET", "POST"].includes(req.method)) {
+
+            req.params = { id: exhibitionArtworksMatch[1] };
+
+            if (!requireCurator(req, res)) return;
+
+            if (req.method === "GET") {
+
+                await listExhibitionArtworksHandler(req, res);
+
+            } else {
+
+                await addArtworkToExhibitionHandler(req, res);
+
+            }
+
+            return;
+
+        }
+
+        if (exhibitionArtworkMatch && req.method === "DELETE") {
+
+            req.params = {
+
+                id: exhibitionArtworkMatch[1],
+
+                accessionId: exhibitionArtworkMatch[2]
+
+            };
+
+            if (!requireCurator(req, res)) return;
+
+            await removeArtworkFromExhibitionHandler(req, res);
+
+            return;
+
+        }
 
         const tierMatch = pathname.match(/^\/api\/director\/memberships\/tiers\/(\d+)$/);
 

@@ -269,6 +269,7 @@ form h2 {
 /* Artwork cards display */
 
 #artwork-results,
+#exhibition-artworks-results,
 #collections-results,
 #exhibitions-results {
     display: grid;

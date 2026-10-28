@@ -19,22 +19,13 @@
             >
         </div>
 
-        <!-- <div class="field-row">
-            <label for="status">Status</label>
-            <select id="status" name="status">
-                <option value="">Select status</option>
-                <option value="upcoming">Upcoming</option>
-                <option value="current">Current</option>
-                <option value="past">Past</option>
-            </select>
-        </div> -->
-
         <div class="field-row">
             <label for="startDate">Start Date</label>
             <input
                 id="startDate"
                 name="startDate"
                 type="date"
+                required
             >
         </div>
 
@@ -44,6 +35,7 @@
                 id="endDate"
                 name="endDate"
                 type="date"
+                required
             >
         </div>
 
@@ -52,7 +44,7 @@
             <textarea
                 id="description"
                 name="description"
-                maxlength="250"
+                maxlength="500"
                 rows="4"
             ></textarea>
         </div>
