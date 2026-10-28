@@ -26,11 +26,14 @@ async function dailyTicketSalesHandler(req, res) {
 
     const result = await pool.request().query(`
         SELECT
-            PurchaseDate,
+            CAST(T.PurchaseDate AS DATE) AS PurchaseDate,
             COUNT(*) AS TicketsSold,
-            SUM(Price) AS TotalRevenue
-        FROM dbo.TICKET
-        GROUP BY PurchaseDate
+            COUNT(DISTINCT TT.TicketTypeID) AS TicketTypesSold,
+            SUM(T.Price) AS TotalRevenue
+        FROM dbo.TICKET T
+        JOIN dbo.TICKET_TYPE TT
+            ON T.TicketTypeID = TT.TicketTypeID
+        GROUP BY CAST(T.PurchaseDate AS DATE)
         ORDER BY PurchaseDate DESC
     `);
 
