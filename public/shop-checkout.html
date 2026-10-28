@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gift Shop Checkout</title>
+    <link rel="stylesheet" href="/style">
+
+    <style>
+        .checkout-card {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 1.5rem;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            background: white;
+            color: #222;
+        }
+
+        .checkout-image {
+            display: block;
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            background: #f5f5f5;
+        }
+
+        .checkout-options {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .checkout-options label {
+            display: block;
+            margin: 0.5rem 0;
+        }
+
+        .checkout-total {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="/artwork">Artwork</a>
+            <a href="/membership">Membership</a>
+            <a href="/events">Events</a>
+            <a href="/ticketing">Tickets</a>
+            <a href="/shop" aria-current="page">Shop</a>
+        </nav>
+
+        <!-- VISITOR_AUTH -->
+    </header>
+
+    <main>
+        <section class="checkout-card">
+            <h2>Gift Shop Checkout</h2>
+
+            <p id="checkout-message" role="status">
+                Loading product...
+            </p>
+
+            <div id="checkout-details" hidden>
+                <img
+                    id="checkout-image"
+                    class="checkout-image"
+                    alt=""
+                    hidden
+                >
+
+                <h3 id="checkout-product-name"></h3>
+                <p id="checkout-category"></p>
+                <p id="checkout-price"></p>
+                <p id="checkout-availability"></p>
+
+                <div id="checkout-guest-options" class="checkout-options" hidden>
+                    <label>
+                        <input
+                            type="radio"
+                            name="checkout-choice"
+                            value="member"
+                        >
+                        Sign in as a member
+                    </label>
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="checkout-choice"
+                            value="guest"
+                            checked
+                        >
+                        Continue as a guest
+                    </label>
+                </div>
+
+                <p id="checkout-membership"></p>
+
+                <label for="checkout-quantity">Quantity</label>
+                <input
+                    type="number"
+                    id="checkout-quantity"
+                    min="1"
+                    step="1"
+                    value="1"
+                    required
+                >
+
+                <p id="checkout-total" class="checkout-total"></p>
+
+                <button type="button" id="checkout-button" disabled>
+                    Complete Purchase
+                </button>
+            </div>
+
+            <p><a href="/shop">Back to Shop</a></p>
+        </section>
+    </main>
+
+    <footer>
+        <a class="header-auth" href="/auth-staff">Staff Portal</a>
+    </footer>
+
+    <script src="/js/shop-checkout.js"></script>
+</body>
+</html>

@@ -24,7 +24,8 @@ async function createProductHandler(req, res) {
         ProductName: body.ProductName,
         Category: body.Category,
         Price: body.Price,
-        QuantityInStock: body.QuantityInStock
+        QuantityInStock: body.QuantityInStock,
+        ImageURL: body.ImageURL
     });
 
     res.writeHead(201, {
@@ -42,7 +43,8 @@ async function updateProductHandler(req, res) {
         ProductName: body.ProductName,
         Category: body.Category,
         Price: body.Price,
-        QuantityInStock: body.QuantityInStock
+        QuantityInStock: body.QuantityInStock,
+        ImageURL: body.ImageURL
     });
 
     if (!product) {

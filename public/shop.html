@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>MFAH Gift Shop</title>
+    <link rel="stylesheet" href="/style">
+
+    <style>
+        .shop-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .shop-filters input,
+        .shop-filters select {
+            padding: 0.75rem;
+            font: inherit;
+        }
+
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .shop-card {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            overflow: hidden;
+            background: white;
+            color: #222;
+        }
+
+        .shop-card-image {
+            width: 100%;
+            height: 240px;
+            object-fit: contain;
+            background: #f5f5f5;
+            display: block;
+        }
+
+        .shop-image-placeholder {
+            height: 240px;
+            display: grid;
+            place-items: center;
+            background: #f5f5f5;
+            color: #555;
+        }
+
+        .shop-card-content {
+            padding: 1rem;
+        }
+
+        .shop-card-category {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .shop-card-price {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .shop-card-stock {
+            color: #166534;
+        }
+
+        .shop-card-stock.unavailable {
+            color: #b91c1c;
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="/artwork">Artwork</a>
+            <a href="/membership">Membership</a>
+            <a href="/events">Events</a>
+            <a href="/ticketing">Tickets</a>
+            <a href="/shop" aria-current="page">Shop</a>
+        </nav>
+
+        <!-- VISITOR_AUTH -->
+    </header>
+
+    <main>
+        <section class="shop-workspace">
+            <header class="workspace-header">
+                <h2>Museum Gift Shop</h2>
+            </header>
+
+            <p>Browse books, accessories, framed art, and museum souvenirs.</p>
+
+            <div class="shop-filters">
+                <input
+                    type="search"
+                    id="shop-search"
+                    placeholder="Search products..."
+                    aria-label="Search shop products"
+                >
+
+                <select id="shop-category" aria-label="Filter by category">
+                    <option value="">All categories</option>
+                </select>
+            </div>
+
+            <p id="shop-message" role="status">Loading products...</p>
+
+            <div id="shop-products" class="shop-grid"></div>
+        </section>
+    </main>
+
+    <footer>
+        <a class="header-auth" href="/auth-staff">Staff Portal</a>
+    </footer>
+
+    <script src="/js/shop.js"></script>
+</body>
+</html>
