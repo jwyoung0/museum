@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>Gift Shop Inventory</title>
+    <link rel="stylesheet" href="/style">
+
+    <style>
+        .inventory-alerts {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            border: 1px solid #d97706;
+            border-radius: 8px;
+            background: #fffbeb;
+            color: #713f12;
+        }
+
+        .inventory-alerts h2 {
+            color: inherit;
+        }
+
+        .inventory-alerts li {
+            margin: 0.75rem 0;
+        }
+
+        .inventory-low-stock {
+            background: #fff3cd;
+            color: #713f12;
+        }
+
+        .inventory-low-stock td:last-child {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <h1 class="dashboard-title">Gift Shop Dashboard</h1>
+
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
+    </header>
+
+    <main>
+        <nav aria-label="Gift Shop navigation">
+            <a href="/gift-shop/products">Products</a>
+            <a href="/gift-shop/inventory" aria-current="page">Inventory</a>
+            <a href="/gift-shop/sales">Sales</a>
+        </nav>
+
+        <section
+            class="inventory-alerts"
+            aria-labelledby="inventory-alerts-title"
+        >
+            <h2 id="inventory-alerts-title">Low Stock Alerts</h2>
+
+            <p id="inventory-alerts-message" role="status">
+                Loading alerts...
+            </p>
+
+            <ul id="inventory-alerts-list"></ul>
+
+            <p>
+                Restock products on the
+                <a href="/gift-shop/products">Products page</a>.
+                Alerts resolve automatically when stock rises above 5.
+            </p>
+        </section>
+
+        <section class="artists-workspace">
+            <header class="workspace-header">
+                <h2>Inventory</h2>
+            </header>
+
+            <p id="inventory-summary" role="status">
+                Loading inventory...
+            </p>
+
+            <div class="workspace-toolbar">
+                <input
+                    type="search"
+                    id="inventory-search"
+                    placeholder="Search inventory..."
+                    aria-label="Search inventory"
+                >
+
+                <label>
+                    <input type="checkbox" id="low-stock-only">
+                    Show only stock of 5 or fewer
+                </label>
+
+                <button type="button" id="refresh-inventory-button">
+                    Refresh
+                </button>
+            </div>
+
+            <div class="artists-table-container">
+                <table class="artists-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Product ID</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Quantity in Stock</th>
+                            <th scope="col">Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="inventory-table-body">
+                        <tr>
+                            <td colspan="5">Loading inventory...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p>
+                To change stock quantities, edit the product on the
+                <a href="/gift-shop/products">Products page</a>.
+            </p>
+        </section>
+    </main>
+
+    <script src="/js/gift-shop-inventory.js"></script>
+</body>
+</html>

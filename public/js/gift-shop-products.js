@@ -100,6 +100,7 @@ function displayProducts(products) {
 
         editButton.type = "button";
         editButton.textContent = "Edit";
+
         editButton.addEventListener("click", () => {
             openEditProduct(product);
         });
@@ -145,6 +146,7 @@ function openEditProduct(product) {
     document.getElementById("product-category").value = product.Category;
     document.getElementById("product-price").value = product.Price;
     document.getElementById("product-stock").value = product.QuantityInStock;
+    document.getElementById("product-image").value = product.ImageURL || "";
 
     document.getElementById("product-form-title").textContent = "Edit Product";
     document.getElementById("save-product-button").textContent = "Save Changes";
@@ -175,7 +177,8 @@ async function submitProduct(event) {
         ProductName: data.get("ProductName").trim(),
         Category: data.get("Category").trim(),
         Price: Number(data.get("Price")),
-        QuantityInStock: Number(data.get("QuantityInStock"))
+        QuantityInStock: Number(data.get("QuantityInStock")),
+        ImageURL: data.get("ImageURL").trim()
     };
 
     const url = isEditing
