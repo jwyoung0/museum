@@ -5,6 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Museum Director Dashboard - Membership Revenue</title>
     <link rel="stylesheet" href="/style">
+    <style>
+        #membership-revenue-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        #membership-revenue-table th,
+        #membership-revenue-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--line);
+        }
+
+        #membership-revenue-table th {
+            background: var(--bg);
+        }
+
+        #membership-revenue-table tbody tr:hover {
+            background: rgba(37, 99, 235, 0.04);
+        }   
+    </style>
     <script src="/js/director-membership-revenue.js" defer></script>
 </head>
 <body>
@@ -26,10 +46,6 @@
 
         <section>
             <h2>Membership Revenue</h2>
-            <p>
-                Revenue is estimated using each tier's current price, not its price
-                at the time of purchase.
-            </p>
 
             <div>
                 <label for="membership-revenue-period">Report period</label>
@@ -60,7 +76,7 @@
                     <tr>
                         <th scope="col">Membership tier</th>
                         <th scope="col">Memberships sold</th>
-                        <th scope="col">Estimated revenue</th>
+                        <th scope="col">Revenue</th>
                     </tr>
                 </thead>
                 <tbody></tbody>

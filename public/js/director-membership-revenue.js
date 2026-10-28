@@ -1,103 +1,64 @@
-const membershipRevenuePeriod =
-    document.getElementById("membership-revenue-period");
-const membershipRevenueYear =
-    document.getElementById("membership-revenue-year");
-const membershipRevenueYearLabel =
-    document.getElementById("membership-revenue-year-label");
-const membershipRevenueMessage =
-    document.getElementById("membership-revenue-message");
-const membershipRevenueTableBody =
-    document.querySelector("#membership-revenue-table tbody");
-const currencyFormatter = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD"
-});
+const period = document.getElementById("membership-revenue-period");
+const year = document.getElementById("membership-revenue-year");
+const yearLabel = document.getElementById("membership-revenue-year-label");
+const message = document.getElementById("membership-revenue-message");
+const tbody = document.querySelector("#membership-revenue-table tbody");
 
-membershipRevenueYear.max = String(new Date().getFullYear());
-membershipRevenueYear.value = String(new Date().getFullYear());
+year.max = new Date().getFullYear();
+year.value = new Date().getFullYear();
 
-membershipRevenuePeriod.addEventListener("change", () => {
-    const selectYear = membershipRevenuePeriod.value === "year";
-    membershipRevenueYear.hidden = !selectYear;
-    membershipRevenueYearLabel.hidden = !selectYear;
+period.addEventListener("change", () => {
+    const showYear = period.value === "year";
+    year.hidden = !showYear;
+    yearLabel.hidden = !showYear;
 });
 
 async function loadMembershipRevenue() {
-    const period = membershipRevenuePeriod.value;
-    const params = new URLSearchParams({ period });
+    let url = `/api/membership-reports/revenue?period=${period.value}`;
 
-    if (period === "year") {
-        const year = Number(membershipRevenueYear.value);
-        if (
-            !Number.isInteger(year) ||
-            year < 1900 ||
-            year > new Date().getFullYear()
-        ) {
-            membershipRevenueMessage.textContent =
-                "Enter a year between 1900 and the current year.";
-            return;
-        }
-        params.set("year", String(year));
+    if (period.value === "year") {
+        url += `&year=${year.value}`;
     }
 
-    membershipRevenueMessage.textContent = "Loading membership revenue...";
-    membershipRevenueTableBody.replaceChildren();
-    document.getElementById("membership-revenue-total-count")
-        .textContent = "0";
-    document.getElementById("membership-revenue-total-amount")
-        .textContent = "$0.00";
+    message.textContent = "Loading...";
+    tbody.innerHTML = "";
 
     try {
-        const response = await fetch(
-            `/api/membership-reports/revenue?${params.toString()}`
-        );
+        const response = await fetch(url);
         const data = await response.json();
 
-        if (!response.ok) {
-            throw new Error(data.error || "Could not load membership revenue.");
-        }
-
         let totalCount = 0;
-        let totalCents = 0;
+        let totalRevenue = 0;
 
-        if (!data.length) {
-            const row = membershipRevenueTableBody.insertRow();
-            const cell = row.insertCell();
-            cell.colSpan = 3;
-            cell.textContent = "No memberships found for this period.";
-        } else {
-            data.forEach(item => {
-                const count = Number(item.MembershipsSold);
-                const revenue = Number(item.EstimatedRevenue);
-                const row = membershipRevenueTableBody.insertRow();
+        for (const item of data) {
+            const row = tbody.insertRow();
 
-                row.insertCell().textContent = item.TierName;
-                row.insertCell().textContent = String(count);
-                row.insertCell().textContent = currencyFormatter.format(revenue);
+            row.insertCell().textContent = item.TierName;
+            row.insertCell().textContent = item.MembershipsSold;
+            row.insertCell().textContent =
+                `$${Number(item.EstimatedRevenue).toLocaleString(undefined, {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                })}`;
 
-                totalCount += count;
-                totalCents += Math.round(revenue * 100);
-            });
+            totalCount += Number(item.MembershipsSold);
+            totalRevenue += Number(item.EstimatedRevenue);
         }
 
-        document.getElementById("membership-revenue-total-count")
-            .textContent = String(totalCount);
-        document.getElementById("membership-revenue-total-amount")
-            .textContent = currencyFormatter.format(totalCents / 100);
+        document.getElementById("membership-revenue-total-count").textContent =
+            totalCount;
 
-        membershipRevenueMessage.textContent =
-            period === "this-month"
-                ? "Showing memberships started this month."
-                : period === "this-year"
-                    ? "Showing memberships started this year."
-                    : `Showing memberships started in ${params.get("year")}.`;
-    } catch (error) {
-        membershipRevenueMessage.textContent =
-            error.message || "Could not load membership revenue.";
+        document.getElementById("membership-revenue-total-amount").textContent =
+            `$${totalRevenue.toFixed(2)}`;
+
+        message.textContent = "";
+    } catch {
+        message.textContent = "Could not load membership revenue.";
     }
 }
 
-document.getElementById("load-membership-revenue")
+document
+    .getElementById("load-membership-revenue")
     .addEventListener("click", loadMembershipRevenue);
 
 loadMembershipRevenue();
