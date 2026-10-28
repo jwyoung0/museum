@@ -30,7 +30,7 @@ async function loginHandler(req, res) {
    const routeByRole = {
     curator: "/curator/artwork",
     director: "/director/dashboard",
-    gift_shop_manager: "/gift-shop/dashboard"
+    gift_shop_manager: "/gift-shop/products"
 };
 
     res.writeHead(200, {
