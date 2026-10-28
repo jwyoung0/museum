@@ -23,14 +23,11 @@ const { listSalesHandler } = require("./handlers/gift-shop/sales");
 const {
 
     ticketSalesByTypeHandler,
-
     dailyTicketSalesHandler,
-
-    visitorPurchaseSummaryHandler,
-
-    membershipRevenueHandler
-
+    visitorPurchaseSummaryHandler
 } = require("./handlers/ticket-reports");
+
+const { membershipRevenueHandler } = require("./handlers/membership-revenue");
 
 const {
 
