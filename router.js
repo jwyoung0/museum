@@ -12,7 +12,9 @@ const {
 
     purchaseTicketHandler,
 
-    listMyTicketsHandler
+    listMyTicketsHandler,
+
+    membershipStatusHandler
 
 } = require("./handlers/tickets");
 
@@ -31,6 +33,7 @@ const {
 const {
 
     checkoutContextHandler,
+
     purchaseProductHandler
 
 } = require("./handlers/gift-shop/checkout");
@@ -57,7 +60,7 @@ const { logoutHandler } = require("./handlers/logout");
 
 const { listArtworkForVisitorHandler,
 
-        readArtworkForVisitorHandler 
+        readArtworkForVisitorHandler
 
 } = require("./handlers/artwork");
 
@@ -115,19 +118,41 @@ const { createExhibitionHandler,
 
 const { registerVisitorHandler } = require("./handlers/register-visitor");
 
-const { 
+const { purchaseMembershipHandler } = require("./handlers/membership-purchase");
+
+//Director-Personnel
+
+const {
 
     listPersonnelHandler,
 
-    createPersonnelHandler
+    createPersonnelHandler,
+
+    deactivatePersonnelHandler,
+
+    reactivatePersonnelHandler
 
 } = require("./handlers/director/personnel");
+
+//Director-Positions
+
+const {
+
+    listPositionsHandler,
+
+    createPositionHandler
+
+} = require("./handlers/director/positions");
+
+//Director-Positions
 
 const {
 
     createTierHandler,
 
     listTiersHandler,
+
+    listBenefitsHandler,
 
     readTierHandler,
 
@@ -137,7 +162,33 @@ const {
 
 } = require("./handlers/director/memberships");
 
-const { getTopArtistsHandler } = require("./handlers/curator/analytics");
+const {
+
+    getTopArtworksHandler,
+
+    getTopArtistsHandler,
+
+    getTopStylesHandler,
+
+    getTopPeriodsHandler,
+
+    getTopCollectionsHandler,
+
+    getArtworkInterestByTierHandler,
+
+    getArtistInterestByTierHandler,
+
+    getMonthlyEngagementHandler,
+
+    getSessionEngagementHandler,
+
+    getTopSessionsHandler,
+
+    getExhibitionRecommendationsHandler,
+
+    getTiersForReportHandler
+
+} = require("./handlers/curator/analytics");
 
 async function router(req, res) {
 
@@ -161,6 +212,14 @@ async function router(req, res) {
 
         }
 
+        if (req.method === "POST" && req.url === "/api/membership-purchase") {
+
+            await purchaseMembershipHandler(req, res);
+
+            return;
+
+        }
+
         if (req.method === "POST" && req.url === "/api/login") {
 
             await loginHandler(req, res);
@@ -177,6 +236,8 @@ async function router(req, res) {
 
         }
 
+        //Director-Personnel POST routing start
+
         if (req.method === "POST" && req.url === "/api/director/personnel") {
 
             if (!requireDirector(req, res)) return;
@@ -192,6 +253,26 @@ async function router(req, res) {
             if (!requireDirector(req, res)) return;
 
             await createTierHandler(req, res);
+
+            return;
+
+        }
+
+        if(req.method ==="POST" && req.url === "/api/director/personnel/deactivate"){
+
+            if(!requireDirector(req, res)) return;
+
+            await deactivatePersonnelHandler(req, res);
+
+            return;
+
+        }
+
+        if (req.method === "POST" && req.url === "/api/director/personnel/reactivate") {
+
+            if (!requireDirector(req, res)) return;
+
+            await reactivatePersonnelHandler(req, res);
 
             return;
 
@@ -280,8 +361,11 @@ if (req.method === "GET" && req.url === "/js/gift-shop-products.js") {
 }
 
 if (req.method === "POST" && req.url === "/api/shop/purchases") {
+
     await purchaseProductHandler(req, res);
+
     return;
+
 }
 
 if (req.method === "GET" && req.url === "/api/shop/checkout-context") {
@@ -438,7 +522,7 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
 
 }
 
-        if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
+if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
 
             sendVisitorPage(req, res, "index.html");
 
@@ -452,7 +536,7 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
 
             return;
 
-        }    
+        }
 
         if (req.method === "GET" && req.url === "/api/artwork") {
 
@@ -470,9 +554,29 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
 
         }
 
+        const visitorCollectionMatch =
+
+            req.url.match(/^\/collections\/(\d+)(?:\?.*)?$/);
+
+        if (req.method === "GET" && visitorCollectionMatch) {
+
+            sendVisitorPage(req, res, "collection-detail.html");
+
+            return;
+
+        }
+
+        if (req.method === "GET" && req.url === "/membership") {
+
+            sendVisitorPage(req, res, "memberships.html");
+
+            return;
+
+        }
+
         if (req.method === "GET" && req.url === "/exhibitions") {
 
-            sendVisitorPage(req, res, "exhibitions.html");            
+            sendVisitorPage(req, res, "exhibitions.html");
 
             return;
 
@@ -480,7 +584,7 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
 
         if (req.method === "GET" && req.url === "/ticketing") {
 
-            sendPage(res, "ticketing.html", "text/html");
+            sendVisitorPage(req, res, "ticketing.html");
 
             return;
 
@@ -505,6 +609,14 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
         if (req.method === "GET" && req.url === "/api/ticket-types") {
 
             await listTicketTypesHandler(req, res);
+
+            return;
+
+        }
+
+        if (req.method === "GET" && req.url === "/api/membership-status") {
+
+            await membershipStatusHandler(req, res);
 
             return;
 
@@ -550,7 +662,7 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
 
             return;
 
-        }   
+        }
 
         if (req.method === "GET" && req.url === "/api/ticket-reports/daily") {
 
@@ -582,6 +694,16 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
 
         }
 
+        if (req.method === "GET" && req.url === "/api/director/memberships/benefits") {
+
+            if (!requireDirector(req, res)) return;
+
+            await listBenefitsHandler(req, res);
+
+            return;
+
+        }
+
         if (req.method === "GET" && req.url === "/about") {
 
             sendVisitorPage(req, res, "about.html");
@@ -593,16 +715,6 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
         if (req.method === "GET" && req.url === "/auth-visitor") {
 
             sendPage(res, "auth-visitor.html", "text/html");
-
-            return;
-
-        }
-
-        if (req.method === "GET" &&
-
-            (req.url === "/register-visitor" || req.url === "/auth-create-account")) {
-
-            sendPage(res, "register-visitor.html", "text/html");
 
             return;
 
@@ -632,7 +744,7 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
 
             return;
 
-        }      
+        }
 
         if (req.method === "GET" && req.url === "/curator/artists") {
 
@@ -722,9 +834,33 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
 
         }
 
+        if (req.method === "GET" && req.url === "/js/collection-detail.js") {
+
+            sendPage(res, path.join("js", "collection-detail.js"), "application/javascript");
+
+            return;
+
+        }
+
         if (req.method === "GET" && req.url === "/js/exhibitions.js") {
 
-            sendPage(res, path.join("js", "exhibitions.js"), "application/javascript");            
+            sendPage(res, path.join("js", "exhibitions.js"), "application/javascript");
+
+            return;
+
+        }
+
+        if (req.method === "GET" && req.url === "/js/memberships.js") {
+
+            sendPage(res, path.join("js", "memberships.js"), "application/javascript");
+
+            return;
+
+        }
+
+        if (req.method === "GET" && req.url === "/js/membership-detail.js") {
+
+            sendPage(res, path.join("js", "membership-detail.js"), "application/javascript");
 
             return;
 
@@ -750,7 +886,7 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
 
             return;
 
-        }    
+        }
 
         if (req.method === "GET" && req.url === "/js/curator-collections.js") {
 
@@ -850,7 +986,7 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
 
             return;
 
-        }          
+        }
 
         if (req.method === "POST" && req.url === "/api/curator/artwork") {
 
@@ -885,6 +1021,28 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
         if (req.method === "GET" && req.url === "/api/collections") {
 
             await listCollectionsHandler(req, res);
+
+            return;
+
+        }
+
+        const visitorCollectionApiMatch =
+
+            req.url.match(/^\/api\/collections\/(\d+)(?:\?.*)?$/);
+
+        if (req.method === "GET" && visitorCollectionApiMatch) {
+
+            req.params = { id: visitorCollectionApiMatch[1] };
+
+            await readCollectionHandler(req, res);
+
+            return;
+
+        }
+
+        if (req.method === "GET" && req.url === "/api/memberships/tiers") {
+
+            await listTiersHandler(req, res);
 
             return;
 
@@ -946,16 +1104,6 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
 
         }
 
-        if (req.method === "GET" && req.url === "/api/curator/analytics") {
-
-            if (!requireCurator(req, res)) return;
-
-            await getTopArtistsHandler(req, res);
-
-            return;
-
-        }
-
 // Director personnel Dashboard routing starts here
 
         if (req.method === "GET" && req.url === "/director/dashboard") {
@@ -998,6 +1146,16 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
 
         }
 
+        if (req.method === "GET" && req.url === "/js/director-positions.js") {
+
+            if (!requireDirector(req, res)) return;
+
+            sendPage(res, path.join("js", "director-positions.js"), "application/javascript");
+
+            return;
+
+        }
+
         if (req.method === "GET" && req.url === "/js/director-memberships.js") {
 
             if (!requireDirector(req, res)) return;
@@ -1008,7 +1166,37 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
 
         }
 
+        //Director Positions Starts Here
+
+        if (req.method === "GET" && req.url === "/api/director/positions") {
+
+            if (!requireDirector(req, res)) return;
+
+            await listPositionsHandler(req, res);
+
+            return;
+
+        }
+
+        if (req.method === "POST" && req.url === "/api/director/positions") {
+
+            if (!requireDirector(req, res)) return;
+
+            await createPositionHandler(req, res);
+
+            return;
+
+        }
+
         const pathname = new URL(req.url, "http://localhost").pathname;
+
+        if (req.method === "GET" && pathname.match(/^\/membership\/\d+$/)) {
+
+            sendVisitorPage(req, res, "membership-detail.html");
+
+            return;
+
+        }
 
         if (req.method === "GET" &&
 
@@ -1054,7 +1242,37 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
 
         }
 
-        if (req.method === "GET" && 
+        if (req.method === "GET" && pathname === "/auth-visitor") {
+
+            sendPage(res, "auth-visitor.html", "text/html");
+
+            return;
+
+        }
+
+        if (req.method === "GET" && pathname === "/register-visitor") {
+
+            sendPage(res, "register-visitor.html", "text/html");
+
+            return;
+
+        }
+
+        if (req.method === "GET" &&
+
+            pathname === "/membership-checkout"
+
+        ) {
+
+            if (!requireRegisteredUser(req, res)) return;
+
+            sendVisitorPage(req, res, "membership-checkout.html");
+
+            return;
+
+        }
+
+        if (req.method === "GET" &&
 
             pathname.match(/^\/curator\/artwork\/\d+$/)
 
@@ -1096,7 +1314,7 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
 
         }
 
-        if (req.method === "GET" && 
+        if (req.method === "GET" &&
 
             pathname.match(/^\/artwork-detail\/\d+$/)
 
@@ -1148,6 +1366,104 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
 
         }
 
+        // curator analytics routing
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/artworks")) {
+
+            if (!requireCurator(req, res)) return;
+
+            return getTopArtworksHandler(req, res);
+
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/artists")) {
+
+            if (!requireCurator(req, res)) return;
+
+            return getTopArtistsHandler(req, res);
+
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/styles")) {
+
+            if (!requireCurator(req, res)) return;
+
+            return getTopStylesHandler(req, res);
+
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/periods")) {
+
+            if (!requireCurator(req, res)) return;
+
+            return getTopPeriodsHandler(req, res);
+
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/collections")) {
+
+            if (!requireCurator(req, res)) return;
+
+            return getTopCollectionsHandler(req, res);
+
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/artwork-by-tier")) {
+
+            if (!requireCurator(req, res)) return;
+
+            return getArtworkInterestByTierHandler(req, res);
+
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/artist-by-tier")) {
+
+            if (!requireCurator(req, res)) return;
+
+            return getArtistInterestByTierHandler(req, res);
+
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/monthly-engagement")) {
+
+            if (!requireCurator(req, res)) return;
+
+            return getMonthlyEngagementHandler(req, res);
+
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/session-engagement")) {
+
+            if (!requireCurator(req, res)) return;
+
+            return getSessionEngagementHandler(req, res);
+
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/top-sessions")) {
+
+            if (!requireCurator(req, res)) return;
+
+            return getTopSessionsHandler(req, res);
+
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/recommendations")) {
+
+            if (!requireCurator(req, res)) return;
+
+            return getExhibitionRecommendationsHandler(req, res);
+
+        }
+
+        if (req.method === "GET" && req.url === "/api/curator/analytics/tiers") {
+
+            if(!requireCurator(req, res)) return;
+
+            return getTiersForReportHandler(req, res);
+
+        }
+
         const artistMatch = pathname.match(/^\/api\/curator\/artists\/(\d+)$/);
 
         const artworkMatch = pathname.match(/^\/api\/curator\/artwork\/(\d+)$/);
@@ -1159,6 +1475,8 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
         const artworkMatchVisitor = pathname.match(/^\/api\/artwork-detail\/(\d+)$/);
 
         const tierMatch = pathname.match(/^\/api\/director\/memberships\/tiers\/(\d+)$/);
+
+        const tierMatchVisitor = pathname.match(/^\/api\/membership-detail\/(\d+)$/);
 
         if (artistMatch && ["GET", "PUT", "DELETE"].includes(req.method)) {
 
@@ -1242,7 +1560,7 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
 
                 await readExhibitionHandler(req, res);
 
-            } else if (req.method === "PUT") { 
+            } else if (req.method === "PUT") {
 
                 await updateExhibitionHandler(req, res);
 
@@ -1264,7 +1582,7 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
 
             return;
 
-        } 
+        }
 
         if (tierMatch && ["GET", "PUT", "DELETE"].includes(req.method)) {
 
@@ -1285,6 +1603,62 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
                 await deleteTierHandler(req, res);
 
             } else return;
+
+            return;
+
+        }
+
+        if (tierMatchVisitor && req.method === "GET") {
+
+            req.params = { id: tierMatchVisitor[1] };
+
+            await readTierHandler(req, res);
+
+            return;
+
+        }
+
+        if (req.method === "GET" && pathname === "/api/me") {
+
+            if (!req.user) {
+
+                res.writeHead(401, {
+
+                    "Content-Type": "application/json"
+
+                });
+
+                res.end(JSON.stringify({
+
+                    authenticated: false
+
+                }));
+
+                return;
+
+            }
+
+            res.writeHead(200, {
+
+                "Content-Type": "application/json"
+
+            });
+
+            res.end(JSON.stringify({
+
+                authenticated: true,
+
+                user: {
+
+                    id: req.user.id,
+
+                    userType: req.user.userType,
+
+                    VisitorID: req.user.VisitorID
+
+                }
+
+            }));
 
             return;
 
@@ -1545,6 +1919,28 @@ function requireDirector(req, res) {
 function requireGiftShopManager(req, res) {
 
     if (!req.user || req.user.role !== "gift_shop_manager") {
+
+        res.writeHead(302, {
+
+            "Location": "/",
+
+            "Content-Length": 0
+
+        });
+
+        res.end();
+
+        return false;
+
+    }
+
+    return true;
+
+}
+
+function requireRegisteredUser(req, res) {
+
+    if (!req.user || !["visitor", "member"].includes(req.user.userType)) {
 
         res.writeHead(302, {
 

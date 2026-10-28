@@ -13,26 +13,21 @@
         }
 
         .artists-table th:nth-child(1),
-        .artists-table td:nth-child(1) { width: 12%; }
+        .artists-table td:nth-child(1) { width: 20%; }
 
         .artists-table th:nth-child(2),
-        .artists-table td:nth-child(2) { width: 10%; }
+        .artists-table td:nth-child(2) { width: 15%; }
 
         .artists-table th:nth-child(3),
-        .artists-table td:nth-child(3) { width: 8%; }
+        .artists-table td:nth-child(3) { width: 45%; }
 
         .artists-table th:nth-child(4),
-        .artists-table td:nth-child(4) { width: 10%; }
+        .artists-table td:nth-child(4) { width: 20%; }
 
-        .artists-table th:nth-child(5),
-        .artists-table td:nth-child(5) { width: 40%; }
-
-        .artists-table th:nth-child(6),
-        .artists-table td:nth-child(6) { width: 20%; }
+        /* .artists-table th:nth-child(5),
+        .artists-table td:nth-child(5) { width: 18%; } */
 
         .benefits-cell {
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
@@ -46,29 +41,41 @@
             display: none;
         }
         
-        .tier-checkbox-row {
-            margin-top: -0.25rem;
+        .tier-benefits {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 0.75rem;
         }
 
-        .tier-checkbox-label {
-            display: inline-flex;
+        .benefit-option {
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr) 8rem;
             align-items: center;
-            gap: 0.35rem;
-            font-size: 0.85rem;
-            color: #777;
-            font-weight: 400;
-            cursor: pointer;
+            gap: 0.5rem;
         }
 
-        .tier-checkbox-label input[type="checkbox"] {
-            width: 14px;
-            min-width: 14px;
-            height: 14px;
-            min-height: 14px;
+        .benefit-option input[type="checkbox"] {
+            width: 16px;
+            min-width: 16px;
+            height: 16px;
+            min-height: 16px;
             padding: 0;
             margin: 0;
-            border-radius: 2px;
-            flex-shrink: 0;
+        }
+
+        .benefit-option input[type="number"] {
+            min-height: 34px;
+        }
+
+        .benefit-option label {
+            margin: 0;
+            font-weight: 400;
+        }
+
+        .benefits-help {
+            font-size: 0.85rem;
+            color: #777;
         }
 
         .tier-form-actions {
@@ -88,10 +95,10 @@
 
     <main>
         <nav aria-label="Director sections">
-            <button type="button" data-tab="personnel">Personnel</button>
+            <a href="/director/dashboard" data-tab="personnel">Personnel</a>
             <a href="/director/memberships" data-tab="memberships" aria-current="page">Memberships</a>
-            <button type="button" data-tab="events">Events</button>
-            <button type="button" disabled>Ticket Revenue — Coming Soon</button>
+            <!-- <a href="/director/events" data-tab="events">Events</a> -->
+            <a href="/director/report/tickets">Ticket Revenue — Coming Soon</a>
         </nav>
 
         <section class="artists-workspace" aria-labelledby="memberships-heading">
@@ -104,24 +111,23 @@
                 <h3 id="tier-form-heading">Add membership tier</h3>
                 <label>
                     Tier name
-                    <input name="TierName" required maxlength="100">
+                    <input name="TierName" required maxlength="50">
                 </label>
                 <label>
                     Price
                     <input name="Price" type="number" min="0" step="0.01" required>
                 </label>
                 <label>
-                    Discount (%)
-                    <input name="DiscountRate" type="number" min="0" max="100" step="0.01" required>
+                    Description
+                    <textarea name="Description" maxlength="500" rows="2"></textarea>
                 </label>
-                <label>
-                    Benefits
-                    <textarea name="Description" rows="2"></textarea>
-                </label>
-                <label class="tier-checkbox-label">
-                    <input name="IsVIP" type="checkbox">
-                    <span>VIP access</span>
-                </label>
+                <fieldset id="tier-benefits" class="tier-benefits">
+                    <legend>Benefits</legend>
+                    <p id="benefits-message" class="benefits-help" role="status" aria-live="polite">
+                        Loading benefits...
+                    </p>
+                    <div id="benefit-options"></div>
+                </fieldset>
                 <div class="tier-form-actions">
                     <button type="submit" id="tier-submit">Add tier</button>
                     <button type="button" id="tier-cancel" hidden>Cancel</button>
@@ -148,21 +154,19 @@
                         <tr>
                             <th scope="col">Tier Name</th>
                             <th scope="col">Price</th>
-                            <th scope="col">Discount</th>
-                            <th scope="col">VIP Access</th>
                             <th scope="col">Benefits</th>
                             <th scope="col">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="memberships-table-body">
                         <tr id="loading-state">
-                            <td colspan="6">Loading membership tiers...</td>
+                            <td colspan="4">Loading membership tiers...</td>
                         </tr>
                         <tr id="empty-state" hidden>
-                            <td colspan="6">No membership tiers match your search.</td>
+                            <td colspan="4">No membership tiers match your search.</td>
                         </tr>
                         <tr id="error-state" hidden>
-                            <td colspan="6">Unable to load membership tiers.</td>
+                            <td colspan="4">Unable to load membership tiers.</td>
                         </tr>
                     </tbody>
                 </table>

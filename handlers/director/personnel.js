@@ -1,7 +1,9 @@
 /* Moved to router.js line 38-41 or not?*/
 const {
     listPersonnel,
-    createPersonnel
+    createPersonnel,
+    deactivatePersonnel,
+    reactivatePersonnel
 } = require("../../database/director/personnel");
 
 function requireDirectorApi(req, res) {
@@ -191,7 +193,168 @@ async function createPersonnelHandler(req, res) {
 }
 
 
+async function deactivatePersonnelHandler(req, res) {
+    if (!requireDirectorApi(req, res)) return;
+
+    try {
+        let body = "";
+
+        for await (const chunk of req) {
+            body += chunk;
+
+            if (body.length > 10000) {
+                res.writeHead(413, {
+                    "Content-Type": "application/json"
+                });
+                res.end(JSON.stringify({
+                    error: "Request is too large"
+                }));
+                return;
+            }
+        }
+
+        const data = JSON.parse(body);
+
+        if (
+            !data ||
+            !Array.isArray(data.personnelIDs) ||
+            data.personnelIDs.length === 0 ||
+            data.personnelIDs.length > 500 ||
+            !data.personnelIDs.every(
+                id => Number.isInteger(id) && id > 0
+            )
+        ) {
+            res.writeHead(400, {
+                "Content-Type": "application/json"
+            });
+            res.end(JSON.stringify({
+                error: "Invalid personnel selection"
+            }));
+            return;
+        }
+
+        const affected = await deactivatePersonnel(
+            data.personnelIDs
+        );
+
+        res.writeHead(200, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify({
+            message: "Personnel deactivation successful",
+            affected
+        }));
+    } catch (error) {
+        if (error instanceof SyntaxError) {
+            res.writeHead(400, {
+                "Content-Type": "application/json"
+            });
+            res.end(JSON.stringify({
+                error: "Invalid JSON request"
+            }));
+            return;
+        }
+
+        console.error("Personnel deactivation failed:", error);
+
+        res.writeHead(500, {
+            "Content-Type": "application/json"
+        });
+        res.end(JSON.stringify({
+            error: "Unable to deactivate personnel"
+        }));
+    }
+}
+
+
+async function reactivatePersonnelHandler(req, res) {
+    if (!requireDirectorApi(req, res)) return;
+
+    try {
+        let body = "";
+
+        for await (const chunk of req) {
+            body += chunk;
+
+            if (body.length > 10000) {
+                res.writeHead(413, {
+                    "Content-Type": "application/json"
+                });
+
+                res.end(JSON.stringify({
+                    error: "Request is too large"
+                }));
+
+                return;
+            }
+        }
+
+        const data = JSON.parse(body);
+
+        if (
+            !data ||
+            !Array.isArray(data.personnelIDs) ||
+            data.personnelIDs.length === 0 ||
+            data.personnelIDs.length > 500 ||
+            !data.personnelIDs.every(
+                id => Number.isInteger(id) && id > 0
+            )
+        ) {
+            res.writeHead(400, {
+                "Content-Type": "application/json"
+            });
+
+            res.end(JSON.stringify({
+                error: "Invalid personnel selection"
+            }));
+
+            return;
+        }
+
+        const affected = await reactivatePersonnel(
+            data.personnelIDs
+        );
+
+        res.writeHead(200, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify({
+            message: "Personnel reactivation successful",
+            affected
+        }));
+    } catch (error) {
+        if (error instanceof SyntaxError) {
+            res.writeHead(400, {
+                "Content-Type": "application/json"
+            });
+
+            res.end(JSON.stringify({
+                error: "Invalid JSON request"
+            }));
+
+            return;
+        }
+
+        console.error("Personnel reactivation failed:", error);
+
+        res.writeHead(500, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify({
+            error: "Unable to reactivate personnel"
+        }));
+    }
+}
+
+
+
+
 module.exports = {
     listPersonnelHandler,
-    createPersonnelHandler
+    createPersonnelHandler,
+    deactivatePersonnelHandler,
+    reactivatePersonnelHandler
 };

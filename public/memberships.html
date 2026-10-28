@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>MFAH Portal</title>
+    <link rel="stylesheet" href="/style">
+    <style>
+        .membership-section {
+            width: 100%;
+            padding: 0.5rem 0;
+        }
+
+        .membership-section h2 {
+            margin: 0 0 0.5rem;
+            text-align: left;
+        }
+
+        .membership-scroller {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+            scroll-snap-type: x proximity;
+        }
+
+        .membership-card {
+            flex: 0 0 28%;
+            padding: 1rem;
+            background: #fff;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            scroll-snap-align: start;
+        }
+
+        @media (max-width: 900px) {
+            .membership-card {
+                flex: 0 0 45%;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .membership-card {
+                flex: 0 0 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="/artwork">Artwork</a>
+            <a href="/membership" aria-current="page">Membership</a>
+            <!-- <a href="/events">Events</a> -->
+            <a href="/ticketing">Tickets</a>
+            <a href="/shop">Shop</a>
+        </nav>
+    
+        <!-- VISITOR_AUTH -->
+
+    </header>
+    <main>
+        <section class="membership-section" aria-labelledby="membership-heading">
+            <h2 id="membership-heading">Membership Tiers</h2>
+            <div id="membership-tiers"
+                 class="membership-scroller"
+                 aria-label="Membership tiers"
+                 tabindex="0">
+                <p>Loading membership tiers…</p>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <a class="header-auth" href="/auth-staff">Staff Portal</a>
+    </footer>
+    <script src="js/memberships.js"></script>
+</body>
+</html>

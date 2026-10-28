@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Museum Director Dashboard</title>
     <link rel="stylesheet" href="/style">
+    <style>
+        #revenue table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        #revenue th,
+        #revenue td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ccc;
+        }
+    </style>
 </head>
 <body>
     <header class="dashboard-header">
@@ -18,14 +31,65 @@
 
     <main>
         <nav aria-label="Director sections">
-            <button type="button" data-tab="personnel">Personnel</button>
+            <a href="/director/dashboard" data-tab="personnel" aria-current="page">Personnel</a>
             <a href="/director/memberships" data-tab="memberships">Memberships</a>
-            <button type="button" data-tab="events">Events</button>
-            <button type="button" disabled>Ticket Revenue — Coming Soon</button>
+            <!-- <a href="/director/events" data-tab="events">Events</a> -->
+            <button type="button" data-tab="revenue">Ticket Revenue</button>
         </nav>
 
         <section id="personnel">
             <h2>Personnel Management</h2>
+
+                       <div class="personnel-filters">
+                <div>
+                    <label for="personnel-name-search">Search by Name</label>
+                    <input
+                        type="search"
+                        id="personnel-name-search"
+                        placeholder="Search first, middle, or last name..."
+                    >
+                </div>
+
+                <div>
+                    <label for="personnel-start-date-from">Start Date From</label>
+                    <input
+                        type="date"
+                        id="personnel-start-date-from"
+                    >
+                </div>
+
+                <div>
+                    <label for="personnel-start-date-to">Start Date To</label>
+                    <input
+                        type="date"
+                        id="personnel-start-date-to"
+                    >
+                </div>
+
+                <div>
+                    <label for="personnel-employment-filter">Employment Status</label>
+                    <select id="personnel-employment-filter">
+                        <option value="all">All Statuses</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="personnel-sort-order">Sort by Last Name</label>
+                    <select id="personnel-sort-order">
+                        <option value="asc">Ascending (A–Z)</option>
+                        <option value="desc">Descending (Z–A)</option>
+                    </select>
+                </div>
+
+                <button type="button" id="clear-personnel-filters">
+                    Clear Filters
+                </button>
+            </div>
+
+
+
 
             <p id="personnel-message" role="status">
                 Loading personnel records...
@@ -35,13 +99,13 @@
                 Refresh Personnel
             </button>
 
-            
             <h3>Current Personnel</h3>
 
             <div class="personnel-table-container">
                 <table class="personnel-table">
                     <thead>
                         <tr>
+                            <th>Select</th>
                             <th>First Name</th>
                             <th>Middle Name</th>
                             <th>Last Name</th>
@@ -57,18 +121,34 @@
                     </thead>
                     <tbody id="personnel-table-body">
                         <tr>
-                            <td colspan="11">Loading personnel records...</td>
+                            <td colspan="12">Loading personnel records...</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-
             <h3>Personnel Actions</h3>
 
-            <button type="button" id="show-add-personnel">
-                Add Personnel
-            </button>
+            <div class="personnel-actions">
+                <button type="button" id="show-add-personnel">
+                    Add Personnel
+                </button>
+
+                <button type="button" id="deactivate-personnel">
+                    Deactivate Selected
+                </button>
+
+                <button type="button" id="reactivate-personnel" disabled>
+                    Reactivate Selected
+                </button>
+            </div>
+
+            <div>
+                <label for="select-all-personnel">
+                    <input type="checkbox" id="select-all-personnel">
+                    Select All Active Personnel
+                </label>
+            </div>
 
             <section id="add-personnel-panel" hidden>
                 <h3>Add New Personnel</h3>
@@ -76,101 +156,68 @@
                 <form id="personnel-form">
                     <div>
                         <label for="personnel-fname">First Name*</label>
-                        <input
-                            type="text"
-                            id="personnel-fname"
-                            name="fname"
-                            maxlength="50"
-                            required
-                        >
+                        <input type="text" id="personnel-fname"
+                            name="fname" maxlength="50" required>
                     </div>
+
                     <div>
-                        <label for = "personnel-mname">Middle Name</label>
-                        <input
-                            type="text"
-                            id="personnel-mname"
-                            name="mname"
-                            maxlength="50"
-                        >
+                        <label for="personnel-mname">Middle Name</label>
+                        <input type="text" id="personnel-mname"
+                            name="mname" maxlength="50">
                     </div>
+
                     <div>
                         <label for="personnel-lname">Last Name*</label>
-                        <input
-                            type="text"
-                            id="personnel-lname"
-                            name="lname"
-                            maxlength="50"
-                            required
-                        >
+                        <input type="text" id="personnel-lname"
+                            name="lname" maxlength="50" required>
                     </div>
 
                     <div>
                         <label for="personnel-email">Email</label>
-                        <input
-                            type="email"
-                            id="personnel-email"
-                            name="email"
-                            maxlength="50"
-                            required
-                        >
+                        <input type="email" id="personnel-email"
+                            name="email" maxlength="50" required>
                     </div>
 
                     <div>
                         <label for="personnel-phone">Phone Number</label>
-                        <input
-                            type="tel"
-                            id="personnel-phone"
-                            name="phoneNumber"
-                            maxlength="10"
-                            pattern="[0-9]{10}"
-                            placeholder="10 digits"
-                        >
+                        <input type="tel" id="personnel-phone"
+                            name="phoneNumber" maxlength="10"
+                            pattern="[0-9]{10}" placeholder="10 digits">
                     </div>
 
                     <div>
                         <label for="date-of-birth">Date of Birth</label>
-                        <input
-                            type="date"
-                            id="date-of-birth"
-                            name="dateOfBirth"
-                        >
+                        <input type="date" id="date-of-birth"
+                            name="dateOfBirth">
                     </div>
 
                     <div>
                         <label for="start-date">Start Date*</label>
-                        <input
-                            type="date"
-                            id="start-date"
-                            name="startDate"
-                        >
+                        <input type="date" id="start-date" name="startDate">
                     </div>
 
                     <div>
                         <label for="end-date">End Date</label>
-                        <input
-                            type="date"
-                            id="end-date"
-                            name="endDate"
-                        >
+                        <input type="date" id="end-date" name="endDate">
                     </div>
 
                     <div>
-                        <label for="position-id">Position ID</label>
-                        <input
-                            type="number"
+                        <label for="position-id">Position*</label>
+                        <select
                             id="position-id"
                             name="positionID"
-                            min="1"
+                            required
                         >
+                            <option value="" selected disabled>
+                                Loading positions...
+                            </option>
+                        </select>
                     </div>
 
                     <div>
                         <label for="employment-status">Employment Status</label>
-                        <select
-                            id="employment-status"
-                            name="employmentStatus"
-                            required
-                        >
+                        <select id="employment-status"
+                            name="employmentStatus" required>
                             <option value="1">Active</option>
                             <option value="0">Inactive</option>
                         </select>
@@ -178,14 +225,10 @@
 
                     <div>
                         <label for="ssn">SSN</label>
-                        <input
-                            type="text"
-                            id="ssn"
-                            name="ssn"
+                        <input type="text" id="ssn" name="ssn"
                             pattern="([0-9]{9}|[0-9]{3}-[0-9]{2}-[0-9]{4})"
                             title="Enter 9 digits, with or without hyphens."
-                            required
-                        >
+                            required>
                     </div>
 
                     <button type="submit">Save Personnel</button>
@@ -194,6 +237,69 @@
                     </button>
                 </form>
             </section>
+        </section>
+
+        <section id="positions">
+            <h2>Position Management</h2>
+
+            <p id="positions-message" role="status">
+                Loading positions...
+            </p>
+
+            <button type="button" id="refresh-positions">
+                Refresh Positions
+            </button>
+
+            <h3>Existing Positions</h3>
+
+            <div class="personnel-table-container">
+                <table class="personnel-table">
+                    <thead>
+                        <tr>
+                            <th>Position ID</th>
+                            <th>Position Name</th>
+                            <th>Description</th>
+                            <th>Employment Type</th>
+                            <th>Salary</th>
+                        </tr>
+                    </thead>
+                    <tbody id="positions-table-body">
+                        <tr>
+                            <td colspan="5">Loading positions...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Add a Position</h3>
+
+            <form id="position-form">
+                <div>
+                    <label for="position-name">Position Name*</label>
+                    <input type="text" id="position-name"
+                        name="positionName" maxlength="50" required>
+                </div>
+
+                <div>
+                    <label for="position-description">Description</label>
+                    <textarea id="position-description"
+                        name="description" maxlength="250" rows="3"></textarea>
+                </div>
+
+                <div>
+                    <label for="position-employment-type">Employment Type</label>
+                    <input type="text" id="position-employment-type"
+                        name="employmentType" maxlength="50">
+                </div>
+
+                <div>
+                    <label for="position-salary">Salary</label>
+                    <input type="number" id="position-salary"
+                        name="salary" min="0" max="99999999.99" step="0.01">
+                </div>
+
+                <button type="submit">Save Position</button>
+            </form>
         </section>
 
         <section id="memberships" hidden>
@@ -205,18 +311,108 @@
             <h2>Events</h2>
             <p>Event management will appear here.</p>
         </section>
+
+        <section id="revenue" hidden>
+            <h2>Ticket Revenue</h2>
+
+            <h3>Sales by Ticket Type</h3>
+            <table id="sales"></table>
+
+            <h3>Daily Ticket Sales</h3>
+            <table id="daily"></table>
+
+            <h3>Visitor Purchases</h3>
+            <table id="visitors"></table>
+        </section>
     </main>
 
     <script>
-        document.querySelectorAll("[data-tab]").forEach(button => {
-            button.addEventListener("click", () => {
-                document.querySelectorAll("main > section").forEach(section => {
-                    section.hidden = section.id !== button.dataset.tab;
-                });
+        document.querySelectorAll("[data-tab]").forEach(tab => {
+            tab.addEventListener("click", event => {
+                const tabName = tab.dataset.tab;
+
+                if (tabName === "personnel") {
+                    event.preventDefault();
+
+                    document.querySelectorAll("main > section").forEach(section => {
+                        section.hidden =
+                            section.id !== "personnel" &&
+                            section.id !== "positions";
+                    });
+
+                    history.pushState({}, "", "/director/dashboard");
+
+                    document.querySelectorAll("[data-tab]").forEach(item => {
+                        item.removeAttribute("aria-current");
+                    });
+
+                    tab.setAttribute("aria-current", "page");
+                }
             });
         });
+
+        async function loadReport(id, url) {
+            const table = document.getElementById(id);
+
+            try {
+                const res = await fetch(url);
+                if (!res.ok) throw Error("Failed to load");
+
+                const data = await res.json();
+                table.innerHTML = "";
+
+                if (!data.length) {
+                    table.textContent = "No records found";
+                    return;
+                }
+
+                const keys = Object.keys(data[0]);
+                const header = table.insertRow();
+
+                keys.forEach(key => {
+                    const th = document.createElement("th");
+                    th.textContent = key;
+                    header.append(th);
+                });
+
+                data.forEach(item => {
+                    const row = table.insertRow();
+
+                    keys.forEach(key => {
+                        const value = item[key];
+
+                        row.insertCell().textContent =
+                            key === "PurchaseDate" && value
+                                ? new Date(value).toLocaleDateString("en-US", {
+                                    timeZone: "UTC"
+                                })
+                                : (value ?? "");
+                    });
+                });
+            } catch {
+                table.textContent = "Could not load report";
+            }
+        }
+
+        document.querySelector('[data-tab="revenue"]').onclick = () => {
+            document.querySelectorAll("main > section").forEach(section => {
+                section.hidden = section.id !== "revenue";
+            });
+
+            document.querySelectorAll("[data-tab]").forEach(item => {
+                item.removeAttribute("aria-current");
+            });
+
+            document.querySelector('[data-tab="revenue"]')
+                .setAttribute("aria-current", "page");
+
+            loadReport("sales", "/api/ticket-reports/sales");
+            loadReport("daily", "/api/ticket-reports/daily");
+            loadReport("visitors", "/api/ticket-reports/visitors");
+        };
     </script>
 
     <script src="/js/director-personnel.js" defer></script>
+    <script src="/js/director-positions.js" defer></script>
 </body>
 </html>

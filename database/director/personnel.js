@@ -109,7 +109,7 @@ async function createPersonnel({
 
     return result.recordset[0];
 }
-
+/*
 async function listPersonnel() {
     const pool = await getPool();
 
@@ -133,9 +133,131 @@ async function listPersonnel() {
         `);
 
     return result.recordset;
+}*/
+
+async function listPersonnel() {
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .query(`
+            SELECT
+                p.PersonnelID,
+                p.PositionID,
+                pos.PositionName,
+                p.Email,
+                p.EmploymentStatus,
+                p.DateOfBirth,
+                p.StartDate,
+                p.EndDate,
+                p.SSN,
+                p.PhoneNumber,
+                p.Fname,
+                p.Mname,
+                p.Lname
+            FROM dbo.Personnel AS p
+            LEFT JOIN dbo.POSITION AS pos
+                ON p.PositionID = pos.PositionID
+            ORDER BY p.Lname, p.Fname;
+        `);
+
+    return result.recordset;
 }
+
+
+async function deactivatePersonnel(personnelIDs){
+    if(
+        !Array.isArray(personnelIDs) ||
+        personnelIDs.length === 0 ||
+        !personnelIDs.every(
+            id => Number.isInteger(id) && id > 0
+        )
+    ){
+        throw new TypeError("Invalid Personnel IDs");
+    }
+
+    const uniqueIDs = [...new Set(personnelIDs)];
+    const pool = await getPool();
+    const transaction = new sql.Transaction(pool);
+
+    await transaction.begin();
+
+    try{
+        const request = new sql.Request(transaction);
+
+        const parameters = uniqueIDs.map((id, index) => {
+            request.input(`id${index}`, sql.Int, id);
+            return `@id${index}`;
+        });
+        
+        const result = await request.query(`
+            UPDATE dbo.Personnel
+            SET 
+                EmploymentStatus = 0,
+                EndDate = CAST(GETDATE() AS DATE)
+            WHERE EmploymentStatus = 1
+                AND PersonnelID IN (${parameters.join(",")});
+        `);
+
+        await transaction.commit();
+
+        return result.rowsAffected[0];
+    }
+    
+    catch (error){
+        await transaction.rollback();
+        throw error;
+    }
+
+}
+
+async function reactivatePersonnel(personnelIDs) {
+    if (
+        !Array.isArray(personnelIDs) ||
+        personnelIDs.length === 0 ||
+        !personnelIDs.every(
+            id => Number.isInteger(id) && id > 0
+        )
+    ) {
+        throw new TypeError("Invalid Personnel IDs");
+    }
+
+    const uniqueIDs = [...new Set(personnelIDs)];
+    const pool = await getPool();
+    const transaction = new sql.Transaction(pool);
+
+    await transaction.begin();
+
+    try {
+        const request = new sql.Request(transaction);
+
+        const parameters = uniqueIDs.map((id, index) => {
+            request.input(`id${index}`, sql.Int, id);
+            return `@id${index}`;
+        });
+
+        const result = await request.query(`
+            UPDATE dbo.Personnel
+            SET 
+                EmploymentStatus = 1,
+                EndDate = NULL
+            WHERE EmploymentStatus = 0
+                AND PersonnelID IN (${parameters.join(",")});
+        `);
+
+        await transaction.commit();
+
+        return result.rowsAffected[0];
+    } catch (error) {
+        await transaction.rollback();
+        throw error;
+    }
+}
+
+
 
 module.exports = {
     createPersonnel,
-    listPersonnel
+    listPersonnel,
+    deactivatePersonnel,
+    reactivatePersonnel
 };

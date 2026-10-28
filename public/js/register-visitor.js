@@ -57,10 +57,8 @@ registerForm.addEventListener("submit", async (event) => {
             );
         }
 
-        registerMessage.style.color = "var(--ink)";
-        registerMessage.textContent =
-            "Account created. You can now sign in.";
-        registerForm.reset();
+        window.location.assign(getPostLoginRedirect(result));
+
     } catch (error) {
         registerMessage.style.color = "#dc2626";
         registerMessage.textContent =
@@ -72,3 +70,20 @@ registerForm.addEventListener("submit", async (event) => {
         submitButton.textContent = "Create Account";
     }
 });
+
+
+// helper for redirect upon successfull registration 
+function getPostLoginRedirect(result) {
+    const params = new URLSearchParams(window.location.search);
+    const returnTo = params.get("returnTo");
+
+    if (
+        returnTo &&
+        returnTo.startsWith("/") &&
+        !returnTo.startsWith("//")
+    ) {
+        return returnTo;
+    }
+
+    return result.redirectTo || "/";
+}

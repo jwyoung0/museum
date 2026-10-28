@@ -7,12 +7,16 @@ document.addEventListener("DOMContentLoaded", () => {
 async function loadCollections() {
     try {
         const response = await fetch("/api/collections");
+        if (!response.ok) {
+            throw new Error(`Failed to load collections: ${response.status}`);
+        }
 
         allCollections = await response.json();
 
         displayCollections(allCollections);
     } catch (error) {
         console.error("Failed to load collections.", error);
+        document.getElementById("collections-error").hidden = false;
     }
 }
 
@@ -36,7 +40,7 @@ function displayCollections(collections) {
         }
 
         const link = document.createElement("a");
-        link.href = collection.url || "#";
+        link.href = `/collections/${collection.collectionId}`;
 
         const title = document.createElement("h3");
         title.textContent =

@@ -4,17 +4,19 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>MFAH Tickets</title>
+<link rel="stylesheet" href="/style">
 <style>
 * { box-sizing: border-box; }
 
-body {
+/* body {
     margin: 0;
     padding: 30px 15px;
     background: #f1f2f5;
     font: 16px Arial, sans-serif;
-}
-  
-main {
+} */
+
+.ticketing-main {
+    width: 100%;
     max-width: 680px;
     margin: auto;
     padding: 30px;
@@ -99,7 +101,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
     main { padding: 18px; }
     .ticket { flex-wrap: wrap; }
 }
-.site-header {
+/* .site-header {
     background: white;
     padding: 20px;
     display: flex;
@@ -110,76 +112,100 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .site-header a {
     color: #263047;
     margin-right: 12px;
-}
-  
+} */
+
 </style>
 </head>
 <body>
-  <header class="site-header">
-    <a href="/">MFAH</a>
-    <nav>
-        <a href="/artwork">Artwork</a>
-        <a href="/membership">Membership</a>
-        <a href="/events">Events</a>
-        <a href="/ticketing">Tickets</a>
-        <a href="/shop">Shop</a>
-    </nav>
-</header>
+    <header class="site-header">
+        <h1 class="site-title">
+            <a href="/">MFAH</a>
+        </h1>
+
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="/artwork">Artwork</a>
+            <a href="/membership">Membership</a>
+            <a href="/ticketing" aria-current="page">Tickets</a>
+            <a href="/shop">Shop</a>
+        </nav>
+
+        <!-- VISITOR_AUTH -->
+    </header>
 <main>
-<a href="/">← Back to Home</a>
-<h1>Museum Admission</h1>
+    <section class="ticketing-main">
+        <a href="/">✕ Exit Ticketing</a>
+        <h1>Museum Admission</h1>
 
-<section id="choose">
-    <h2>Select Tickets</h2>
+        <p id="membership">Membership: Checking...</p>
 
-    <label for="visitDate">Date of Visit</label>
-    <input type="date" id="visitDate" required>
+        <section id="choose">
+            <h2>Select Tickets</h2>
 
-    <div id="ticketTypes">Loading tickets...</div>
+            <label for="visitDate">Date of Visit</label>
+            <input type="date" id="visitDate" required>
 
-    <div class="summary">
-        Total: <strong id="total">$0.00</strong>
-    </div>
+            <div id="ticketTypes">Loading tickets...</div>
 
-    <button class="action" id="next" disabled>Next</button>
-</section>
+            <div class="summary">
+                Total: <strong id="total">$0.00</strong>
+            </div>
 
-<section id="account" hidden>
-    <h2>Log In for Account Access</h2>
-    <p>Already have an account?</p>
+            <button class="action" id="next" disabled>Next</button>
+        </section>
 
-    <a class="login" href="/auth-visitor">Log In</a>
-    <button class="action" id="skip">Skip for Now</button>
-    <button class="action secondary" onclick="show('choose')">Back</button>
-</section>
+        <section id="account" hidden>
+            <h2>Log In for Account Access</h2>
+            <p>Already have an account?</p>
 
-<section id="review" hidden>
-    <h2>Review Your Tickets</h2>
+            <a class="login" href="/auth-visitor" id="ticketLogin">Log In</a>
+            <button class="action" id="skip">Skip for Now</button>
+            <button class="action secondary" onclick="show('choose')">Back</button>
+        </section>
 
-    <div class="summary" id="summary"></div>
+        <section id="review" hidden>
+            <h2>Review Your Tickets</h2>
 
-    <form id="form">
-        <label for="name">Full Name</label>
-        <input id="name" maxlength="100" required>
+            <div class="summary" id="summary"></div>
+            <div id="freeOption" hidden>
+            <label>
+                <span id="freeLabel">Free Guest Tickets Available:</span>
+                <span id="freeCount">0</span>
+            </label>
+            <label for="freeTickets">How many do you want to use?</label>
+            <input type="number" id="freeTickets" min="0" value="0">
+        </div>
 
-        <label for="email">Email Address</label>
-        <input id="email" type="email" maxlength="150" required>
+            <form id="form">
+                <label for="name">Full Name</label>
+                <input id="name" maxlength="100" required>
 
-        <button class="action" id="buy" type="submit">
-            Confirm Purchase
-        </button>
-    </form>
+                <label for="email">Email Address</label>
+                <input id="email" type="email" maxlength="150" required>
 
-    <button class="action secondary" onclick="show('choose')">Back</button>
-</section>
+                <button class="action" id="buy" type="submit">
+                    Confirm Purchase
+                </button>
+            </form>
 
-<p id="message" role="status"></p>
+            <button class="action secondary" onclick="show('choose')">Back</button>
+        </section>
+
+        <p id="message" role="status"></p>
+    </section>
+
 </main>
 
 <script>
 const $ = id => document.getElementById(id);
 let types = [];
 let quantities = {};
+let signedIn = false;
+$("ticketLogin").onclick = () => {
+    sessionStorage.setItem("ticketDraft", JSON.stringify({
+        quantities,
+        visitDate: $("visitDate").value
+    }));
+};
 
 const age = {
     Adult: "Adult (19+)",
@@ -204,6 +230,15 @@ const today = new Date(now - now.getTimezoneOffset() * 60000)
 
 $("visitDate").min = today;
 $("visitDate").value = today;
+
+const draft = JSON.parse(sessionStorage.getItem("ticketDraft") || "null");
+
+if (draft) {
+    quantities = draft.quantities;
+    $("visitDate").value = draft.visitDate;
+    sessionStorage.removeItem("ticketDraft");
+}
+
 
 function show(page) {
     ["choose", "account", "review"].forEach(id =>
@@ -287,7 +322,12 @@ $("visitDate").onchange = update;
 
 $("next").onclick = () => {
     if (!$("visitDate").reportValidity() || !count()) return;
-    show("account");
+
+    if (signedIn) {
+        $("skip").click();
+    } else {
+        show("account");
+    }
 };
 
 // Review tickets
@@ -304,7 +344,24 @@ $("skip").onclick = () => {
         tickets.join("\n") +
         `\n\nTotal: $${total().toFixed(2)}`;
 
+    $("freeTickets").max = Math.min(
+        Number($("freeCount").textContent), count()
+    );
     show("review");
+    $("freeTickets").oninput();
+};
+$("freeTickets").oninput = () => {
+    const prices = types.flatMap(t =>
+        Array(quantities[t.TicketTypeID] || 0).fill(Number(t.Price))
+    ).filter(p => p > 0);
+
+    const n = Math.min(Number($("freeTickets").value) || 0, prices.length);
+    const discount = prices.slice(0, n).reduce((a, b) => a + b, 0);
+
+    $("summary").textContent = $("summary").textContent.replace(
+        /Total: \$[\d.]+$/,
+        `Total: $${(total() - discount).toFixed(2)}`
+    );
 };
 
 // Confirm purchase
@@ -315,13 +372,27 @@ $("form").onsubmit = async e => {
         Array(quantities[t.TicketTypeID] || 0).fill(t.TicketTypeID)
     );
 
+    const freeAmount = Number($("freeTickets").value);
+    const paidCount = ids.filter(id =>
+        Number(types.find(t => t.TicketTypeID === id)?.Price) > 0
+    ).length;
+
+    if (!Number.isInteger(freeAmount) ||
+        freeAmount < 0 ||
+        freeAmount > Math.min(Number($("freeCount").textContent), paidCount)) {
+        $("message").textContent = "Invalid free ticket quantity";
+        return;
+    }
     $("buy").disabled = true;
     $("buy").textContent = "Saving...";
 
     const saved = [];
+    let freeLeft = Number($("freeTickets").value) || 0;
 
     try {
         for (const ticketTypeId of ids) {
+            const useFreeTicket = freeLeft > 0 &&
+                Number(types.find(t => t.TicketTypeID === ticketTypeId)?.Price) > 0;
             const res = await fetch("/api/tickets", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -329,7 +400,8 @@ $("form").onsubmit = async e => {
                     name: $("name").value.trim(),
                     email: $("email").value.trim(),
                     ticketTypeId,
-                    visitDate: $("visitDate").value
+                    visitDate: $("visitDate").value,
+                    useFreeTicket
                 })
             });
 
@@ -337,6 +409,7 @@ $("form").onsubmit = async e => {
             if (!res.ok) throw Error(result.error || "Purchase failed");
 
             saved.push(result);
+            if (useFreeTicket) freeLeft--;
         }
 
         $("message").textContent =
@@ -360,7 +433,43 @@ $("form").onsubmit = async e => {
     }
 };
 
-loadTickets();
+async function start() {
+    await loadTickets();
+
+    try {
+        const res = await fetch("/api/membership-status");
+        if (!res.ok) throw Error("Membership unavailable");
+
+        const member = await res.json();
+        const remaining = member.unlimitedTickets
+            ? 10 : Number(member.remainingTickets) || 0;
+
+        $("freeCount").textContent = remaining;
+        $("freeTickets").max = remaining;
+        $("freeOption").hidden = remaining === 0;
+        $("freeLabel").textContent = member.unlimitedTickets
+            ? "Unlimited Guest Admission (max per order):"
+            : "Free Guest Tickets Available:";
+
+        signedIn = !!member.email;
+
+        $("membership").textContent =
+            "Membership: " + (member.tier || "None");
+
+        if (signedIn) {
+            $("email").value = member.email;
+            $("email").readOnly = true;
+        }
+
+        if (draft && signedIn && count() && types.length) {
+            $("skip").click();
+        }
+    } catch {
+        $("membership").textContent = "Membership: Unable to check";
+    }
+}
+
+start();
 </script>
 </body>
 </html>

@@ -3,8 +3,6 @@ const {
     readArtworkForVisitor
 } = require("../database/artwork");
 
-// const { readJsonBody } = require("../utils/http");
-
 async function listArtworkForVisitorHandler(req, res) {
     const artwork = await listArtworkForVisitor();
 
@@ -16,21 +14,32 @@ async function listArtworkForVisitorHandler(req, res) {
 }
 
 async function readArtworkForVisitorHandler(req, res) {
-    const artworkId = req.params.id;
+    const sessionId = req.headers["x-analytics-session-id"];
+    const uuidPattern =
+        /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+    if (typeof sessionId !== "string" || !uuidPattern.test(sessionId)) {
+        res.writeHead(400, {
+            "Content-Type": "application/json"
+        });
+
+        return res.end(JSON.stringify({
+            error: "A valid analytics session ID is required"
+        }));
+    }
 
     const artwork = await readArtworkForVisitor(
-        artworkId,
-        req.user?.visitorId
+        req.params.id,
+        req.user?.visitorId,
+        sessionId
     );
 
-    if(!artwork) {
+    if (!artwork) {
         res.writeHead(404, {
             "Content-Type": "application/json"
         });
 
-        return res.end(
-            JSON.stringify({ error: "Artwork not found" })
-        );
+        return res.end(JSON.stringify({ error: "Artwork not found" }));
     }
 
     res.writeHead(200, {

@@ -1,6 +1,7 @@
 const {
     createTier,
     listTiers,
+    listBenefits,
     readTier,
     updateTier,
     deleteTier
@@ -9,15 +10,14 @@ const {
 const { readJsonBody } = require("../../utils/http");
 
 async function createTierHandler(req, res) {
-    const body = await readJsonBody(req);  
+    const body = await readJsonBody(req);
 
     const tier = {
         TierName: body.TierName,
         Price: body.Price,
-        IsVIP: body.IsVIP,
-        DiscountRate: body.DiscountRate,
-        Description: body.Description
-    }; 
+        Description: body.Description,
+        Benefits: body.Benefits || []
+    };
 
     const createdTier = await createTier(tier);
 
@@ -30,16 +30,26 @@ async function createTierHandler(req, res) {
 
 async function listTiersHandler(req, res) {
     const tiers = await listTiers();
-    
+
     res.writeHead(200, {
         "Content-Type": "application/json"
-    });     
+    });
 
     res.end(JSON.stringify(tiers));
 }
 
+async function listBenefitsHandler(req, res) {
+    const benefits = await listBenefits();
+
+    res.writeHead(200, {
+        "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify(benefits));
+}
+
 async function readTierHandler(req, res) {
-    const tierId = req.params.id;
+    const tierId = Number(req.params.id);
     const tier = await readTier(tierId);
 
     if (!tier) {
@@ -48,7 +58,9 @@ async function readTierHandler(req, res) {
         });
 
         return res.end(
-            JSON.stringify({ error: "Tier not found" })    
+            JSON.stringify({
+                error: "Tier not found"
+            })
         );
     }
 
@@ -57,63 +69,92 @@ async function readTierHandler(req, res) {
     });
 
     res.end(JSON.stringify(tier));
-}       
+}
 
 async function updateTierHandler(req, res) {
-    const tierId = req.params.id;
+    const tierId = Number(req.params.id);
     const body = await readJsonBody(req);
 
     const tier = {
         TierName: body.TierName,
         Price: body.Price,
-        IsVIP: body.IsVIP,
-        DiscountRate: body.DiscountRate,
-        Description: body.Description
-    };  
+        Description: body.Description,
+        Benefits: body.Benefits || []
+    };
 
-    const updatedTier = await updateTier(tierId, tier);
+    const updatedTier = await updateTier(
+        tierId,
+        tier
+    );
 
     if (!updatedTier) {
         res.writeHead(404, {
             "Content-Type": "application/json"
-        }); 
-
+        });
 
         return res.end(
-            JSON.stringify({ error: "Tier not found" })    
+            JSON.stringify({
+                error: "Tier not found"
+            })
         );
     }
 
     res.writeHead(200, {
         "Content-Type": "application/json"
     });
+
     res.end(JSON.stringify(updatedTier));
 }
 
 async function deleteTierHandler(req, res) {
-    const tierId = req.params.id;
-    const deletedTier = await deleteTier(tierId);   
-    
+    const tierId = Number(req.params.id);
+
+    const deletedTier = await deleteTier(tierId);
+
     if (!deletedTier) {
         res.writeHead(404, {
             "Content-Type": "application/json"
-        }); 
+        });
 
         return res.end(
-            JSON.stringify({ error: "Tier not found" })    
+            JSON.stringify({
+                error: "Tier not found"
+            })
         );
     }
 
     res.writeHead(200, {
         "Content-Type": "application/json"
     });
+
     res.end(JSON.stringify(deletedTier));
-}       
+}
+
+async function createMembershipHandler(req, res) {
+    const body = await readJsonBody(req);
+
+    const tier = {
+        TierID: body.TierName,
+        Price: body.Price,
+        Description: body.Description,
+        Benefits: body.Benefits || []
+    };
+
+    const createdTier = await createTier(tier);
+
+    res.writeHead(201, {
+        "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify(createdTier));
+}
 
 module.exports = {
     createTierHandler,
-    listTiersHandler,  
+    listTiersHandler,
+    listBenefitsHandler,
     readTierHandler,
     updateTierHandler,
-    deleteTierHandler
+    deleteTierHandler,
+    createMembershipHandler
 };

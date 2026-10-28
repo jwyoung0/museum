@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#2563eb">
+    <title>Membership Checkout | MFAH</title>
+    <link rel="stylesheet" href="/style">
+    <style>
+        .checkout-card {
+            width: min(100%, 560px);
+            margin: 1rem 0 2rem;
+            padding: 1.5rem;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+        }
+
+        .checkout-card h2 { margin-top: 0; text-align: left; }
+        .checkout-summary { padding: 1rem 0; border-top: 1px solid var(--line); }
+        .checkout-price { font-size: 1.25rem; font-weight: 700; }
+        .checkout-note { color: var(--muted); }
+        #checkout-error { color: #b91c1c; }
+        #checkout-success { color: var(--green); font-weight: 600; }
+    </style>
+</head>
+<body>
+    <header class="site-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <nav class="header-nav" aria-label="Main navigation">
+            <a href="/artwork">Artwork</a>
+            <a href="/membership" aria-current="page">Membership</a>
+            <a href="/events">Events</a>
+            <a href="/ticketing">Tickets</a>
+            <a href="/shop">Shop</a>
+        </nav>
+        <!-- VISITOR_AUTH -->
+    </header>
+
+    <main>
+        <section class="checkout-card" aria-labelledby="checkout-title">
+            <h2 id="checkout-title">Review your membership</h2>
+            <p>Check your selected membership before continuing.</p>
+
+            <div id="checkout-summary" class="checkout-summary" aria-live="polite">
+                <p>Loading membership details…</p>
+            </div>
+
+            <p class="checkout-note">Demo checkout only. No payment will be processed.</p>
+            <button id="purchase-button" type="button" disabled>Complete purchase</button>
+            <p id="checkout-error" role="status" hidden></p>
+            <p id="checkout-success" role="status" aria-live="polite" hidden></p>
+            <a href="/membership">Back to membership tiers</a>
+        </section>
+    </main>
+
+    <script>
+        const summary = document.querySelector("#checkout-summary");
+        const errorMessage = document.querySelector("#checkout-error");
+        const purchaseButton = document.querySelector("#purchase-button");
+        const successMessage = document.querySelector("#checkout-success");
+        const tierId = new URLSearchParams(window.location.search).get("tierId");
+
+        function addText(parent, tag, text, className) {
+            const element = document.createElement(tag);
+            element.textContent = text;
+            if (className) element.className = className;
+            parent.appendChild(element);
+        }
+
+        async function loadSelectedTier() {
+            if (!tierId || !/^\d+$/.test(tierId)) {
+                throw new Error("Choose a membership tier to continue.");
+            }
+
+            const response = await fetch(`/api/membership-detail/${encodeURIComponent(tierId)}`);
+            const tier = await response.json();
+            if (!response.ok) {
+                throw new Error(tier.error || "Could not load this membership tier.");
+            }
+
+            summary.replaceChildren();
+            addText(summary, "h3", tier.TierName);
+            addText(summary, "p", tier.Description || "Membership access and benefits.");
+            addText(summary, "p", `$${Number(tier.Price).toFixed(2)}`, "checkout-price");
+            purchaseButton.disabled = false;
+        }
+
+        purchaseButton.addEventListener("click", async () => {
+            purchaseButton.disabled = true;
+            purchaseButton.textContent = "Processing purchase…";
+            errorMessage.hidden = true;
+            successMessage.hidden = true;
+
+            try {
+                const response = await fetch("/api/membership-purchase", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ tierId })
+                });
+                const result = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(result.error || "Could not complete membership purchase.");
+                }
+
+                purchaseButton.textContent = "Purchase complete";
+                successMessage.textContent = `Membership purchased successfully. Your membership is active for one year (ID ${result.membership.MembershipID}).`;
+                successMessage.hidden = false;
+            } catch (error) {
+                errorMessage.textContent = error.message || "Could not complete membership purchase.";
+                errorMessage.hidden = false;
+                purchaseButton.disabled = false;
+                purchaseButton.textContent = "Complete purchase";
+            }
+        });
+
+        loadSelectedTier().catch(error => {
+            summary.replaceChildren();
+            errorMessage.textContent = error.message;
+            errorMessage.hidden = false;
+        });
+    </script>
+</body>
+</html>

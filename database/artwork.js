@@ -7,6 +7,7 @@ async function listArtworkForVisitor() {
         .query(`
             SELECT
                 a.accessionId,
+                a.collectionId,
                 a.title,
                 ar.fullName AS artist,
                 a.creationDate,
@@ -14,13 +15,13 @@ async function listArtworkForVisitor() {
             FROM dbo.ARTWORKS a
             INNER JOIN dbo.ARTISTS ar
                 ON a.artistId = ar.artistId
-            ORDER BY a.title;            
+            ORDER BY a.title;
         `);
 
     return result.recordset;
 }
 
-async function readArtworkForVisitor(accessionId, visitorId) {
+async function readArtworkForVisitor(accessionId, visitorId, sessionId) {
     const pool = await getPool();
 
     const result = await pool.request()
@@ -34,20 +35,20 @@ async function readArtworkForVisitor(accessionId, visitorId) {
             INNER JOIN dbo.ARTISTS ar
                 ON a.artistId = ar.artistId
             INNER JOIN dbo.COLLECTIONS c
-                ON a.collectionId = c.collectionId 
-            WHERE a.accessionId = @accessionId;            
+                ON a.collectionId = c.collectionId
+            WHERE a.accessionId = @accessionId;
         `);
 
     const artwork = result.recordset[0] || null;
-
-    if (!artwork) {return null};
+    if (!artwork) return null;
 
     await pool.request()
         .input("artworkId", sql.Int, accessionId)
-        .input("visitorId", sql.Int, visitorId)
+        .input("visitorId", sql.Int, visitorId ?? null)
+        .input("sessionId", sql.UniqueIdentifier, sessionId)
         .query(`
-            INSERT INTO dbo.ARTWORK_VIEW (ArtworkID, VisitorID)
-            VALUES (@artworkId, @visitorId);    
+            INSERT INTO dbo.ARTWORK_VIEW (ArtworkID, VisitorID, SessionID)
+            VALUES (@artworkId, @visitorId, @sessionId);
         `);
 
     return artwork;
