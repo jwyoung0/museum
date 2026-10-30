@@ -1,4 +1,5 @@
 let currentCollection = null;
+let allArtworks = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
     const collectionId = window.location.pathname.split("/").pop();
@@ -104,4 +105,25 @@ async function loadCollection() {
         console.error("Unable to refresh collection:", error);
         document.getElementById("detail-error").hidden = false;
     }
+}
+
+async function loadArtworks() {
+    try {
+        const response = await fetch(`/api/curator/collection-artworks/${currentCollection.collectionId}`);
+        if (!response.ok) {
+            throw new Error(`Failed to load artworks: ${response.status}`);
+        }
+
+        allArtworks = await response.json();
+        document.getElementById("error-state").hidden = true;
+        renderArtworks();
+    } catch (error) {
+        console.error("Unable to load collections:", error);
+        document.getElementById("error-state").hidden = false;
+    }
+
+}
+
+function renderArtworks(artworks) {
+
 }
