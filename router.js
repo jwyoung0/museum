@@ -800,6 +800,16 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             pathname.match(/^\/api\/exhibitions\/(\d+)$/);
         const visitorExhibitionArtworksMatch =
             pathname.match(/^\/api\/exhibitions\/(\d+)\/artworks$/);
+        
+        const collectionArtworksMatch = pathname.match(
+            /^\/api\/curator\/collection\/(\d+)\/artworks$/);
+        if (req.method === "GET" && collectionArtworksMatch) {
+            if(!requireCurator(req, res)) return;
+            req.params = { id: collectionArtworksMatch[1] };
+            await getArtworksInCollectionHandler(req, res);
+            return;
+        }
+        
         if (req.method === "GET" && visitorExhibitionMatch) {
             req.params = { id: visitorExhibitionMatch[1] };
             await readExhibitionHandler(req, res);

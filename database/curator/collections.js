@@ -109,11 +109,33 @@ async function countCollectionArtworks(collectionId) {
     return result.recordset[0].artworkCount;
 }
 
+async function getArtworksInCollection(collectionId) {
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .input("collectionId", sql.Int, collectionId)
+        .query(`
+            SELECT
+                a.accessionId,
+                a.title,
+                a.creationDate,
+                ar.fullName AS artist
+            FROM dbo.ARTWORKS a
+            INNER JOIN dbo.ARTISTS ar
+                ON a.artistId = ar.artistId
+            WHERE a.collectionId = @collectionId
+            ORDER BY a.title;
+        `);
+
+    return result.recordset;
+}
+
 module.exports = {
     createCollection,
     listCollections,
     readCollection,
     updateCollection,
     deleteCollection,
-    countCollectionArtworks
+    countCollectionArtworks,
+    getArtworksInCollection
 };

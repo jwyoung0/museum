@@ -4,7 +4,8 @@ const {
     readCollection,
     updateCollection,
     deleteCollection,
-    countCollectionArtworks
+    countCollectionArtworks,
+    getArtworksInCollection
 } = require("../../database/curator/collections");
 
 const { readJsonBody } = require("../../utils/http");
@@ -122,10 +123,34 @@ async function deleteCollectionHandler(req, res) {
     res.end();
 }
 
+async function getArtworksInCollectionHandler(req, res) {
+    const collectionId = req.params.id;
+    const artworks = await getArtworksInCollection(collectionId);
+
+    if (!artworks) {
+        res.writeHead(404, {
+            "Content-Type": "application/json"
+        });
+
+        return res.end(
+            JSON.stringify({ error: "Collection artworks not found" })    
+        );
+    }
+
+    res.writeHead(200, {
+        "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify({
+        artworks
+    }));
+}
+
 module.exports = {
     createCollectionHandler,
     listCollectionsHandler,
     readCollectionHandler,
     updateCollectionHandler,
-    deleteCollectionHandler
+    deleteCollectionHandler,
+    getArtworksInCollectionHandler
 };

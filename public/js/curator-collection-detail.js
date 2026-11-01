@@ -16,6 +16,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         const collection = await response.json();
 
         currentCollection = collection;
+        
+        await loadArtworks();
 
         document.getElementById("collection-name").textContent =
             collection.collectionName;
@@ -109,12 +111,17 @@ async function loadCollection() {
 
 async function loadArtworks() {
     try {
-        const response = await fetch(`/api/curator/collection-artworks/${currentCollection.collectionId}`);
+        const response = await fetch(`/api/curator/collection/${currentCollection.collectionId}/artworks`);
         if (!response.ok) {
             throw new Error(`Failed to load artworks: ${response.status}`);
         }
 
-        allArtworks = await response.json();
+        const data = await response.json();
+        if (!Array.isArray(data.artworks)) {
+            throw new Error("Invalid artworks response");
+        }
+
+        allArtworks = await data.artworks;
         document.getElementById("error-state").hidden = true;
         renderArtworks();
     } catch (error) {
@@ -124,6 +131,33 @@ async function loadArtworks() {
 
 }
 
-function renderArtworks(artworks) {
+function renderArtworks(artworks = allArtworks) {
+    const tbody = document.getElementById("artworks-table-body");
+    const emptyState = document.getElementById("empty-artworks");
 
+    tbody.innerHTML = "";
+
+    if (artworks.length === 0) {
+        emptyState.hidden = false;
+        return;
+    }
+
+    emptyState.hidden = true;
+
+    for (const artwork of artworks) {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td>${artwork.title}</td>
+            <td>${artwork.artist ?? "Unknown"}</td>
+            <td>${artwork.creationDate ?? ""}</td>
+            <td>
+                <a href="/curator/artwork/${artwork.artworkId}">
+                    View
+                </a>
+            </td>
+        `;
+
+        tbody.appendChild(row);
+    }
 }

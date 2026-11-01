@@ -6,6 +6,59 @@
     <meta name="theme-color" content="#2563eb">
     <title>Collection Details | Curator Dashboard</title>
     <link rel="stylesheet" href="/style">
+    <style>
+        /* Curator collection detail */
+
+        .collection-detail-workspace {
+            width: 100%;
+            max-width: 1060px;
+            margin: 0 auto;
+        }
+
+        .collection-artworks {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+        }
+
+        .collection-artworks h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .collection-artworks table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .collection-artworks th {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 2px solid var(--line);
+            background: var(--bg);
+        }
+
+        .collection-artworks td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .collection-artworks tbody tr:hover {
+            background: rgba(37, 99, 235, 0.04);
+        }
+
+        #empty-artworks {
+            padding: 1rem;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .artist-actions {
+            margin-top: 1.5rem;
+        }
+    </style>
 </head>
 <body>
     <header class="dashboard-header">
@@ -55,6 +108,30 @@
 
             <div id="detail-error" role="alert" hidden>
                 Unable to load collection.
+            </div>            
+        </section>
+        <section class="collection-artworks">
+            <h3>Artworks</h3>
+
+            <table class="workspace-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Artist</th>
+                        <th>Year</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="artworks-table-body">
+                </tbody>
+            </table>
+
+            <div id="error-state" role="alert" hidden>
+                Unable to load artworks in collection.
+            </div>  
+
+            <div id="empty-artworks" hidden>
+                No artworks are assigned to this collection.
             </div>
         </section>
     </main>
