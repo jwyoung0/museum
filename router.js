@@ -57,8 +57,10 @@ const { createCollectionHandler,
         getArtworksInCollectionHandler
 } = require("./handlers/curator/collections");
 const { createExhibitionHandler,
-    listExhibitionHandler,
-    readExhibitionHandler,
+    listExhibitionsForCuratorHandler,
+    readExhibitionForCuratorHandler,
+    listExhibitionsForVisitorHandler,
+    readExhibitionForVisitorHandler,
     updateExhibitionHandler,
     deleteExhibitionHandler,
     listExhibitionArtworksHandler,
@@ -558,7 +560,7 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             return;
         }
         if (req.method === "GET" && req.url === "/api/exhibitions") {
-            await listExhibitionHandler(req, res);
+            await listExhibitionsForVisitorHandler(req, res);
             return;
         }
         if (req.method === "GET" && req.url === "/api/curator/collections") {
@@ -567,12 +569,12 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             return;
         }
         if (req.method === "GET" && req.url === "/api/exhibitions") {
-            await listExhibitionHandler(req, res);
+            await listExhibitionsForVisitorHandler(req, res);
             return;
         }
         if (req.method === "GET" && req.url === "/api/curator/exhibitions") {
             if (!requireCurator(req, res)) return;
-            await listExhibitionHandler(req, res);
+            await listExhibitionsForCuratorHandler(req, res);
             return;
         }
         if (req.method === "POST" && req.url === "/api/curator/exhibitions") {
@@ -582,7 +584,7 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
         }
         if (req.method === "GET" && req.url === "/api/director/exhibitions") {
             if (!requireDirector(req, res)) return;
-            await listExhibitionHandler(req, res);
+            await listExhibitionsForCuratorHandler(req, res);
             return
         }
         if (req.method === "POST" && req.url === "/api/director/exhibitions") {
@@ -812,7 +814,7 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
         
         if (req.method === "GET" && visitorExhibitionMatch) {
             req.params = { id: visitorExhibitionMatch[1] };
-            await readExhibitionHandler(req, res);
+            await readExhibitionForVisitorHandler(req, res);
             return;
         }
         if (req.method === "GET" && visitorExhibitionArtworksMatch) {
@@ -881,7 +883,7 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             req.params = { id: exhibitionMatch[1] };
             if (!requireCurator(req, res)) return;
             if (req.method === "GET") {
-                await readExhibitionHandler(req, res);
+                await readExhibitionForCuratorHandler(req, res);
             } else if (req.method === "PUT") {
                 await updateExhibitionHandler(req, res);
             } else if (req.method === "DELETE") {

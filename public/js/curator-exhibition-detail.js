@@ -1,3 +1,4 @@
+let currentExhibition = null;
 let exhibitionId;
 let allArtwork = [];
 let assignedArtworkIds = new Set();
@@ -17,6 +18,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         }
 
         const exhibition = await response.json();
+        
+        currentExhibition = exhibition;
 
         document.getElementById("exhibitionName").textContent =
             exhibition.exhibitionName;
@@ -32,6 +35,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         document.getElementById("description").textContent =
             exhibition.description ?? "—";
+
+        const deleteButton = document.getElementById("delete-exhibition-button");
+        deleteButton.hidden = false;
+        deleteButton.addEventListener("click", confirmDeleteExhibition);
     } catch (error) {
         console.error(
             "Unable to load exhibition:",
@@ -365,5 +372,55 @@ async function removeArtwork(
         );
     } finally {
         removeButton.disabled = false;
+    }
+}
+
+async function confirmDeleteExhibition() {
+    const confirmed = window.confirm(
+        `Delete ${currentExhibition.exhibitionName}?`
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    await handleDeleteExhibition();
+}
+
+async function handleDeleteExhibition() {
+    try {
+        const response = await fetch(
+            `/api/curator/exhibitions/${currentExhibition.exhibitionId}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        if (response.status === 200) {
+            window.location.href = "/curator/exhibitions";
+            return;
+        }
+
+        if (response.status === 204) {
+            window.location.href = "/curator/exhibitions";
+            return;
+        }
+
+        if (response.status === 409) {
+            const error = await response.json();
+            window.alert(error.error);
+            await loadExhibition();
+            return;
+        }
+
+        if (response.status === 404) {
+            window.alert("Exhibition not found.");
+            return;
+        }
+
+        throw new Error(`Unable to delete exhibition: ${response.status}`);
+    } catch (error) {
+        console.error("Unable to delete exhibition:", error);
+        window.alert("Unable to delete exhibition. Please try again.");
     }
 }

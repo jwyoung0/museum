@@ -59,7 +59,7 @@ async function createExhibition({
     return result.recordset[0];
 }
 
-async function listExhibitions() {
+async function listExhibitionsForCurator() {
     const pool = await getPool();
 
     const result = await pool.request()
@@ -72,7 +72,7 @@ async function listExhibitions() {
     return result.recordset;
 }
 
-async function readExhibition(exhibitionId) {
+async function readExhibitionForCurator(exhibitionId) {
     const pool = await getPool();
 
     const result = await pool.request()
@@ -81,6 +81,51 @@ async function readExhibition(exhibitionId) {
             SELECT *
             FROM dbo.EXHIBITIONS
             WHERE exhibitionId = @exhibitionId;    
+        `);
+
+    return result.recordset[0] || null;
+}
+
+async function listExhibitionsForVisitor() {
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .query(`
+            SELECT 
+                e.exhibitionId, 
+                e.exhibitionName,
+                e.startDate,
+                e.endDate,
+                e.description,
+                a.imageURL
+            FROM dbo.EXHIBITIONS AS e
+            LEFT JOIN dbo.ARTWORKS AS a
+                ON a.accessionId = e.representativeArtwork
+            WHERE e.status = 'active'
+            ORDER BY e.exhibitionName;
+   
+        `);
+
+    return result.recordset;
+}
+
+async function readExhibitionForVisitor(exhibitionId) {
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .input("exhibitionId", sql.Int, exhibitionId)
+        .query(`
+            SELECT 
+                e.exhibitionId, 
+                e.exhibitionName,
+                e.startDate,
+                e.endDate,
+                e.description,
+                a.imageURL
+            FROM dbo.EXHIBITIONS AS e
+            LEFT JOIN dbo.ARTWORKS AS a
+                ON a.accessionId = e.representativeArtwork
+            WHERE e.exhibitionId = @exhibitionId;    
         `);
 
     return result.recordset[0] || null;
@@ -244,8 +289,10 @@ async function removeArtworkFromExhibition(exhibitionId, accessionId) {
 
 module.exports = {
     createExhibition,
-    listExhibitions,
-    readExhibition,
+    listExhibitionsForVisitor,
+    readExhibitionForVisitor,
+    listExhibitionsForCurator,
+    readExhibitionForCurator,
     updateExhibition,
     deleteExhibition,
     listExhibitionArtworks,

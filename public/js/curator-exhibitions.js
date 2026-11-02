@@ -87,13 +87,37 @@ function renderExhibitions(exhibitions) {
 
         const datesCell = document.createElement("td");
         if (exhibition.startDate && exhibition.endDate) {
-            const startDate = exhibition.startDate.slice(0, 10);
-            const endDate = exhibition.endDate.slice(0, 10);
-            datesCell.textContent = `${startDate} - ${endDate}`;
+            const startDate = new Date(exhibition.startDate);
+            const endDate = new Date(exhibition.endDate);
+
+            const formattedStart = startDate.toLocaleDateString("en-US");
+            const formattedEnd = endDate.toLocaleDateString("en-US");
+
+            datesCell.textContent = `${formattedStart} - ${formattedEnd}`;
         } else {
             datesCell.textContent = "—";
         }
         
+        const scheduledStatusCell = document.createElement("td");
+
+        if (exhibition.startDate && exhibition.endDate) {
+            const today = new Date().toISOString().slice(0, 10);
+            
+            const startDate = exhibition.startDate?.slice(0, 10);
+            const endDate = exhibition.endDate?.slice(0, 10);
+        
+            if (endDate < today ) {
+                scheduledStatusCell.textContent = "Past";
+            } else if (startDate > today ) {
+                scheduledStatusCell.textContent = "Upcoming";
+            } else {
+                scheduledStatusCell.textContent = "Current";
+            } 
+        } else {
+                scheduledStatusCell.textContent = "—";
+            }
+
+
         const actionsCell = document.createElement("td");
         const viewButton = document.createElement("button");
         viewButton.type = "button";
@@ -108,7 +132,7 @@ function renderExhibitions(exhibitions) {
         editButton.textContent = "Edit";
 
         actionsCell.append(viewButton, editButton);
-        row.append(nameCell, statusCell, datesCell, actionsCell);
+        row.append(nameCell, statusCell, datesCell, scheduledStatusCell, actionsCell);
         tableBody.insertBefore(row, emptyState);
 
         viewButton.addEventListener("click", () => {
