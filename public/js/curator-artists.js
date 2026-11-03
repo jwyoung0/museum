@@ -203,10 +203,30 @@ async function submitArtistForm(event) {
 
     const data = new FormData(form);
 
+    const birthYear =
+        data.get("birthYear") ? Number(data.get("birthYear")) : null;
+    const deathYear =
+        data.get("deathYear") ? Number(data.get("deathYear")) : null;
+
+    const currentYear = new Date().getFullYear();
+
+    if (birthYear !== null && birthYear > currentYear) {
+        alert("Birth year cannot be in the future.");
+        return;
+    }
+
+    if (birthYear !== null &&
+        deathYear !== null && 
+        deathYear < birthYear
+    ) {
+        alert("Death year must be after birth year.");
+        return;
+    }
+
     const artist = {
         fullName: data.get("fullName").trim(),
-        birthYear: data.get("birthYear") ? Number(data.get("birthYear")) : null,
-        deathYear: data.get("deathYear") ? Number(data.get("deathYear")) : null,
+        birthYear,
+        deathYear,
         placeOfBirth: data.get("placeOfBirth"),
         period: data.get("period"),
         sex: data.get("sex"),
