@@ -53,11 +53,11 @@ loginForm.addEventListener(`submit`, async (event) => {
         }
 
     } catch (error) {
-        loginMessage.style.color = '#dc2626';
-        loginMessage.textContent = error.message;
+        loginMessage.textContent = `⚠ ${error.message}`;
+        loginMessage.classList.add('visible');
 
         submitButton.disabled = false;
-        submitButton.textContent = 'Login';
+        submitButton.textContent = 'Sign In';
     }
 });
 

@@ -6,6 +6,28 @@
     <meta name="theme-color" content="#2563eb">
     <title>MFAH Portal</title>
     <link rel="stylesheet" href="/style">
+    <style>
+        .login-message {
+            display: none;
+
+            margin-bottom: 16px;
+            padding: 14px 16px;
+
+            background: #fef3c7;
+            border-left: 4px solid #d97706;
+            border-radius: 6px;
+
+            color: #92400e;
+            font-size: 0.95rem;
+            font-weight: 500;
+
+            line-height: 1.4;
+        }
+
+        .login-message.visible {
+            display: block;
+        }
+    </style>    
 </head>
 <body class="login-page">
     <header class="site-header">
@@ -22,6 +44,12 @@
             <form id="login-form">
                 <h2>Sign In</h2>
                 <p>Sign in with the email address you used to register or join.</p>
+
+                <div id="login-message"
+                    class="login-message"
+                    role="alert">
+                </div>
+
                 <div class="field-row">
                     <label for="email">Email</label>
                     <input 
