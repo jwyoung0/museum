@@ -81,7 +81,11 @@ const {
     listPositionsHandler,
     createPositionHandler
 } = require("./handlers/director/positions");
-//Director-Positions
+//Director-User Accounts
+const {
+    createUserAccountHandler
+} = require("./handlers/director/accounts");
+//Director-Membership Tiers
 const {
     createTierHandler,
     listTiersHandler,
@@ -133,6 +137,11 @@ async function router(req, res) {
             await createPersonnelHandler(req, res);
             return;
         }
+        if (req.method === "POST" && req.url === "/api/director/accounts") {
+            if (!requireDirector(req, res)) return;
+            await createUserAccountHandler(req, res);
+            return;
+        }        
         if (req.method === "POST" && req.url === "/api/director/memberships/tiers") {
             if (!requireDirector(req, res)) return;
             await createTierHandler(req, res);
@@ -598,6 +607,11 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             sendPage(res, path.join("director", "dashboard.html"), "text/html");
             return;
         }
+        if (req.method === "GET" && req.url === "/director/accounts") {
+            if (!requireDirector(req, res)) return;
+            sendPage(res, path.join("director", "accounts.html"), "text/html");
+            return;
+        }
         if (req.method === "GET" && req.url === "/director/membership-revenue") {
             if (!requireDirector(req, res)) return;
             sendPage(res, path.join("director", "membership-revenue.html"), "text/html");
@@ -621,6 +635,11 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
         if (req.method === "GET" && req.url === "/js/director-positions.js") {
             if (!requireDirector(req, res)) return;
             sendPage(res, path.join("js", "director-positions.js"), "application/javascript");
+            return;
+        }
+        if (req.method === "GET" && req.url === "/js/director-accounts.js") {
+            if (!requireDirector(req, res)) return;
+            sendPage(res, path.join("js", "director-accounts.js"), "application/javascript");
             return;
         }
         if (req.method === "GET" && req.url === "/js/director-memberships.js") {
