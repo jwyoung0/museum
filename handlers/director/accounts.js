@@ -1,8 +1,56 @@
 const {
+    searchPersonnelForAccounts,
     createUserAccount
 } = require("../../database/director/accounts");
 
 const { readJsonBody } = require("../../utils/http");
+
+async function searchPersonnelForAccountsHandler(req, res) {
+    if (!req.user || req.user.role !== "director") {
+        res.writeHead(403, {
+            "Content-Type": "application/json"
+        });
+
+        return res.end(JSON.stringify({
+            error: "Forbidden"
+        }));
+    }
+
+    try {
+        const url = new URL(req.url, "http://localhost");
+        const searchTerm = url.searchParams.get("term") || "";
+
+        if (searchTerm.length > 100) {
+            const error = new Error("Search term must not exceed 100 characters");
+            error.statusCode = 400;
+            throw error;
+        }
+
+        const personnel = await searchPersonnelForAccounts(searchTerm);
+
+        res.writeHead(200, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify(personnel));
+    } catch (error) {
+        console.error("Personnel account search error:", error);
+
+        const statusCode = Number.isInteger(error.statusCode)
+            ? error.statusCode
+            : 500;
+
+        res.writeHead(statusCode, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify({
+            error: statusCode >= 500
+                ? "Unable to search employees. Try again later."
+                : error.message
+        }));
+    }
+}
 
 async function createUserAccountHandler(req, res) {
     if (!req.user || req.user.role !== "director") {
@@ -90,5 +138,6 @@ async function createUserAccountHandler(req, res) {
 }
 
 module.exports = {
+    searchPersonnelForAccountsHandler,
     createUserAccountHandler
 };

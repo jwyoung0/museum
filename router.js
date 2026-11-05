@@ -83,6 +83,7 @@ const {
 } = require("./handlers/director/positions");
 //Director-User Accounts
 const {
+    searchPersonnelForAccountsHandler,
     createUserAccountHandler
 } = require("./handlers/director/accounts");
 //Director-Membership Tiers
@@ -625,6 +626,14 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
         if (req.method === "GET" && req.url === "/api/director/personnel") {
             if (!requireDirector(req, res)) return;
             await listPersonnelHandler(req, res);
+            return;
+        }
+        if (
+            req.method === "GET" &&
+            /^\/api\/director\/accounts\/search(?:\?|$)/.test(req.url)
+        ) {
+            if (!requireDirector(req, res)) return;
+            await searchPersonnelForAccountsHandler(req, res);
             return;
         }
         if (req.method === "GET" && req.url === "/js/director-personnel.js") {

@@ -1,5 +1,51 @@
 const { sql, getPool } = require("../connection");
 
+async function searchPersonnelForAccounts(searchTerm) {
+    if (typeof searchTerm !== "string") {
+        throw new TypeError("searchTerm must be a string");
+    }
+
+    const pool = await getPool();
+    const searchPattern = `%${searchTerm.trim()}%`;
+
+    const result = await pool.request()
+        .input("searchTerm", sql.NVarChar(100), searchTerm.trim())
+        .input("searchPattern", sql.NVarChar(202), searchPattern)
+        .query(`
+            SELECT
+                p.PersonnelID,
+                p.Fname,
+                p.Mname,
+                p.Lname,
+                pos.PositionName,
+                p.StartDate
+            FROM dbo.Personnel AS p
+            LEFT JOIN dbo.POSITION AS pos
+                ON p.PositionID = pos.PositionID
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM dbo.USER_ACCOUNT AS ua
+                WHERE ua.personnelID = p.PersonnelID
+            )
+                AND (
+                    @searchTerm = N''
+                    OR p.Fname LIKE @searchPattern
+                    OR p.Mname LIKE @searchPattern
+                    OR p.Lname LIKE @searchPattern
+                    OR CONCAT(
+                        p.Fname,
+                        N' ',
+                        COALESCE(p.Mname + N' ', N''),
+                        p.Lname
+                    ) LIKE @searchPattern
+                    OR CONVERT(NVARCHAR(20), p.PersonnelID) LIKE @searchPattern
+                )
+            ORDER BY p.Lname, p.Fname;
+        `);
+
+    return result.recordset;
+}
+
 async function createUserAccount({
     username,
     password,
@@ -104,5 +150,6 @@ async function createUserAccount({
 }
 
 module.exports = {
+    searchPersonnelForAccounts,
     createUserAccount
 }
