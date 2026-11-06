@@ -61,14 +61,27 @@ async function loadReport() {
         params.append("tier", tier);
     }
 
-    const response = await fetch(
-        `/api/curator/analytics/${analyzeBy}?${params}`
-    );
+    const reportType = visualization === "ranking"
+        ? "ranking"
+        : "trend";
 
-    const data = await response.json();
+    try {
+        const response = await fetch(
+            `/api/curator/analytics/${reportType}?${params}`
+        );
 
-    renderChart(data);
-    renderTable(data);
+        if (!response.ok) {
+            throw new Error(`Analytics request failed (${response.status})`);
+        }
+
+        const data = await response.json();
+
+        renderChart(data, reportType);
+        renderTable(data);
+    } catch (error) {
+        console.error("Failed to load analytics report", error);
+        showReportError("Unable to load analytics report.");
+    }
 }
 
 async function loadTiers() {
@@ -140,14 +153,18 @@ function renderTable(data) {
         ArtworkTitle: "Artwork Title",
         ArtistID: "Artist ID",
         ArtistName: "Artist Name",
+        ArtistSex: "Artist's Sex",
         StyleID: "Style ID",
         StyleName: "Style Name",
         CollectionID: "Collection ID",
         CollectionName: "Collection Name",
         PeriodID: "Period ID",
         PeriodName: "Period Name",
+        EntityID: "Entity ID",
+        EntityName: "Entity",
         YearViewed: "Year Viewed",
         MonthViewed: "Month Viewed",
+        Views: "Views",
         TotalViews: "Total Views"
     };
 
@@ -167,7 +184,12 @@ function renderTable(data) {
     });
 }
 
-function renderChart(data) {
+function renderChart(data, visualization) {
+    if (visualization === "ranking") {
+        renderRankingChart(data);
+        return;
+    }
+
     const container =
         document.getElementById(
             "analytics-chart"
@@ -369,6 +391,75 @@ function renderChart(data) {
 
         </svg>
     `;
+}
+
+function renderRankingChart(data) {
+    const container = document.getElementById("analytics-chart");
+
+    if (!Array.isArray(data) || data.length === 0) {
+        container.textContent = "No ranking data available.";
+        return;
+    }
+
+    const width = 900;
+    const rowHeight = 32;
+    const top = 36;
+    const height = top + data.length * rowHeight + 20;
+    const labelWidth = 250;
+    const chartWidth = width - labelWidth - 80;
+    const maxViews = Math.max(
+        1,
+        ...data.map(row => Number(row.Views) || 0)
+    );
+    const svgNamespace = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNamespace, "svg");
+    svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    svg.setAttribute("width", String(width));
+    svg.setAttribute("height", String(height));
+    svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", "Engagement ranking");
+
+    data.forEach((row, index) => {
+        const y = top + index * rowHeight;
+        const views = Number(row.Views) || 0;
+        const label = document.createElementNS(svgNamespace, "text");
+        label.setAttribute("x", String(labelWidth - 12));
+        label.setAttribute("y", String(y + 16));
+        label.setAttribute("text-anchor", "end");
+        label.setAttribute("font-size", "12");
+        label.textContent = row.EntityName ?? "";
+
+        const bar = document.createElementNS(svgNamespace, "rect");
+        bar.setAttribute("x", String(labelWidth));
+        bar.setAttribute("y", String(y));
+        bar.setAttribute("width", String((views / maxViews) * chartWidth));
+        bar.setAttribute("height", "20");
+        bar.setAttribute("fill", "#0078d4");
+
+        const value = document.createElementNS(svgNamespace, "text");
+        value.setAttribute(
+            "x",
+            String(labelWidth + (views / maxViews) * chartWidth + 8)
+        );
+        value.setAttribute("y", String(y + 15));
+        value.setAttribute("font-size", "12");
+        value.setAttribute("fill", "#333");
+        value.textContent = String(views);
+
+        svg.append(label, bar, value);
+    });
+
+    container.replaceChildren(svg);
+}
+
+function showReportError(message) {
+    const chart = document.getElementById("analytics-chart");
+    const head = document.querySelector("#report-results thead");
+    const body = document.querySelector("#report-results tbody");
+
+    chart.textContent = message;
+    head.replaceChildren();
+    body.replaceChildren();
 }
 
 async function loadEntityValues() {

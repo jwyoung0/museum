@@ -1,16 +1,10 @@
 const {
-    getTopArtworks,
-    getTopArtists,
-    getTopArtistSex,
-    getTopStyles,
-    getTopPeriods,
-    getTopCollections,
     getArtworkInterestByTier,
     getArtistInterestByTier,
-    getMonthlyEngagement,
+    getTrendData,
+    getRankingData,
     getSessionEngagement,
     getTopSessions,
-    getExhibitionRecommendations,
     getTiersForReport,
     getLookupValues
 } = require("../../database/curator/analytics");
@@ -46,30 +40,6 @@ async function sendJson(res, reportFunction, filters = {}) {
     res.end(JSON.stringify(data));
 }
 
-async function getTopArtworksHandler(req, res) {
-    await sendJson(res, getTopArtworks, getFilters(req));
-}
-
-async function getTopArtistsHandler(req, res) {
-    await sendJson(res, getTopArtists, getFilters(req));
-}
-
-async function getTopArtistSexHandler(req, res) {
-    await sendJson(res, getTopArtistSex, getFilters(req));
-}
-
-async function getTopStylesHandler(req, res) {
-    await sendJson(res, getTopStyles, getFilters(req));
-}
-
-async function getTopPeriodsHandler(req, res) {
-    await sendJson(res, getTopPeriods, getFilters(req));
-}
-
-async function getTopCollectionsHandler(req, res) {
-    await sendJson(res, getTopCollections, getFilters(req));
-}
-
 async function getArtworkInterestByTierHandler(req, res) {
     await sendJson(res, getArtworkInterestByTier, getFilters(req));
 }
@@ -78,8 +48,12 @@ async function getArtistInterestByTierHandler(req, res) {
     await sendJson(res, getArtistInterestByTier, getFilters(req));
 }
 
-async function getMonthlyEngagementHandler(req, res) {
-    await sendJson(res, getMonthlyEngagement, getFilters(req));
+async function getTrendDataHandler(req, res) {
+    await sendJson(res, getTrendData, getFilters(req));
+}
+
+async function getRankingDataHandler(req, res) {
+    await sendJson(res, getRankingData, getFilters(req));
 }
 
 async function getSessionEngagementHandler(req, res) {
@@ -88,10 +62,6 @@ async function getSessionEngagementHandler(req, res) {
 
 async function getTopSessionsHandler(req, res) {
     await sendJson(res, getTopSessions, getFilters(req));
-}
-
-async function getExhibitionRecommendationsHandler(req, res) {
-    await sendJson(res, getExhibitionRecommendations, getFilters(req));
 }
 
 async function getTiersForReportHandler(req, res) {
@@ -145,18 +115,12 @@ async function getLookupValuesHandler(req, res) {
 }
 
 module.exports = {
-    getTopArtworksHandler,
-    getTopArtistsHandler,
-    getTopArtistSexHandler,
-    getTopStylesHandler,
-    getTopPeriodsHandler,
-    getTopCollectionsHandler,
     getArtworkInterestByTierHandler,
     getArtistInterestByTierHandler,
-    getMonthlyEngagementHandler,
+    getTrendDataHandler,
+    getRankingDataHandler,
     getSessionEngagementHandler,
     getTopSessionsHandler,
-    getExhibitionRecommendationsHandler,
     getTiersForReportHandler,
     getLookupValuesHandler
 };
