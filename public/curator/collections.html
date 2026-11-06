@@ -6,6 +6,63 @@
     <meta name="theme-color" content="#2563eb">
     <title>Curator Collections - Collections</title>
     <link rel="stylesheet" href="/style">
+    <style>
+        #collections-results {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .collection-card {
+            display: flex;
+            flex-direction: column;
+
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            overflow: hidden;
+
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+            height: 100%;
+            transition: transform 0.2s ease,
+                        box-shadow 0.2s ease;
+        }
+
+        .collection-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .collection-card img {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .collection-card a {
+            text-decoration: none;
+            color: inherit;
+            padding: 1rem 1rem 0.5rem;
+        }
+
+        .collection-card h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .collection-card p {
+            padding: 0 1rem 1rem;
+            margin: 0;
+            line-height: 1.5;
+            color: #555;
+
+            flex-grow: 1;
+        }
+    </style>    
 </head>
 <body>
     <header class="dashboard-header">

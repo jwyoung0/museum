@@ -3,6 +3,7 @@ const {
     listCollections,
     readCollection,
     updateCollection,
+    setRepresentativeArtwork,
     deleteCollection,
     countCollectionArtworks,
     getArtworksInCollection
@@ -91,6 +92,50 @@ async function updateCollectionHandler(req, res) {
     res.end(JSON.stringify(updatedCollection));
 }
 
+async function setRepresentativeArtworkHandler(req, res) {
+    const collectionId = Number(req.params.id);
+    const body = await readJsonBody(req);
+    const accessionId = Number(body?.accessionId);
+
+    if (
+        !Number.isSafeInteger(collectionId) ||
+        collectionId <= 0 ||
+        collectionId > 2147483647 ||
+        !Number.isSafeInteger(accessionId) ||
+        accessionId <= 0 ||
+        accessionId > 2147483647
+    ) {
+        res.writeHead(400, {
+            "Content-Type": "application/json"
+        });
+
+        return res.end(JSON.stringify({
+            error: "A valid artwork accession ID is required"
+        }));
+    }
+
+    const collection = await setRepresentativeArtwork(
+        collectionId,
+        accessionId
+    );
+
+    if (!collection) {
+        res.writeHead(404, {
+            "Content-Type": "application/json"
+        });
+
+        return res.end(JSON.stringify({
+            error: "Collection or artwork not found in collection"
+        }));
+    }
+
+    res.writeHead(200, {
+        "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify(collection));
+}
+
 async function deleteCollectionHandler(req, res) {
     const collectionId = req.params.id;
 
@@ -151,6 +196,7 @@ module.exports = {
     listCollectionsHandler,
     readCollectionHandler,
     updateCollectionHandler,
+    setRepresentativeArtworkHandler,
     deleteCollectionHandler,
     getArtworksInCollectionHandler
 };

@@ -53,6 +53,7 @@ const { createCollectionHandler,
         listCollectionsHandler,
         readCollectionHandler,
         updateCollectionHandler,
+        setRepresentativeArtworkHandler,
         deleteCollectionHandler,
         getArtworksInCollectionHandler
 } = require("./handlers/curator/collections");
@@ -905,6 +906,18 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             } else if (req.method === "DELETE"){
                 await deleteCollectionHandler(req, res);
             } else return;
+            return;
+        }
+        const collectionRepresentativeMatch = pathname.match(
+            /^\/api\/curator\/collections\/(\d+)\/representative-artwork$/
+        );
+        if (
+            collectionRepresentativeMatch &&
+            req.method === "POST"
+        ) {
+            if (!requireCurator(req, res)) return;
+            req.params = { id: collectionRepresentativeMatch[1] };
+            await setRepresentativeArtworkHandler(req, res);
             return;
         }
         if (exhibitionMatch && ["GET", "PUT", "DELETE"].includes(req.method)) {

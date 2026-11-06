@@ -32,9 +32,13 @@ async function listCollections() {
 
     const result = await pool.request()
         .query(`
-           SELECT *
-           FROM dbo.COLLECTIONS
-           ORDER BY collectionName; 
+            SELECT
+                c.*,
+                a.imageURL
+            FROM dbo.COLLECTIONS c
+            LEFT JOIN dbo.ARTWORKS a
+                ON a.accessionId = c.representativeArtwork
+            ORDER BY c.collectionName;
         `);
 
     return result.recordset;
@@ -78,6 +82,29 @@ async function updateCollection(
             OUTPUT INSERTED.*
             WHERE collectionId = @collectionId;
         `); 
+
+    return result.recordset[0] || null;
+}
+
+async function setRepresentativeArtwork(collectionId, accessionId) {
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .input("collectionId", sql.Int, collectionId)
+        .input("accessionId", sql.Int, accessionId)
+        .query(`
+            UPDATE c
+            SET representativeArtwork = @accessionId
+            OUTPUT INSERTED.*
+            FROM dbo.COLLECTIONS c
+            WHERE c.collectionId = @collectionId
+                AND EXISTS (
+                    SELECT 1
+                    FROM dbo.ARTWORKS a
+                    WHERE a.accessionId = @accessionId
+                        AND a.collectionId = c.collectionId
+                );
+        `);
 
     return result.recordset[0] || null;
 }
@@ -135,6 +162,7 @@ module.exports = {
     listCollections,
     readCollection,
     updateCollection,
+    setRepresentativeArtwork,
     deleteCollection,
     countCollectionArtworks,
     getArtworksInCollection

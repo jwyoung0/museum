@@ -270,12 +270,48 @@ form h2 {
 
 #artwork-results,
 #exhibition-artworks-results,
-#collections-results,
 #exhibitions-results {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 16px;
     width: 100%;
+}
+
+#collections-results {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    width: 100%;
+}
+
+.collection-card {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--paper);
+    display: flex;
+    flex-direction: column;
+}
+
+.collection-card img {
+    display: block;
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.collection-card a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.collection-card a:hover {
+    text-decoration: underline;
+}
+
+.collection-card h3,
+.collection-card p {
+    margin: 8px 12px;
 }
 
 .artwork-card,
