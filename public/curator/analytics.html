@@ -64,17 +64,34 @@
                 <h2>Curator Analytics</h2>
             </header>
 
+            <div id="analytics-chart"></div>
+
             <div class="analytics-filters">
 
                 <div class="field-row">
-                    <label for="report-type">Report</label>
-                    <select id="report-type">
-                        <option value="artists">Most Viewed Artists</option>
-                        <option value="artworks">Most Viewed Artworks</option>
-                        <option value="styles">Most Viewed Styles</option>
-                        <option value="periods">Most Viewed Periods</option>
-                        <option value="collections">Most Viewed Collections</option>
-                        <option value="monthly-engagement">Monthly Engagement</option>
+                    <label for="visualization">Visualization</label>
+                    <select id="visualization">
+                        <option value="trend">Trend</option>
+                        <option value="ranking">Ranking</option>
+                    </select>
+                </div>
+
+                <div class="field-row">
+                    <label for="analyze-by">Analyze By</label>
+                    <select id="analyze-by">
+                        <option value="artists">Artists</option>
+                        <option value="artist-sex">Artist's Sex</option>
+                        <option value="artworks">Artworks</option>
+                        <option value="styles">Styles</option>
+                        <option value="periods">Periods</option>
+                        <option value="collections">Collections</option>
+                        <option value="exhibitions">Exhibitions</option>
+                    </select>
+                </div>
+
+                <div class="entity-value">
+                    <label for="entity-value">Value</label>
+                    <select id="entity-value">
                     </select>
                 </div>
 

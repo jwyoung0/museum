@@ -99,6 +99,7 @@ const {
 const {
     getTopArtworksHandler,
     getTopArtistsHandler,
+    getTopArtistSexHandler,
     getTopStylesHandler,
     getTopPeriodsHandler,
     getTopCollectionsHandler,
@@ -108,7 +109,8 @@ const {
     getSessionEngagementHandler,
     getTopSessionsHandler,
     getExhibitionRecommendationsHandler,
-    getTiersForReportHandler
+    getTiersForReportHandler,
+    getLookupValuesHandler
 } = require("./handlers/curator/analytics");
 async function router(req, res) {
     try {
@@ -776,6 +778,16 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             if (!requireCurator(req, res)) return;
             return getTopArtistsHandler(req, res);
         }
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/artist-sex")) {
+            if (!requireCurator(req, res)) return;
+            return getMonthlyEngagementHandler(req, res);
+            // return getTopArtistSexHandler(req, res);
+        }
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/exhibitions")) {
+            if (!requireCurator(req, res)) return;
+            return getMonthlyEngagementHandler(req, res);
+            // return getTopExhibitionHandler(req, res);
+        }
         if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/styles")) {
             if (!requireCurator(req, res)) return;
             return getTopStylesHandler(req, res);
@@ -816,6 +828,12 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             if(!requireCurator(req, res)) return;
             return getTiersForReportHandler(req, res);
         }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/lookup/")) {
+            if(!requireCurator(req, res)) return;
+            return getLookupValuesHandler(req, res);
+        }
+
         const artistMatch = pathname.match(/^\/api\/curator\/artists\/(\d+)$/);
         const artworkMatch = pathname.match(/^\/api\/curator\/artwork\/(\d+)$/);
         const collectionMatch = pathname.match(/^\/api\/curator\/collections\/(\d+)$/);

@@ -1,13 +1,35 @@
 const { sql, getPool } = require("../connection");
 
-function applyCommonFilters(request, filters = {}) {
+function applyCommonFilters(
+    request,
+    filters = {}
+) {
     return request
-        .input("startDate", sql.Date, filters.startDate || null)
-        .input("endDate", sql.Date, filters.endDate || null)
-        .input("tier", sql.NVarChar(50), filters.tier || null)
-        .input("style", sql.NVarChar(100), filters.style || null)
-        .input("period", sql.NVarChar(100), filters.period || null)
-        .input("collection", sql.NVarChar(100), filters.collection || null);
+        .input(
+            "startDate",
+            sql.Date,
+            filters.startDate || null
+        )
+        .input(
+            "endDate",
+            sql.Date,
+            filters.endDate || null
+        )
+        .input(
+            "tier",
+            sql.NVarChar(50),
+            filters.tier || null
+        )
+        .input(
+            "analyzeBy",
+            sql.NVarChar(50),
+            filters.analyzeBy || null
+        )
+        .input(
+            "entityValue",
+            sql.NVarChar(100),
+            filters.entityValue || null
+        );
 }
 
 const commonWhere = `
@@ -15,9 +37,60 @@ WHERE
     (@startDate IS NULL OR ViewDate >= @startDate)
     AND (@endDate IS NULL OR ViewDate <= @endDate)
     AND (@tier IS NULL OR TierName = @tier)
-    AND (@style IS NULL OR StyleName = @style)
-    AND (@period IS NULL OR PeriodName = @period)
-    AND (@collection IS NULL OR CollectionName = @collection)
+`;
+
+const entityWhere = `
+AND (
+    @entityValue IS NULL
+
+    OR (
+        @analyzeBy = 'artists'
+        AND
+        CAST(ArtistID AS NVARCHAR(100))
+        = @entityValue
+    )
+
+    OR (
+        @analyzeBy = 'artworks'
+        AND
+        CAST(ArtworkID AS NVARCHAR(100))
+        = @entityValue
+    )
+
+    OR (
+        @analyzeBy = 'styles'
+        AND
+        CAST(StyleID AS NVARCHAR(100))
+        = @entityValue
+    )
+
+    OR (
+        @analyzeBy = 'periods'
+        AND
+        CAST(PeriodID AS NVARCHAR(100))
+        = @entityValue
+    )
+
+    OR (
+        @analyzeBy = 'collections'
+        AND
+        CAST(CollectionID AS NVARCHAR(100))
+        = @entityValue
+    )
+
+    OR (
+        @analyzeBy = 'exhibitions'
+        AND
+        CAST(ExhibitionID AS NVARCHAR(100))
+        = @entityValue
+    )
+
+    OR (
+        @analyzeBy = 'artist-sex'
+        AND
+        ArtistSex = @entityValue
+    )
+)
 `;
 
 async function getTopArtworks(filters = {}) {
@@ -59,6 +132,26 @@ async function getTopArtists(filters = {}) {
             ArtistID,
             ArtistName
         ORDER BY Views DESC;
+    `);
+
+    return result.recordset;
+}
+
+async function getTopArtistSex(filters = {}) {
+    const pool = await getPool();
+
+    const result = await applyCommonFilters(
+        pool.request(),
+        filters
+    ).query(`
+        SELECT
+            ArtistSex,
+            COUNT(*) AS Views
+        FROM dbo.vw_ArtworkEngagement
+        ${commonWhere}
+        AND ArtistSex IS NOT NULL
+        GROUP BY ArtistSex
+        ORDER BY Views DESC;        
     `);
 
     return result.recordset;
@@ -199,25 +292,36 @@ async function getArtistInterestByTier(filters = {}) {
 }
 
 async function getMonthlyEngagement(filters = {}) {
+
     const pool = await getPool();
 
-    const result = await applyCommonFilters(
-        pool.request(),
-        filters
-    ).query(`
-        SELECT
-            YEAR(ViewDate) AS YearViewed,
-            MONTH(ViewDate) AS MonthViewed,
-            COUNT(*) AS TotalViews
-        FROM dbo.vw_ArtworkEngagement
-        ${commonWhere}
-        GROUP BY
-            YEAR(ViewDate),
-            MONTH(ViewDate)
-        ORDER BY
-            YearViewed,
-            MonthViewed;
-    `);
+    const result =
+        await applyCommonFilters(
+            pool.request(),
+            filters
+        ).query(`
+            SELECT
+                YEAR(ViewDate) AS YearViewed,
+                MONTH(ViewDate) AS MonthViewed,
+                DATENAME(
+                    MONTH,
+                    ViewDate
+                ) AS MonthName,
+                COUNT(*) AS Views
+            FROM dbo.vw_ArtworkEngagement
+            ${commonWhere}
+            ${entityWhere}
+            GROUP BY
+                YEAR(ViewDate),
+                MONTH(ViewDate),
+                DATENAME(
+                    MONTH,
+                    ViewDate
+                )
+            ORDER BY
+                YearViewed,
+                MonthViewed;
+        `);
 
     return result.recordset;
 }
@@ -301,9 +405,100 @@ async function getTiersForReport() {
     return result.recordset;
 }
 
+async function getLookupValues(type) {
+
+    const pool = await getPool();
+
+    switch (type) {
+
+        case "artists":
+            return (
+                await pool.request().query(`
+                    SELECT DISTINCT
+                        ArtistID AS value,
+                        ArtistName AS label
+                    FROM dbo.vw_ArtworkEngagement
+                    ORDER BY label;
+                `)
+            ).recordset;
+
+        case "artworks":
+            return (
+                await pool.request().query(`
+                    SELECT DISTINCT
+                        ArtworkID AS value,
+                        ArtworkTitle AS label
+                    FROM dbo.vw_ArtworkEngagement
+                    ORDER BY label;
+                `)
+            ).recordset;
+
+        case "styles":
+            return (
+                await pool.request().query(`
+                    SELECT DISTINCT
+                        StyleID AS value,
+                        StyleName AS label
+                    FROM dbo.vw_ArtworkEngagement
+                    ORDER BY label;
+                `)
+            ).recordset;
+
+        case "periods":
+            return (
+                await pool.request().query(`
+                    SELECT DISTINCT
+                        PeriodID AS value,
+                        PeriodName AS label
+                    FROM dbo.vw_ArtworkEngagement
+                    ORDER BY label;
+                `)
+            ).recordset;
+
+        case "collections":
+            return (
+                await pool.request().query(`
+                    SELECT DISTINCT
+                        CollectionID AS value,
+                        CollectionName AS label
+                    FROM dbo.vw_ArtworkEngagement
+                    ORDER BY label;
+                `)
+            ).recordset;
+
+        case "exhibitions":
+            return (
+                await pool.request().query(`
+                    SELECT DISTINCT
+                        ExhibitionID AS value,
+                        ExhibitionName AS label
+                    FROM dbo.vw_ArtworkEngagement
+                    WHERE ExhibitionID IS NOT NULL
+                    ORDER BY label;
+                `)
+            ).recordset;
+
+        case "artist-sex":
+            return (
+                await pool.request().query(`
+                    SELECT DISTINCT
+                        ArtistSex AS value,
+                        ArtistSex AS label
+                    FROM dbo.vw_ArtworkEngagement
+                    WHERE ArtistSex IS NOT NULL
+                    ORDER BY label;
+                `)
+            ).recordset;
+
+        default:
+            return [];
+    }
+}
+
 module.exports = {
     getTopArtworks,
     getTopArtists,
+    getTopArtistSex,
     getTopStyles,
     getTopPeriods,
     getTopCollections,
@@ -313,5 +508,6 @@ module.exports = {
     getSessionEngagement,
     getTopSessions,
     getExhibitionRecommendations,
-    getTiersForReport
+    getTiersForReport, 
+    getLookupValues
 };

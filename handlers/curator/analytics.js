@@ -1,6 +1,7 @@
 const {
     getTopArtworks,
     getTopArtists,
+    getTopArtistSex,
     getTopStyles,
     getTopPeriods,
     getTopCollections,
@@ -10,19 +11,28 @@ const {
     getSessionEngagement,
     getTopSessions,
     getExhibitionRecommendations,
-    getTiersForReport
+    getTiersForReport,
+    getLookupValues
 } = require("../../database/curator/analytics");
 
 function getFilters(req) {
     const url = new URL(req.url, "http://localhost");
 
     return {
-        startDate: url.searchParams.get("startDate"),
-        endDate: url.searchParams.get("endDate"),
-        tier: url.searchParams.get("tier"),
-        style: url.searchParams.get("style"),
-        period: url.searchParams.get("period"),
-        collection: url.searchParams.get("collection")
+        startDate:
+            url.searchParams.get("startDate"),
+
+        endDate:
+            url.searchParams.get("endDate"),
+
+        tier:
+            url.searchParams.get("tier"),
+
+        analyzeBy:
+            url.searchParams.get("analyzeBy"),
+
+        entityValue:
+            url.searchParams.get("entityValue")
     };
 }
 
@@ -42,6 +52,10 @@ async function getTopArtworksHandler(req, res) {
 
 async function getTopArtistsHandler(req, res) {
     await sendJson(res, getTopArtists, getFilters(req));
+}
+
+async function getTopArtistSexHandler(req, res) {
+    await sendJson(res, getTopArtistSex, getFilters(req));
 }
 
 async function getTopStylesHandler(req, res) {
@@ -90,9 +104,50 @@ async function getTiersForReportHandler(req, res) {
     res.end(JSON.stringify(tiers));
 };
 
+async function getLookupValuesHandler(req, res) {
+    const pathname = new URL(req.url, "http://localhost").pathname;
+    
+    const type = pathname.split("/").pop();
+
+    const validTypes = [
+        "artists",
+        "artworks",
+        "styles",
+        "periods",
+        "collections",
+        "exhibitions",
+        "artist-sex"
+    ];
+
+    if (
+        !validTypes.includes(type)
+    ) {
+        res.writeHead(400, {
+            "Content-Type":
+                "application/json"
+        });
+
+        return res.end(
+            JSON.stringify({
+                error:
+                    "Invalid lookup type"
+            })
+        );
+    }
+
+    const values = await getLookupValues(type);
+
+    res.writeHead(200,
+        {"Content-Type": "application/json"}
+    );
+
+    res.end(JSON.stringify(values));
+}
+
 module.exports = {
     getTopArtworksHandler,
     getTopArtistsHandler,
+    getTopArtistSexHandler,
     getTopStylesHandler,
     getTopPeriodsHandler,
     getTopCollectionsHandler,
@@ -102,5 +157,6 @@ module.exports = {
     getSessionEngagementHandler,
     getTopSessionsHandler,
     getExhibitionRecommendationsHandler,
-    getTiersForReportHandler
+    getTiersForReportHandler,
+    getLookupValuesHandler
 };
