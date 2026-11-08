@@ -10,6 +10,22 @@ const deactivatePersonnelButton = document.getElementById("deactivate-personnel"
 const reactivatePersonnelButton = document.getElementById("reactivate-personnel");
 const selectAllPersonnelCheckbox = document.getElementById("select-all-personnel");
 const positionSelect = document.getElementById("position-id");
+// Edit Personnel Elements section
+const editPersonnelButton = document.getElementById("show-edit-personnel");
+const editPersonnelPanel = document.getElementById("edit-personnel-panel");
+const editPersonnelForm = document.getElementById("edit-personnel-form");
+const cancelEditPersonnelButton = document.getElementById("cancel-edit-personnel");
+const editPositionSelect = document.getElementById("edit-personnel-position");
+
+// Date ruling
+
+const startDateInput = document.getElementById("start-date");
+const endDateInput = document.getElementById("end-date");
+
+const editStartDateInput = document.getElementById("edit-personnel-start-date");
+const editEndDateInput = document.getElementById("edit-personnel-end-date");
+
+let editingPersonnelID = null;
 
 //Personnel Filtering Elements Start Here
 
@@ -30,6 +46,10 @@ if (
     !addPersonnelPanel ||
     !cancelAddPersonnelButton ||
     !positionSelect ||
+    !startDateInput ||
+    !endDateInput ||
+    !editStartDateInput ||
+    !editEndDateInput ||
     !personnelNameSearch ||
     !startDateFromInput ||
     !startDateToInput ||
@@ -108,10 +128,19 @@ if (
             reactivatePersonnelButton.disabled =
                 getSelectedInactivePersonnelIDs().length === 0;
         }
+
+        if (editPersonnelButton) {
+            editPersonnelButton.disabled =
+                getSelectedPersonnelIDs().length !== 1;
+        }
     }
-// load avaiable positions from backend
+// Load available positions from the backend.
     async function loadPositionOptions() {
         positionSelect.disabled = true;
+
+        if (editPositionSelect) {
+            editPositionSelect.disabled = true;
+        }
 
         try {
             const response = await fetch("/api/director/positions");
@@ -130,53 +159,64 @@ if (
                 );
             }
 
-            positionSelect.replaceChildren();
+            function populatePositionSelect(selectElement) {
+                if (!selectElement) return;
 
-            const placeholder = document.createElement("option");
-            placeholder.value = "";
-            placeholder.textContent = positions.length > 0
-                ? "Select a position"
-                : "No positions available";
-            placeholder.disabled = true;
-            placeholder.selected = true;
+                selectElement.replaceChildren();
 
-            positionSelect.appendChild(placeholder);
+                const placeholder = document.createElement("option");
+                placeholder.value = "";
+                placeholder.textContent = positions.length > 0
+                    ? "Select a position"
+                    : "No positions available";
+                placeholder.disabled = true;
+                placeholder.selected = true;
 
-            positions.forEach(position => {
-                const option = document.createElement("option");
+                selectElement.appendChild(placeholder);
 
-                option.value = position.PositionID;
-                option.textContent = position.PositionName;
+                positions.forEach(position => {
+                    const option = document.createElement("option");
 
-                positionSelect.appendChild(option);
-            });
+                    option.value = position.PositionID;
+                    option.textContent = position.PositionName;
 
-            positionSelect.disabled = positions.length === 0;
+                    selectElement.appendChild(option);
+                });
+
+                selectElement.disabled = positions.length === 0;
+            }
+
+            populatePositionSelect(positionSelect);
+            populatePositionSelect(editPositionSelect);
 
             if (positions.length === 0) {
                 personnelMessage.textContent =
-                    "No positions exist. Add a position before adding personnel.";
+                    "No positions exist. Add a position before assigning personnel.";
             }
+
         } catch (error) {
             console.error("Failed to load positions:", error);
 
-            positionSelect.replaceChildren();
+            const selects = [positionSelect, editPositionSelect];
 
-            const option = document.createElement("option");
-            option.value = "";
-            option.textContent = "Failed to load positions";
-            option.disabled = true;
-            option.selected = true;
+            selects.forEach(selectElement => {
+                if (!selectElement) return;
 
-            positionSelect.appendChild(option);
-            positionSelect.disabled = true;
+                selectElement.replaceChildren();
+
+                const option = document.createElement("option");
+                option.value = "";
+                option.textContent = "Failed to load positions";
+                option.disabled = true;
+                option.selected = true;
+
+                selectElement.appendChild(option);
+                selectElement.disabled = true;
+            });
 
             personnelMessage.textContent = error.message;
         }
     }
-
-
-    // Load personnel records from the backend.
 
 // Check whether a personnel record is active.
     function isPersonnelActive(person) {
@@ -190,6 +230,23 @@ if (
     // Convert a date to YYYY-MM-DD for consistent comparisons.
     function getDateOnly(value) {
         return value ? String(value).slice(0, 10) : "";
+    }
+
+    // Validate that End Date is not earlier than Start Date.
+    function validateEmploymentDates(startInput, endInput) {
+        endInput.min = startInput.value;
+
+        if (
+            startInput.value &&
+            endInput.value &&
+            endInput.value < startInput.value
+        ) {
+            endInput.setCustomValidity(
+                "End Date cannot be earlier than Start Date."
+            );
+        } else {
+            endInput.setCustomValidity("");
+        }
     }
 
     // Filter and sort the full personnel list.
@@ -370,6 +427,92 @@ if (
         }
     }
 
+
+    // Open the Edit Personnel form for the selected employee.
+    async function openEditPersonnel() {
+        const selectedIDs = getSelectedPersonnelIDs();
+
+        if (selectedIDs.length !== 1) {
+            personnelMessage.textContent =
+                "Please select exactly one employee to edit.";
+            return;
+        }
+
+        const personnelID = selectedIDs[0];
+
+        // Find the selected employee in the currently loaded records.
+        const person = allPersonnel.find(
+            person => Number(person.PersonnelID) === personnelID
+        );
+
+        if (!person) {
+            personnelMessage.textContent =
+                "Unable to find the selected personnel record.";
+            return;
+        }
+
+        // Ensure the position dropdown has been populated.
+        await loadPositionOptions();
+
+        if (editPositionSelect.disabled) {
+            personnelMessage.textContent =
+                "Unable to edit personnel because positions could not be loaded.";
+            return;
+        }
+
+        editingPersonnelID = personnelID;
+
+        // Populate the form with the employee's current information.
+        editPersonnelForm.elements["fname"].value = person.Fname ?? "";
+        editPersonnelForm.elements["mname"].value = person.Mname ?? "";
+        editPersonnelForm.elements["lname"].value = person.Lname ?? "";
+        editPersonnelForm.elements["email"].value = person.Email ?? "";
+        editPersonnelForm.elements["phoneNumber"].value =
+            person.PhoneNumber ?? "";
+
+        editPersonnelForm.elements["dateOfBirth"].value =
+            getDateOnly(person.DateOfBirth);
+
+        editPersonnelForm.elements["startDate"].value =
+            getDateOnly(person.StartDate);
+
+        editPersonnelForm.elements["endDate"].value =
+            getDateOnly(person.EndDate);
+
+        // Initialize the Edit form's date validation.
+        validateEmploymentDates(
+            editStartDateInput,
+            editEndDateInput
+        );
+
+        editPositionSelect.value = String(person.PositionID ?? "");
+
+        editPersonnelForm.elements["employmentStatus"].value =
+            isPersonnelActive(person) ? "1" : "0";
+
+        // Hide the Add Personnel form if it is open.
+        addPersonnelPanel.hidden = true;
+        addPersonnelButton.hidden = false;
+
+        // Display the Edit Personnel form.
+        editPersonnelPanel.hidden = false;
+
+        personnelMessage.textContent =
+            `Editing personnel record #${personnelID}.`;
+    }
+
+
+    // Close and reset the Edit Personnel form.
+    function closeEditPersonnel() {
+        editPersonnelPanel.hidden = true;
+        editPersonnelForm.reset();
+
+        editingPersonnelID = null;
+
+        personnelMessage.textContent = "";
+    }
+
+
     // Load the complete personnel list from the backend.
     async function loadPersonnel() {
         personnelMessage.textContent = "Loading personnel records...";
@@ -433,6 +576,46 @@ if (
 
     //Begining of event listeners for personnel management
 
+    // Validate Add Personnel dates.
+    startDateInput.addEventListener("change", () => {
+        validateEmploymentDates(startDateInput, endDateInput);
+    });
+
+    endDateInput.addEventListener("change", () => {
+        validateEmploymentDates(startDateInput, endDateInput);
+    });
+
+    // Validate Edit Personnel dates.
+    editStartDateInput.addEventListener("change", () => {
+        validateEmploymentDates(editStartDateInput, editEndDateInput);
+    });
+
+    editEndDateInput.addEventListener("change", () => {
+        validateEmploymentDates(editStartDateInput, editEndDateInput);
+    });
+
+
+    // Open the Edit Personnel form.
+    if (editPersonnelButton) {
+        editPersonnelButton.addEventListener(
+            "click",
+            openEditPersonnel
+        );
+    }
+
+    validateEmploymentDates(
+        editStartDateInput,
+        editEndDateInput
+    );
+
+    // Cancel editing personnel.
+    if (cancelEditPersonnelButton) {
+        cancelEditPersonnelButton.addEventListener(
+            "click",
+            closeEditPersonnel
+        );
+    }
+
 
     // Update the table when the name search changes.
     personnelNameSearch.addEventListener("input", applyPersonnelFilters);
@@ -478,9 +661,11 @@ if (
         addPersonnelPanel.hidden = true;
         addPersonnelButton.hidden = false;
         personnelForm.reset();
+
+        // Clear the previous End Date restriction.
+        validateEmploymentDates(startDateInput, endDateInput);
         personnelMessage.textContent = "";
     });
-
     // Select or deselect active employees only.
     if (selectAllPersonnelCheckbox) {
         selectAllPersonnelCheckbox.addEventListener("change", () => {
@@ -669,6 +854,16 @@ if (
         const lname = getText("lname");
         const dateOfBirth = getText("dateOfBirth");
         const ssn = getText("ssn").replace(/-/g, "");
+
+        const startDate = getText("startDate");
+        const endDate = getText("endDate");
+
+        if (startDate && endDate && endDate < startDate) {
+            personnelMessage.textContent =
+                "End Date cannot be earlier than Start Date.";
+            return;
+        }
+
         const employmentStatus = getText("employmentStatus");
 
         if (employmentStatus !== "0" && employmentStatus !== "1") {
@@ -712,8 +907,8 @@ if (
             email: getText("email") || null,
             phoneNumber: getText("phoneNumber") || null,
             dateOfBirth,
-            startDate: getText("startDate") || null,
-            endDate: getText("endDate") || null,
+            startDate: startDate || null,
+            endDate: endDate || null,
             positionID,
             employmentStatus: Number(employmentStatus),
             ssn
@@ -750,6 +945,9 @@ if (
             }
 
             personnelForm.reset();
+
+            // Clear the previous End Date restriction.
+            validateEmploymentDates(startDateInput, endDateInput);
             addPersonnelPanel.hidden = true;
             addPersonnelButton.hidden = false;
 
@@ -764,6 +962,135 @@ if (
             addPersonnelButton.disabled = false;
         }
     });
+
+    // Submit the Edit Personnel form.
+    if (editPersonnelForm) {
+        editPersonnelForm.addEventListener("submit", async event => {
+            event.preventDefault();
+
+            if (!editingPersonnelID) {
+                personnelMessage.textContent =
+                    "No personnel record is currently selected for editing.";
+                return;
+            }
+
+            const formData = new FormData(editPersonnelForm);
+
+            const getText = name => {
+                const value = formData.get(name);
+                return value == null ? "" : String(value).trim();
+            };
+
+            const fname = getText("fname");
+            const lname = getText("lname");
+            const dateOfBirth = getText("dateOfBirth");
+            const positionText = getText("positionID");
+
+            const startDate = getText("startDate");
+            const endDate = getText("endDate");
+
+            if (startDate && endDate && endDate < startDate) {
+                personnelMessage.textContent =
+                    "End Date cannot be earlier than Start Date.";
+                return;
+            }
+
+            const employmentStatus = getText("employmentStatus");
+
+            const positionID = Number(positionText);
+
+            if (!fname || !lname || !dateOfBirth) {
+                personnelMessage.textContent =
+                    "First name, last name, and date of birth are required.";
+                return;
+            }
+
+            if (employmentStatus !== "0" && employmentStatus !== "1") {
+                personnelMessage.textContent =
+                    "Please select a valid employment status.";
+                return;
+            }
+
+            if (
+                !positionText ||
+                !Number.isInteger(positionID) ||
+                positionID <= 0 ||
+                !Array.from(editPositionSelect.options).some(
+                    option =>
+                        option.value === positionText &&
+                        !option.disabled
+                )
+            ) {
+                personnelMessage.textContent =
+                    "Please select a valid position.";
+                return;
+            }
+
+            const personnel = {
+                fname,
+                mname: getText("mname") || null,
+                lname,
+                email: getText("email") || null,
+                phoneNumber: getText("phoneNumber") || null,
+                dateOfBirth,
+                startDate: startDate || null,
+                endDate: endDate || null,
+                positionID,
+                employmentStatus: Number(employmentStatus)
+            };
+
+            try {
+                personnelMessage.textContent = "Updating personnel...";
+
+                editPersonnelButton.disabled = true;
+                refreshPersonnelButton.disabled = true;
+
+                const response = await fetch(
+                    `/api/director/personnel/${editingPersonnelID}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(personnel)
+                    }
+                );
+
+                const responseText = await response.text();
+                let result;
+
+                try {
+                    result = JSON.parse(responseText);
+                } catch {
+                    throw new Error(
+                        `Server returned an unexpected response (HTTP ${response.status}).`
+                    );
+                }
+
+                if (!response.ok) {
+                    throw new Error(
+                        result.error ||
+                        `Unable to update personnel (HTTP ${response.status}).`
+                    );
+                }
+
+                closeEditPersonnel();
+
+                await loadPersonnel();
+
+                personnelMessage.textContent =
+                    result.message || "Personnel updated successfully.";
+
+            } catch (error) {
+                console.error("Failed to update personnel:", error);
+                personnelMessage.textContent = error.message;
+
+            } finally {
+                refreshPersonnelButton.disabled = false;
+                updateSelectionControls();
+            }
+        });
+    }
 
     // Load personnel as soon as the script runs.
     loadPersonnel();

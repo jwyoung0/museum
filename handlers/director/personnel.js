@@ -1,7 +1,7 @@
-/* Moved to router.js line 38-41 or not?*/
 const {
     listPersonnel,
     createPersonnel,
+    updatePersonnel,
     deactivatePersonnel,
     reactivatePersonnel
 } = require("../../database/director/personnel");
@@ -192,6 +192,171 @@ async function createPersonnelHandler(req, res) {
     }
 }
 
+async function updatePersonnelHandler(req, res, personnelID) {
+    if (!requireDirectorApi(req, res)) return;
+
+    try {
+        let body = "";
+
+        for await (const chunk of req) {
+            body += chunk;
+
+            if (body.length > 10000) {
+                res.writeHead(413, {
+                    "Content-Type": "application/json"
+                });
+
+                return res.end(JSON.stringify({
+                    error: "Request is too large"
+                }));
+            }
+        }
+
+        const personnel = JSON.parse(body);
+
+        const fname = personnel.fname?.trim();
+        const mname = personnel.mname?.trim() || null;
+        const lname = personnel.lname?.trim();
+        const dateOfBirth = personnel.dateOfBirth;
+        const email = personnel.email?.trim() || null;
+        const phoneNumber = personnel.phoneNumber?.trim() || null;
+        const startDate = personnel.startDate || null;
+        const endDate = personnel.endDate || null;
+        const positionID = Number(personnel.positionID);
+        const status = Number(personnel.employmentStatus);
+
+        if (!fname || !lname || !dateOfBirth) {
+            res.writeHead(400, {
+                "Content-Type": "application/json"
+            });
+
+            return res.end(JSON.stringify({
+                error: "First name, last name, and date of birth are required"
+            }));
+        }
+
+        if (
+            fname.length > 50 ||
+            mname?.length > 50 ||
+            lname.length > 50
+        ) {
+            res.writeHead(400, {
+                "Content-Type": "application/json"
+            });
+
+            return res.end(JSON.stringify({
+                error: "Names must not exceed 50 characters"
+            }));
+        }
+
+        if (email && email.length > 50) {
+            res.writeHead(400, {
+                "Content-Type": "application/json"
+            });
+
+            return res.end(JSON.stringify({
+                error: "Email must not exceed 50 characters"
+            }));
+        }
+
+        if (phoneNumber && !/^\d{10}$/.test(phoneNumber)) {
+            res.writeHead(400, {
+                "Content-Type": "application/json"
+            });
+
+            return res.end(JSON.stringify({
+                error: "Phone number must contain exactly 10 digits"
+            }));
+        }
+
+        if (!Number.isInteger(positionID) || positionID < 1) {
+            res.writeHead(400, {
+                "Content-Type": "application/json"
+            });
+
+            return res.end(JSON.stringify({
+                error: "Invalid position ID"
+            }));
+        }
+
+        if (status !== 0 && status !== 1) {
+            res.writeHead(400, {
+                "Content-Type": "application/json"
+            });
+
+            return res.end(JSON.stringify({
+                error: "Invalid employment status"
+            }));
+        }
+
+        const updated = await updatePersonnel(
+            Number(personnelID),
+            {
+                fname,
+                mname,
+                lname,
+                email,
+                phoneNumber,
+                dateOfBirth,
+                startDate,
+                endDate,
+                positionID,
+                employmentStatus: status
+            }
+        );
+
+        if (!updated) {
+            res.writeHead(404, {
+                "Content-Type": "application/json"
+            });
+
+            return res.end(JSON.stringify({
+                error: "Personnel record not found"
+            }));
+        }
+
+        res.writeHead(200, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify({
+            message: "Personnel updated successfully",
+            PersonnelID: updated.PersonnelID
+        }));
+
+    } catch (error) {
+        if (error instanceof SyntaxError) {
+            res.writeHead(400, {
+                "Content-Type": "application/json"
+            });
+
+            return res.end(JSON.stringify({
+                error: "Invalid JSON request body"
+            }));
+        }
+
+        if (error instanceof TypeError) {
+            res.writeHead(400, {
+                "Content-Type": "application/json"
+            });
+
+            return res.end(JSON.stringify({
+                error: error.message
+            }));
+        }
+
+        console.error("Error updating personnel:", error);
+
+        res.writeHead(500, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify({
+            error: "Unable to update personnel"
+        }));
+    }
+}
+
 
 async function deactivatePersonnelHandler(req, res) {
     if (!requireDirectorApi(req, res)) return;
@@ -355,6 +520,7 @@ async function reactivatePersonnelHandler(req, res) {
 module.exports = {
     listPersonnelHandler,
     createPersonnelHandler,
+    updatePersonnelHandler,
     deactivatePersonnelHandler,
     reactivatePersonnelHandler
 };

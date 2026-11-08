@@ -11,9 +11,9 @@ async function listPositions() {
                 PositionName,
                 Description,
                 EmploymentType,
-                Salary
+                HourlyRate
             FROM dbo.POSITION
-            ORDER BY PositionName;
+            ORDER BY PositionID ASC;
         `);
 
     return result.recordset;
@@ -23,7 +23,7 @@ async function createPosition({
     positionName,
     description,
     employmentType,
-    salary
+    hourlyRate
 }) {
     if (
         typeof positionName !== "string" ||
@@ -57,17 +57,17 @@ async function createPosition({
     }
 
     if (
-        salary != null &&
+        hourlyRate != null &&
         (
-            typeof salary !== "number" ||
-            !Number.isFinite(salary) ||
-            salary < 0 ||
-            salary > 99999999.99 ||
-            Math.round(salary * 100) !== salary * 100
+            typeof hourlyRate !== "number" ||
+            !Number.isFinite(hourlyRate) ||
+            hourlyRate < 0 ||
+            hourlyRate > 99999999.99 ||
+            Math.round(hourlyRate * 100) !== hourlyRate * 100
         )
     ) {
         throw new TypeError(
-            "Salary must be a non-negative amount with up to two decimal places"
+            "Hourly rate must be a non-negative amount with up to two decimal places"
         );
     }
 
@@ -90,9 +90,9 @@ async function createPosition({
             employmentType?.trim() || null
         )
         .input(
-            "Salary",
+            "HourlyRate",
             sql.Decimal(10, 2),
-            salary ?? null
+            hourlyRate ?? null
         )
         .query(`
             INSERT INTO dbo.POSITION
@@ -100,7 +100,7 @@ async function createPosition({
                 PositionName,
                 Description,
                 EmploymentType,
-                Salary
+                HourlyRate
             )
             OUTPUT
                 INSERTED.PositionID AS PositionID
@@ -109,7 +109,7 @@ async function createPosition({
                 @PositionName,
                 @Description,
                 @EmploymentType,
-                @Salary
+                @HourlyRate
             );
         `);
 

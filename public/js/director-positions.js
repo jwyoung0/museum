@@ -66,9 +66,9 @@ if (
                         position.PositionName ?? "",
                         position.Description ?? "",
                         position.EmploymentType ?? "",
-                        position.Salary == null
+                        position.HourlyRate == null
                             ? ""
-                            : Number(position.Salary).toFixed(2)
+                            : Number(position.HourlyRate).toFixed(2)
                     ];
 
                     values.forEach(value => {
@@ -119,7 +119,7 @@ if (
         const positionName = getText("positionName");
         const description = getText("description");
         const employmentType = getText("employmentType");
-        const salaryText = getText("salary");
+        const hourlyRateText = getText("hourlyRate");
 
         if (!positionName) {
             positionsMessage.textContent =
@@ -127,19 +127,19 @@ if (
             return;
         }
 
-        const salary = salaryText === "" ? null : Number(salaryText);
+        const hourlyRate = hourlyRateText === "" ? null : Number(hourlyRateText);
 
         if (
-            salary !== null &&
+            hourlyRate !== null &&
             (
-                !Number.isFinite(salary) ||
-                salary < 0 ||
-                salary > 99999999.99 ||
-                Math.round(salary * 100) !== salary * 100
+                !Number.isFinite(hourlyRate) ||
+                hourlyRate < 0 ||
+                hourlyRate > 99999999.99 ||
+                Math.round(hourlyRate * 100) !== hourlyRate * 100
             )
         ) {
             positionsMessage.textContent =
-                "Enter a valid non-negative salary with up to two decimal places.";
+                "Enter a valid non-negative hourly rate with up to two decimal places.";
             return;
         }
 
@@ -147,7 +147,7 @@ if (
             positionName,
             description: description || null,
             employmentType: employmentType || null,
-            salary
+            hourlyRate
         };
 
         const submitButton = positionForm.querySelector(
