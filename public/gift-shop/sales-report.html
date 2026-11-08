@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gift Shop Sales Report</title>
+    <link rel="stylesheet" href="/style">
+
+    <style>
+        .report-totals {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .report-totals div {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .report-totals dd {
+            margin: 0.25rem 0 0;
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+
+        #report-filters {
+            flex-wrap: wrap;
+            align-items: end;
+        }
+
+        #report-filters label {
+            display: grid;
+            gap: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <h1 class="dashboard-title">Gift Shop Dashboard</h1>
+
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
+    </header>
+
+    <main>
+        <nav aria-label="Gift Shop navigation">
+            <a href="/gift-shop/products">Products</a>
+            <a href="/gift-shop/inventory">Inventory</a>
+            <a href="/gift-shop/sales">Sales</a>
+            <a href="/gift-shop/sales-report" aria-current="page">Sales Report</a>
+        </nav>
+
+        <section class="artists-workspace">
+            <header class="workspace-header">
+                <h2>Sales Report</h2>
+            </header>
+
+            <p>See how many purchases were made, how many units sold,
+                and how much revenue each product earned.</p>
+
+            <form id="report-filters" class="workspace-toolbar">
+                <label for="report-from">
+                    Start date
+                    <input id="report-from" type="date" min="1000-01-01" max="9999-12-30">
+                </label>
+
+                <label for="report-to">
+                    End date
+                    <input id="report-to" type="date" min="1000-01-01" max="9999-12-30">
+                </label>
+
+                <button type="submit">Apply dates</button>
+                <button id="report-reset" type="button">Reset</button>
+            </form>
+
+            <p>Dates are in UTC. Leave both dates blank to see all sales.</p>
+
+            <p id="report-status" role="status">Loading sales report...</p>
+
+            <dl class="report-totals">
+                <div>
+                    <dt>Total purchases</dt>
+                    <dd id="report-purchases">—</dd>
+                </div>
+                <div>
+                    <dt>Units sold</dt>
+                    <dd id="report-units">—</dd>
+                </div>
+                <div>
+                    <dt>Sales revenue</dt>
+                    <dd id="report-revenue">—</dd>
+                </div>
+            </dl>
+
+            <div class="artists-table-container">
+                <table class="artists-table">
+                    <caption>Product sales, highest revenue first</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Product</th>
+                            <th scope="col">Purchases</th>
+                            <th scope="col">Units sold</th>
+                            <th scope="col">Revenue</th>
+                        </tr>
+                    </thead>
+                    <tbody id="report-products"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="/js/gift-shop-sales-report.js" defer></script>
+</body>
+</html>

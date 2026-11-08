@@ -22,6 +22,9 @@ const {
     checkoutContextHandler,
     purchaseProductHandler
 } = require("./handlers/gift-shop/checkout");
+
+const { salesReportHandler } = require("./handlers/gift-shop/sales-report");
+
 const {
     getVisitorProfileHandler,
     updateVisitorProfileHandler
@@ -165,14 +168,33 @@ async function router(req, res) {
         }
         // GET - HTML file routing starts here
         if (req.method === "GET" && req.url === "/gift-shop/dashboard") {
-    if (!requireGiftShopManager(req, res)) return;
-    sendPage(
-        res,
-        path.join("gift-shop", "dashboard.html"),
-        "text/html"
-    );
-    return;
-}
+            if (!requireGiftShopManager(req, res)) return;
+            sendPage(res, path.join("gift-shop", "dashboard.html"), "text/html");
+            return;
+        }
+
+        if (req.method === "GET" && (
+            new URL(req.url, "http://localhost").pathname === "/api/gift-shop/sales-report"
+        )) {
+            if (!requireGiftShopManager(req, res)) return;
+            await salesReportHandler(req, res);
+            return;
+        }
+
+        if (req.method === "GET" && (
+            new URL(req.url, "http://localhost").pathname === "/gift-shop/sales-report"
+        )) {
+            if (!requireGiftShopManager(req, res)) return;
+            sendPage(res, path.join("gift-shop", "sales-report.html"), "text/html");
+            return;
+        }
+
+        if (req.method === "GET" && req.url === "/js/gift-shop-sales-report.js") {
+            if (!requireGiftShopManager(req, res)) return;
+            sendPage(res, path.join("js", "gift-shop-sales-report.js"), "application/javascript");
+            return;
+        }
+
 if (req.method === "GET" && req.url === "/gift-shop/products") {
     if (!requireGiftShopManager(req, res)) return;
     sendPage(
