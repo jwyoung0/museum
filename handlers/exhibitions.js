@@ -1,7 +1,9 @@
 const {
     createExhibition,
-    listExhibitions,
-    readExhibition,
+    listExhibitionsForCurator,
+    readExhibitionForCurator,
+    listExhibitionsForVisitor,
+    readExhibitionForVisitor,
     updateExhibition,
     deleteExhibition,
     listExhibitionArtworks,
@@ -33,9 +35,9 @@ async function createExhibitionHandler(req, res) {
     }
 }
 
-async function listExhibitionHandler(req, res) {
+async function listExhibitionsForCuratorHandler(req, res) {
     try {
-        const exhibitions = await listExhibitions();
+        const exhibitions = await listExhibitionsForCurator();
 
         res.writeHead(200, {
             "Content-Type": "application/json"
@@ -53,10 +55,63 @@ async function listExhibitionHandler(req, res) {
     }
 }
 
-async function readExhibitionHandler(req, res) {
+async function readExhibitionForCuratorHandler(req, res) {
     const exhibitionId = req.params.id;    
     try {
-        const exhibition = await readExhibition(
+        const exhibition = await readExhibitionForCurator(
+            Number(exhibitionId)
+        );
+
+        if (!exhibition) {
+            res.writeHead(404, {
+                "Content-Type": "application/json"
+            });
+
+            return res.end(JSON.stringify({
+                error: "Exhibition not found"
+            }));
+        }
+
+        res.writeHead(200, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify(exhibition));
+    } catch (error) {
+        res.writeHead(500, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify({
+            error: error.message
+        }));
+    }
+}
+
+async function listExhibitionsForVisitorHandler(req, res) {
+    try {
+        const exhibitions = await listExhibitionsForVisitor();
+
+        res.writeHead(200, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify(exhibitions));
+    } catch (error) {
+        res.writeHead(500, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(JSON.stringify({
+            error: "Failed to retrieve exhibitions"
+        }));
+    }
+}
+
+async function readExhibitionForVisitorHandler(req, res) {
+    const exhibitionId = req.params.id;    
+    try {
+        const exhibition = await readExhibitionForVisitor(
             Number(exhibitionId)
         );
 
@@ -214,8 +269,10 @@ async function removeArtworkFromExhibitionHandler(req, res) {
 
 module.exports = {
     createExhibitionHandler,
-    listExhibitionHandler,
-    readExhibitionHandler,
+    listExhibitionsForCuratorHandler,
+    readExhibitionForCuratorHandler,
+    listExhibitionsForVisitorHandler,
+    readExhibitionForVisitorHandler,
     updateExhibitionHandler,
     deleteExhibitionHandler,
     listExhibitionArtworksHandler,

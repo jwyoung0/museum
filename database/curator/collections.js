@@ -32,9 +32,13 @@ async function listCollections() {
 
     const result = await pool.request()
         .query(`
-           SELECT *
-           FROM dbo.COLLECTIONS
-           ORDER BY collectionName; 
+            SELECT
+                c.*,
+                a.imageURL
+            FROM dbo.COLLECTIONS c
+            LEFT JOIN dbo.ARTWORKS a
+                ON a.accessionId = c.representativeArtwork
+            ORDER BY c.collectionName;
         `);
 
     return result.recordset;
@@ -82,6 +86,29 @@ async function updateCollection(
     return result.recordset[0] || null;
 }
 
+async function setRepresentativeArtwork(collectionId, accessionId) {
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .input("collectionId", sql.Int, collectionId)
+        .input("accessionId", sql.Int, accessionId)
+        .query(`
+            UPDATE c
+            SET representativeArtwork = @accessionId
+            OUTPUT INSERTED.*
+            FROM dbo.COLLECTIONS c
+            WHERE c.collectionId = @collectionId
+                AND EXISTS (
+                    SELECT 1
+                    FROM dbo.ARTWORKS a
+                    WHERE a.accessionId = @accessionId
+                        AND a.collectionId = c.collectionId
+                );
+        `);
+
+    return result.recordset[0] || null;
+}
+
 async function deleteCollection(collectionId) {
     const pool = await getPool();
 
@@ -109,11 +136,34 @@ async function countCollectionArtworks(collectionId) {
     return result.recordset[0].artworkCount;
 }
 
+async function getArtworksInCollection(collectionId) {
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .input("collectionId", sql.Int, collectionId)
+        .query(`
+            SELECT
+                a.accessionId,
+                a.title,
+                a.creationDate,
+                ar.fullName AS artist
+            FROM dbo.ARTWORKS a
+            INNER JOIN dbo.ARTISTS ar
+                ON a.artistId = ar.artistId
+            WHERE a.collectionId = @collectionId
+            ORDER BY a.title;
+        `);
+
+    return result.recordset;
+}
+
 module.exports = {
     createCollection,
     listCollections,
     readCollection,
     updateCollection,
+    setRepresentativeArtwork,
     deleteCollection,
-    countCollectionArtworks
+    countCollectionArtworks,
+    getArtworksInCollection
 };

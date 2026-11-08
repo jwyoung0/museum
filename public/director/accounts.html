@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Museum Director Dashboard</title>
+    <link rel="stylesheet" href="/style">
+    <style>
+        .account-workspace {
+            width: 100%;
+            margin: 20px 0;
+            padding: 24px;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+        }
+
+        .employees-table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .employees-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--paper);
+        }
+
+        .employees-table thead {
+            background: var(--bg);
+        }
+
+        .employees-table th {
+            padding: 12px 16px;
+            border-bottom: 2px solid var(--line);
+            text-align: left;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .employees-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--line);
+            vertical-align: middle;
+        }
+
+        .employees-table tbody tr:hover {
+            background: rgba(37, 99, 235, 0.04);
+        }
+
+        .employees-table td:last-child {
+            white-space: nowrap;
+        }
+
+        .create-account-button {
+            padding: 8px 14px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .modal {
+            position: fixed;
+            inset: 0;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            padding: 24px;
+
+            background: rgba(0, 0, 0, 0.55);
+
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: relative;
+
+            width: 100%;
+            max-width: 540px;
+
+            padding: 24px;
+
+            background: var(--paper);
+
+            border-radius: 12px;
+            border: 1px solid var(--line);
+
+            box-shadow:
+                0 16px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            position: absolute;
+
+            top: 12px;
+            right: 12px;
+
+            min-width: 40px;
+            min-height: 40px;
+
+            padding: 0;
+
+            font-size: 1.5rem;
+            line-height: 1;
+
+            background: transparent;
+            color: var(--muted);
+        }
+
+        .modal-close:hover {
+            background: transparent;
+            color: var(--ink);
+        }
+
+        #create-account-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        #create-account-form label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        #create-account-form button[type="submit"] {
+            margin-top: 8px;
+        }
+
+        #employee-name {
+            background: #f8fafc;
+        }
+
+        #account-message {
+            min-height: 24px;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .success-message {
+            color: var(--green);
+        }
+
+        .error-message {
+            color: #b91c1c;
+        }
+
+        #search-empty-state td,
+        #error-state td {
+            padding: 24px;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        @media (max-width: 600px) {
+
+            .modal {
+                padding: 12px;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+
+            .employees-table {
+                min-width: 800px;
+            }
+
+        }        
+    </style>
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <h1 class="dashboard-title">Museum Director Dashboard</h1>
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
+    </header>
+
+    <main>
+        <nav aria-label="Director sections">
+            <a href="/director/dashboard">Personnel</a>
+            <a href="/director/accounts" aria-current="page">Account Management</a>
+            <a href="/director/memberships">Memberships</a>
+            <a href="/director/dashboard#revenue">Ticket Revenue</a>
+            <a href="/director/membership-revenue">Membership Revenue</a>
+        </nav>
+
+    <section class="account-workspace">
+        <header class="workspace-header">
+            <h2>Accounts</h2>
+        </header>
+
+        <div class="workspace-toolbar">
+            <input
+                type="search"
+                id="employee-search"
+                placeholder="Search employees..."
+                aria-label="Search employees"
+            >
+
+            <button
+                type="button"
+                id="search-employees-button"
+            >
+                Search
+            </button>
+        </div>
+
+        <div class="employees-table-container">
+            <table class="employees-table">
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Last name</th>
+                        <th>First name</th>
+                        <th>Middle</th>
+                        <th>Position</th>
+                        <th>Start Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody id="employees-table-body">
+                    <tr id="search-empty-state" hidden>
+                        <td colspan="7" style="text-align: center;">
+                            No employees match your search.
+                        </td>
+                    </tr>
+
+                    <tr id="error-state" hidden>
+                        <td colspan="7" style="text-align: center;">
+                            Unable to load employees.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+       
+
+    </main>
+
+    <div id="account-modal" class="modal hidden">
+        <div class="modal-content">
+            <button
+                type="button"
+                id="close-modal"
+                class="modal-close"
+            >
+                ×
+            </button>
+
+            <h3>Create Account</h3>
+
+            <form id="create-account-form">
+                <input id="personnel-id" type="hidden">
+                <div>
+                    <label>Employee</label>
+                    <input id="employee-name" readonly>
+                </div>
+
+                <div>
+                    <label>Username</label>
+                    <input
+                        id="username"
+                        maxlength="20"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label>Password</label>
+                    <input
+                        id="password"
+                        type="password"
+                        maxlength="12"
+                        required
+                    >
+                </div>
+
+                <div>
+                    <label>Role</label>
+
+                    <select id="role" required>
+                        <option value="">
+                            Select Role
+                        </option>
+
+                        <option value="director">
+                            Director
+                        </option>
+
+                        <option value="curator">
+                            Curator
+                        </option>
+
+                        <option value="admin">
+                            Admin
+                        </option>
+
+                        <option value="gift_shop_manager">
+                            Gift Shop Manager
+                        </option>
+                    </select>
+                </div>
+
+                <button type="submit">
+                    Create Account
+                </button>
+
+                <p id="account-message"></p>
+            </form>
+        </div>
+    </div>
+    <script src="/js/director-accounts.js"></script>
+</body>
+</html>

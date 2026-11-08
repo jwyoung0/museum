@@ -15,18 +15,7 @@ async function createExhibition({
         throw new RangeError("End date must be after start date");
     }
 
-    const today = new Date();
-
-    let status;
-
-    if (today < new Date(startDate)) {
-        status = "upcoming";
-    } else if (today > new Date(endDate)) {
-        status = "archived";
-    } else {
-        status = "active";
-    }
-
+    const status = "Active";
 
     const pool = await getPool();
 
@@ -45,7 +34,6 @@ async function createExhibition({
                 endDate,
                 status
             )
-            OUTPUT INSERTED.*
             VALUES
             (
                 @exhibitionName,
@@ -54,12 +42,16 @@ async function createExhibition({
                 @endDate,
                 @status
             );
+
+            SELECT TOP 1 *
+            FROM dbo.EXHIBITIONS
+            WHERE exhibitionId = SCOPE_IDENTITY();
         `);
 
     return result.recordset[0];
 }
 
-async function listExhibitions() {
+async function listExhibitionsForCurator() {
     const pool = await getPool();
 
     const result = await pool.request()
@@ -72,7 +64,7 @@ async function listExhibitions() {
     return result.recordset;
 }
 
-async function readExhibition(exhibitionId) {
+async function readExhibitionForCurator(exhibitionId) {
     const pool = await getPool();
 
     const result = await pool.request()
@@ -86,13 +78,57 @@ async function readExhibition(exhibitionId) {
     return result.recordset[0] || null;
 }
 
+async function listExhibitionsForVisitor() {
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .query(`
+            SELECT 
+                e.exhibitionId, 
+                e.exhibitionName,
+                e.startDate,
+                e.endDate,
+                e.description,
+                a.imageURL
+            FROM dbo.EXHIBITIONS AS e
+            LEFT JOIN dbo.ARTWORKS AS a
+                ON a.accessionId = e.representativeArtwork
+            WHERE e.status = 'active'
+            ORDER BY e.exhibitionName;
+   
+        `);
+
+    return result.recordset;
+}
+
+async function readExhibitionForVisitor(exhibitionId) {
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .input("exhibitionId", sql.Int, exhibitionId)
+        .query(`
+            SELECT 
+                e.exhibitionId, 
+                e.exhibitionName,
+                e.startDate,
+                e.endDate,
+                e.description,
+                a.imageURL
+            FROM dbo.EXHIBITIONS AS e
+            LEFT JOIN dbo.ARTWORKS AS a
+                ON a.accessionId = e.representativeArtwork
+            WHERE e.exhibitionId = @exhibitionId;    
+        `);
+
+    return result.recordset[0] || null;
+}
+
 async function updateExhibition(
     exhibitionId, {
         exhibitionName,
         description,
         startDate,
-        endDate,
-        status
+        endDate
     }
 ) {
     if (typeof exhibitionName !== "string" || !exhibitionName.trim()) {
@@ -104,16 +140,6 @@ async function updateExhibition(
         throw new RangeError("End date must be after start date");
     }
 
-    const today = new Date();
-
-    if (today < new Date(startDate)) {
-        status = "upcoming";
-    } else if (today > new Date(endDate)) {
-        status = "archived";
-    } else {
-        status = "active";
-    }
-
     const pool = await getPool();
 
     const result = await pool.request()
@@ -122,16 +148,17 @@ async function updateExhibition(
         .input("description", sql.NVarChar(500), description || null)
         .input("startDate", sql.Date, startDate)
         .input("endDate", sql.Date, endDate)
-        .input("status", sql.NVarChar(20), status)
         .query(`
             UPDATE dbo.EXHIBITIONS
             SET
                 exhibitionName = @exhibitionName,
                 description = @description,
                 startDate = @startDate,
-                endDate = @endDate,
-                status = @status
-            OUTPUT INSERTED.*
+                endDate = @endDate
+            WHERE exhibitionId = @exhibitionId;
+
+            SELECT *
+            FROM dbo.EXHIBITIONS
             WHERE exhibitionId = @exhibitionId;
         `);
 
@@ -151,7 +178,10 @@ async function deleteExhibition(exhibitionId) {
         .query(`
             UPDATE dbo.EXHIBITIONS
             SET status = 'archived'
-            OUTPUT INSERTED.*
+            WHERE exhibitionId = @exhibitionId;
+
+            SELECT *
+            FROM dbo.EXHIBITIONS
             WHERE exhibitionId = @exhibitionId;
         `);
 
@@ -234,18 +264,21 @@ async function removeArtworkFromExhibition(exhibitionId, accessionId) {
         .input("accessionId", sql.Int, accessionId)
         .query(`
             DELETE FROM dbo.EXHIBITION_ARTWORK
-            OUTPUT DELETED.*
             WHERE exhibitionId = @exhibitionId
-              AND accessionId = @accessionId;
+            AND accessionId = @accessionId;
+
+            SELECT @@ROWCOUNT AS rowsDeleted;
         `);
 
-    return result.recordset[0] || null;
+        return result.recordset[0].rowsDeleted > 0;
 }
 
 module.exports = {
     createExhibition,
-    listExhibitions,
-    readExhibition,
+    listExhibitionsForVisitor,
+    readExhibitionForVisitor,
+    listExhibitionsForCurator,
+    readExhibitionForCurator,
     updateExhibition,
     deleteExhibition,
     listExhibitionArtworks,

@@ -6,6 +6,134 @@
     <meta name="theme-color" content="#2563eb">
     <title>Collection Details | Curator Dashboard</title>
     <link rel="stylesheet" href="/style">
+    <style>
+        /* Curator collection detail */
+
+        .collection-detail-workspace {
+            width: 100%;
+            max-width: 1060px;
+            margin: 0 auto;
+        }
+
+        .collection-artworks {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: var(--paper);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+        }
+
+        .collection-artworks h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .collection-artworks table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .collection-artworks th {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 2px solid var(--line);
+            background: var(--bg);
+        }
+
+        .collection-artworks td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .collection-artworks tbody tr:hover {
+            background: rgba(37, 99, 235, 0.04);
+        }
+
+        #empty-artworks {
+            padding: 1rem;
+            text-align: center;
+            color: var(--muted);
+        }
+
+        .artist-actions {
+            margin-top: 1.5rem;
+        }
+
+        #artwork-detail-modal {
+            width: min(900px, calc(100% - 2rem));
+            max-height: calc(100% - 2rem);
+            padding: 1.5rem;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: var(--paper);
+            color: inherit;
+        }
+
+        #artwork-detail-modal::backdrop {
+            background: rgba(15, 23, 42, 0.6);
+        }
+
+        .artwork-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .artwork-modal-header h2 {
+            margin: 0;
+        }
+
+        .artwork-modal-content {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(220px, 40%);
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .artwork-modal-content[hidden] {
+            display: none;
+        }
+
+        .artwork-modal-actions {
+            grid-column: 1 / -1;
+        }
+
+        .artwork-modal-details {
+            display: grid;
+            grid-template-columns: minmax(120px, 35%) minmax(0, 1fr);
+            gap: 0.75rem 1rem;
+            margin: 0;
+        }
+
+        .artwork-modal-details dt {
+            font-weight: 600;
+        }
+
+        .artwork-modal-details dd {
+            min-width: 0;
+            margin: 0;
+            overflow-wrap: anywhere;
+        }
+
+        #modal-artwork-image {
+            width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+        }
+
+        @media (max-width: 700px) {
+            .artwork-modal-content {
+                grid-template-columns: 1fr;
+            }
+
+            .artwork-modal-details {
+                grid-template-columns: 1fr;
+                gap: 0.25rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <header class="dashboard-header">
@@ -55,9 +183,91 @@
 
             <div id="detail-error" role="alert" hidden>
                 Unable to load collection.
+            </div>            
+        </section>
+        <section class="collection-artworks">
+            <h3>Artworks</h3>
+
+            <table class="workspace-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Artist</th>
+                        <th>Year</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="artworks-table-body">
+                </tbody>
+            </table>
+
+            <div id="error-state" role="alert" hidden>
+                Unable to load artworks in collection.
+            </div>  
+
+            <div id="empty-artworks" hidden>
+                No artworks are assigned to this collection.
             </div>
         </section>
     </main>
+    <dialog
+        id="artwork-detail-modal"
+        aria-labelledby="modal-artwork-title"
+    >
+        <div class="artwork-modal-header">
+            <h2 id="modal-artwork-title">Artwork Details</h2>
+            <button id="close-artwork-modal" type="button" aria-label="Close artwork details">
+                Close
+            </button>
+        </div>
+        <p id="modal-artwork-loading" role="status" hidden>
+            Loading artwork details...
+        </p>
+        <p id="modal-artwork-error" role="alert" hidden>
+            Unable to load artwork details.
+        </p>
+        <div id="modal-artwork-content" class="artwork-modal-content" hidden>
+            <dl class="artwork-modal-details">
+                <dt>Title</dt>
+                <dd id="modal-artwork-name"></dd>
+
+                <dt>Artist</dt>
+                <dd id="modal-artwork-artist"></dd>
+
+                <dt>Creation Date</dt>
+                <dd id="modal-artwork-creation-date"></dd>
+
+                <dt>Category</dt>
+                <dd id="modal-artwork-category"></dd>
+
+                <dt>Medium</dt>
+                <dd id="modal-artwork-medium"></dd>
+
+                <dt>Dimensions</dt>
+                <dd id="modal-artwork-dimensions"></dd>
+
+                <dt>Collection</dt>
+                <dd id="modal-artwork-collection"></dd>
+
+                <dt>Style</dt>
+                <dd id="modal-artwork-style"></dd>
+
+                <dt>Period</dt>
+                <dd id="modal-artwork-period"></dd>
+
+                <dt>Image URL</dt>
+                <dd id="modal-artwork-image-url"></dd>
+            </dl>
+            <img id="modal-artwork-image" alt="" hidden>
+            <div class="artwork-modal-actions">
+                <button id="set-representative-artwork" type="button">
+                    Make Representative Artwork
+                </button>
+                <p id="representative-artwork-status" role="status" hidden></p>
+                <p id="representative-artwork-error" role="alert" hidden></p>
+            </div>
+        </div>
+    </dialog>
     <script src="/js/curator-collection-detail.js"></script>
 </body>
 </html>

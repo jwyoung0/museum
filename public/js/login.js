@@ -12,7 +12,7 @@ loginForm.addEventListener(`submit`, async (event) => {
     };
 
     loginMessage.textContent = '';
-    loginMessage.style.color = 'var(--ink)';
+    loginMessage.classList.remove("visible");
     submitButton.disabled = true;
     submitButton.textContent = 'Logging in...';
 
@@ -37,8 +37,9 @@ loginForm.addEventListener(`submit`, async (event) => {
         window.location.assign(result.redirectTo);
 
     } catch (error) {
-        loginMessage.style.color = '#dc2626';
-        loginMessage.textContent = error.message;
+     
+        loginMessage.textContent = `⚠ ${error.message}`;
+        loginMessage.classList.add("visible");
 
         submitButton.disabled = false;
         submitButton.textContent = 'Login';

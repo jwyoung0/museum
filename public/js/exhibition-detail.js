@@ -35,8 +35,8 @@ async function loadExhibition() {
 
         document.getElementById("exhibition-name").textContent =
             exhibition.exhibitionName || "Untitled Exhibition";
-        document.getElementById("exhibition-status").textContent =
-            formatExhibitionStatus(exhibition.status);
+        document.getElementById("exhibition-scheduledStatus").textContent =
+            getScheduledStatus(exhibition);
         document.getElementById("exhibition-start-date").textContent =
             formatDate(exhibition.startDate);
         document.getElementById("exhibition-end-date").textContent =
@@ -99,14 +99,14 @@ function renderExhibitionArtwork() {
         filteredArtwork.length > 0;
 }
 
-function formatExhibitionStatus(status) {
-    const labels = {
-        active: "Current",
-        upcoming: "Upcoming",
-        archived: "Past"
-    };
-    return labels[status?.toLowerCase()] || "Status unavailable";
-}
+// function formatExhibitionStatus(status) {
+//     const labels = {
+//         active: "Current",
+//         upcoming: "Upcoming",
+//         archived: "Past"
+//     };
+//     return labels[status?.toLowerCase()] || "Status unavailable";
+// }
 
 function formatDate(value) {
     if (!value) {
@@ -118,4 +118,23 @@ function formatDate(value) {
     return Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day)
         ? "Date unavailable"
         : new Date(year, month - 1, day).toLocaleDateString();
+}
+
+function getScheduledStatus(exhibition) {
+    if (exhibition.startDate && exhibition.endDate) {
+            const today = new Date().toISOString().slice(0, 10);
+            
+            const startDate = exhibition.startDate?.slice(0, 10);
+            const endDate = exhibition.endDate?.slice(0, 10);
+        
+            if (endDate < today ) {
+                return "Past";
+            } else if (startDate > today ) {
+                return "Upcoming";
+            } else {
+                return "Current";
+            } 
+        } else {
+                return "—";
+    }
 }

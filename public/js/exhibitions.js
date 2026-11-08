@@ -121,8 +121,8 @@ function displayExhibitions(exhibitions) {
                 formatDate(exhibition.endDate);
         }
 
-        const status = document.createElement("p");
-        status.textContent = formatExhibitionStatus(exhibition.status);
+        const scheduledStatus = document.createElement("p");
+        scheduledStatus.textContent = getScheduledStatus(exhibition);
 
         card.append(link, dates, status);
         results.append(card);
@@ -141,23 +141,18 @@ function handleSearch() {
     const selectedField = document
         .getElementById("search-exhibition-field")
         .value;
-    const statusByFilter = {
-        current: "active",
-        upcoming: "upcoming",
-        past: "archived"
-    };
+
 
     visibleExhibitions = allExhibitions.filter((exhibition) => {
         const matchesQuery =
             !query ||
             exhibition.exhibitionName?.toLowerCase().includes(query) ||
             exhibition.description?.toLowerCase().includes(query);
-        const matchesStatus =
+        const matchesScheduledStatus =
             !selectedField ||
-            exhibition.status?.toLowerCase() ===
-                statusByFilter[selectedField];
+            getScheduledStatus(exhibition) === selectedField;
 
-        return matchesQuery && matchesStatus;
+        return matchesQuery && matchesScheduledStatus;
     });
 
     currentPage = 1;
@@ -166,11 +161,11 @@ function handleSearch() {
 
 function formatExhibitionStatus(status) {
     const labels = {
-        active: "Current",
+        current: "Current",
         upcoming: "Upcoming",
-        archived: "Past"
+        past: "Past"
     };
-    return labels[status?.toLowerCase()] || "Status unavailable";
+    return labels[status] || "Status unavailable";
 }
 
 function formatDate(value) {
@@ -179,4 +174,23 @@ function formatDate(value) {
     return Number.isNaN(year) || Number.isNaN(month) || Number.isNaN(day)
         ? "Date unavailable"
         : new Date(year, month - 1, day).toLocaleDateString();
+}
+
+function getScheduledStatus(exhibition) {
+    if (exhibition.startDate && exhibition.endDate) {
+            const today = new Date().toISOString().slice(0, 10);
+            
+            const startDate = exhibition.startDate?.slice(0, 10);
+            const endDate = exhibition.endDate?.slice(0, 10);
+        
+            if (endDate < today ) {
+                return "past";
+            } else if (startDate > today ) {
+                return "upcoming";
+            } else {
+                return "current";
+            } 
+        } else {
+                return "—";
+    }
 }

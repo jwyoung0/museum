@@ -17,6 +17,15 @@ async function createArtist({
         throw new TypeError("birthYear is required and must be an integer");
     }
 
+    if (deathYear !== null &&
+        deathYear !== undefined &&
+        deathYear < birthYear
+    ) {
+        throw new TypeError(
+            "deathYear cannot be earlier than birthYear"
+        )
+    }
+
     const pool = await getPool();
 
     const result = await pool.request()
@@ -99,12 +108,22 @@ async function updateArtist(
 
     if (!Number.isInteger(birthYear)) {
         throw new TypeError("birthYear is required and must be an integer");
-    }    
+    }
+    
+    if (deathYear !== null &&
+        deathYear !== undefined &&
+        deathYear < birthYear
+    ) {
+        throw new TypeError(
+            "deathYear cannot be earlier than birthYear"
+        )
+    }
+
     const pool = await getPool();
 
     const result = await pool.request()
         .input("artistId", sql.Int, artistId)
-        .input("fullName", sql.NVarChar(100), fullName)
+        .input("fullName", sql.NVarChar(100), fullName.trim())
         .input("placeOfBirth", sql.NVarChar(100), placeOfBirth || null)
         .input("birthYear", sql.Int, birthYear)
         .input("period", sql.NVarChar(50), period || null)
