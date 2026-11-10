@@ -18,7 +18,7 @@ async function visitorLoginAttempt({ email, password }) {
             SELECT 
                 v.VisitorID AS visitorId,
                 va.email,
-                va.userType
+                va.role
             FROM dbo.VISITOR_ACCOUNTS AS va
             INNER JOIN dbo.VISITOR AS v
                 ON v.Email = va. email
@@ -78,7 +78,7 @@ async function registerVisitorAccount({ name, email, password }) {
                     LinkedVisitorID,
                     email,
                     password,
-                    userType
+                    role
                 )
                 VALUES
                 (

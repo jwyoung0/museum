@@ -65,7 +65,7 @@ async function createUserAccountHandler(req, res) {
     try {
         const body = await readJsonBody(req);
 
-        const username = typeof body.username === "string" ? body.username.trim() : "";
+        const email = typeof body.email === "string" ? body.email.trim() : "";
         const password = typeof body.password === "string" ? body.password : "";    
         const role = typeof body.role === "string" 
             ? body.role.trim().toLowerCase() 
@@ -76,7 +76,7 @@ async function createUserAccountHandler(req, res) {
                 : Number.parseInt(body.personnelId, 10);
 
 
-        if (!username || username.length > 20 ||
+        if (!email || email.length > 20 ||
             !password || password.length > 12
         ) {
             const error = new Error("Invalid user registration information");
@@ -104,7 +104,7 @@ async function createUserAccountHandler(req, res) {
         }
 
         const account = await createUserAccount({
-            username: username,
+            email: email,
             password: password,
             role: role,
             personnelId: personnelId,

@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const errorState = document.getElementById("error-state");
     const personnelIdInput = document.getElementById("personnel-id");
     const employeeNameInput = document.getElementById("employee-name");
-    const usernameInput = document.getElementById("username");
+    const emailInput = document.getElementById("email");
     const passwordInput = document.getElementById("password");
     const roleInput = document.getElementById("role");
     const messageElement = document.getElementById("account-message");
@@ -94,7 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
         employeeNameInput.value = employeeName;
         selectedEmployeeRow = employeeRow;
 
-        usernameInput.value = "";
+        emailInput.value = "";
         passwordInput.value = "";
         roleInput.value = "";
 
@@ -170,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         headers: {"Content-Type": "application/json"},
                         body: JSON.stringify({
                             personnelId: Number(personnelIdInput.value),
-                            username: usernameInput.value.trim(),
+                            email: emailInput.value.trim(),
                             password: passwordInput.value,
                             role: roleInput.value
                         })

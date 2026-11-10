@@ -47,13 +47,13 @@ async function searchPersonnelForAccounts(searchTerm) {
 }
 
 async function createUserAccount({
-    username,
+    email,
     password,
     role,
     personnelId
 }) {
-    if (typeof username !== "string" || !username.trim()) {
-        throw new TypeError("username is required");
+    if (typeof email !== "string" || !email.trim()) {
+        throw new TypeError("email is required");
     }
     if (typeof password !== "string" || !password.trim()) {
         throw new TypeError("password is required");
@@ -99,29 +99,29 @@ async function createUserAccount({
             throw error;
         }
 
-        const usernameCheck = await new sql.Request(transaction)
-            .input("username", sql.NVarChar(20), username)
+        const emailCheck = await new sql.Request(transaction)
+            .input("email", sql.NVarChar(20), email)
             .query(`
-               SELECT username
+               SELECT email
                FROM dbo.USER_ACCOUNT
-               WHERE username = @username  
+               WHERE email = @email  
             `);
 
-        if (usernameCheck.recordset.length > 0) {
-            const error = new Error ("Username already exists.");
+        if (emailCheck.recordset.length > 0) {
+            const error = new Error ("email already exists.");
             error.statusCode = 409;
             throw error;
         }
 
         const result = await new sql.Request(transaction)
-            .input("username", sql.NVarChar(20), username)
+            .input("email", sql.NVarChar(20), email)
             .input("password", sql.NVarChar(12), password)
             .input("role", sql.NVarChar(20), role)
             .input("personnelId", sql.Int, personnelId)
             .query(`
                 INSERT INTO dbo.USER_ACCOUNT
                 (
-                    username,
+                    email,
                     password,
                     role,
                     personnelID
@@ -129,7 +129,7 @@ async function createUserAccount({
                 OUTPUT INSERTED.userID
                 VALUES
                 (
-                    @username,
+                    @email,
                     @password,
                     @role,
                     @personnelId

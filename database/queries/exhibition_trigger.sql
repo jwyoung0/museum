@@ -71,6 +71,3 @@ BEGIN
     END;
 END;
 GO
-
--- ENABLE TRIGGER dbo.TR_EXHIBITIONS_NoActiveArtworkOverlap
--- ON dbo.EXHIBITIONS;
