@@ -163,6 +163,87 @@ async function listPersonnel() {
     return result.recordset;
 }
 
+async function updatePersonnel(personnelID, {
+    positionID,
+    email,
+    employmentStatus,
+    dateOfBirth,
+    startDate,
+    endDate,
+    phoneNumber,
+    fname,
+    mname,
+    lname
+}) {
+    if (!Number.isInteger(personnelID) || personnelID <= 0) {
+        throw new TypeError("Invalid Personnel ID");
+    }
+
+    if (typeof fname !== "string" || !fname.trim() || fname.trim().length > 50) {
+        throw new TypeError("Invalid first name");
+    }
+
+    if (mname != null && mname.length > 50) {
+        throw new TypeError("Middle name must not exceed 50 characters");
+    }
+
+    if (typeof lname !== "string" || !lname.trim() || lname.trim().length > 50) {
+        throw new TypeError("Invalid last name");
+    }
+
+    if (typeof dateOfBirth !== "string" || !dateOfBirth.trim()) {
+        throw new TypeError("Date of birth is required");
+    }
+
+    if (!Number.isInteger(positionID) || positionID <= 0) {
+        throw new TypeError("Invalid Position ID");
+    }
+
+    if (employmentStatus !== 0 && employmentStatus !== 1) {
+        throw new TypeError("Employment status must be 0 or 1");
+    }
+
+    if (email != null && email.length > 50) {
+        throw new TypeError("Email must not exceed 50 characters");
+    }
+
+    if (phoneNumber != null && !/^\d{10}$/.test(phoneNumber)) {
+        throw new TypeError("Phone number must contain exactly 10 digits");
+    }
+
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .input("PersonnelID", sql.Int, personnelID)
+        .input("PositionID", sql.Int, positionID)
+        .input("Email", sql.NVarChar(50), email || null)
+        .input("EmploymentStatus", sql.Bit, employmentStatus)
+        .input("DateOfBirth", sql.Date, dateOfBirth)
+        .input("StartDate", sql.Date, startDate || null)
+        .input("EndDate", sql.Date, endDate || null)
+        .input("PhoneNumber", sql.VarChar(10), phoneNumber || null)
+        .input("Fname", sql.NVarChar(50), fname.trim())
+        .input("Mname", sql.NVarChar(50), mname?.trim() || null)
+        .input("Lname", sql.NVarChar(50), lname.trim())
+        .query(`
+            UPDATE dbo.Personnel
+            SET
+                PositionID = @PositionID,
+                Email = @Email,
+                EmploymentStatus = @EmploymentStatus,
+                DateOfBirth = @DateOfBirth,
+                StartDate = @StartDate,
+                EndDate = @EndDate,
+                PhoneNumber = @PhoneNumber,
+                Fname = @Fname,
+                Mname = @Mname,
+                Lname = @Lname
+            OUTPUT INSERTED.PersonnelID AS PersonnelID
+            WHERE PersonnelID = @PersonnelID;
+        `);
+
+    return result.recordset[0] || null;
+}
 
 async function deactivatePersonnel(personnelIDs){
     if(
@@ -258,6 +339,7 @@ async function reactivatePersonnel(personnelIDs) {
 module.exports = {
     createPersonnel,
     listPersonnel,
+    updatePersonnel,
     deactivatePersonnel,
     reactivatePersonnel
 };
