@@ -77,9 +77,15 @@ const { purchaseMembershipHandler } = require("./handlers/membership-purchase");
 const {
     listPersonnelHandler,
     createPersonnelHandler,
+    updatePersonnelHandler,
     deactivatePersonnelHandler,
     reactivatePersonnelHandler
 } = require("./handlers/director/personnel");
+//Director-Work Assignments
+const {
+    listWorkAssignmentsHandler,
+    generateLaborCostReportHandler
+} = require("./handlers/director/work-assignments");
 //Director-Positions
 const {
     listPositionsHandler,
@@ -138,6 +144,19 @@ async function router(req, res) {
             await createPersonnelHandler(req, res);
             return;
         }
+
+        const personnelUpdateMatch = new URL(req.url, "http://localhost")
+            .pathname.match(/^\/api\/director\/personnel\/(\d+)$/);
+
+        if (req.method === "PUT" && personnelUpdateMatch) {
+            if (!requireDirector(req, res)) return;
+
+            const personnelID = Number(personnelUpdateMatch[1]);
+
+            await updatePersonnelHandler(req, res, personnelID);
+            return;
+        }
+
         if (req.method === "POST" && req.url === "/api/director/accounts") {
             if (!requireDirector(req, res)) return;
             await createUserAccountHandler(req, res);
@@ -148,14 +167,11 @@ async function router(req, res) {
             await createTierHandler(req, res);
             return;
         }
-        if (
-    req.method === "GET" &&
-    req.url === "/api/gift-shop/inventory-alerts"
-) {
-    if (!requireGiftShopManager(req, res)) return;
-    await listInventoryAlertsHandler(req, res);
-    return;
-}
+        if (req.method === "GET" && req.url === "/api/gift-shop/inventory-alerts") {
+                if (!requireGiftShopManager(req, res)) return;
+                await listInventoryAlertsHandler(req, res);
+                return;
+        }
         if(req.method ==="POST" && req.url === "/api/director/personnel/deactivate"){
             if(!requireDirector(req, res)) return;
             await deactivatePersonnelHandler(req, res);
@@ -642,6 +658,34 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             await listPersonnelHandler(req, res);
             return;
         }
+        if (req.method === "GET" && req.url === "/director/work-assignments") {//work assignments page
+            if (!requireDirector(req, res)) return;
+            sendPage(res, path.join("director", "work-assignments.html"), "text/html");
+            return;
+        }
+        if (req.method === "GET" && req.url === "/js/work-assignments.js") {
+            if (!requireDirector(req, res)) return;
+            sendPage(res, path.join("js", "work-assignments.js"), "application/javascript");
+            return;
+        }
+        if (req.method === "GET" && req.url === "/api/director/work-assignments") {
+            if (!requireDirector(req, res)) return;
+            await listWorkAssignmentsHandler(req, res);
+            return;
+        }
+
+        // Generate Labor Cost Report
+        if (
+            req.method === "GET" &&
+            new URL(req.url, "http://localhost").pathname ===
+                "/api/director/work-assignments/labor-cost-report"
+        ) {
+            if (!requireDirector(req, res)) return;
+            await generateLaborCostReportHandler(req, res);
+            return;
+        }
+
+
         if (
             req.method === "GET" &&
             /^\/api\/director\/accounts\/search(?:\?|$)/.test(req.url)

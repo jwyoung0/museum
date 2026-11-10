@@ -93,10 +93,10 @@ async function createPositionHandler(req, res) {
                 ? null
                 : data.employmentType;
 
-        const salary =
-            data.salary == null || data.salary === ""
+        const hourlyRate =
+            data.hourlyRate == null || data.hourlyRate === ""
                 ? null
-                : Number(data.salary);
+                : Number(data.hourlyRate);
 
         if (!positionName) {
             res.writeHead(400, {
@@ -151,12 +151,12 @@ async function createPositionHandler(req, res) {
         }
 
         if (
-            salary !== null &&
+            hourlyRate !== null &&
             (
-                !Number.isFinite(salary) ||
-                salary < 0 ||
-                salary > 99999999.99 ||
-                Math.round(salary * 100) !== salary * 100
+                !Number.isFinite(hourlyRate) ||
+                hourlyRate < 0 ||
+                hourlyRate > 99999999.99 ||
+                Math.round(hourlyRate * 100) !== hourlyRate * 100
             )
         ) {
             res.writeHead(400, {
@@ -164,7 +164,7 @@ async function createPositionHandler(req, res) {
             });
 
             return res.end(JSON.stringify({
-                error: "Salary must be non-negative and have at most two decimal places"
+                error: "Hourly rate must be non-negative and have at most two decimal places"
             }));
         }
 
@@ -172,7 +172,7 @@ async function createPositionHandler(req, res) {
             positionName,
             description,
             employmentType,
-            salary
+            hourlyRate
         });
 
         res.writeHead(201, {

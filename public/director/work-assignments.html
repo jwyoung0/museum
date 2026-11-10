@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Work Assignment Management</title>
+    <link rel="stylesheet" href="/style">
+</head>
+<body>
+    <header class="dashboard-header">
+        <h1 class="site-title"><a href="/">MFAH</a></h1>
+        <h1 class="dashboard-title">Museum Director Dashboard</h1>
+        <form class="header-auth-form" action="/api/logout" method="post">
+            <button type="submit" class="header-auth">Logout</button>
+        </form>
+    </header>
+
+    <main>
+        <nav aria-label="Director sections">
+            <a href="/director/dashboard">Personnel</a>
+            <a href="/director/work-assignments" aria-current="page">Work Assignments</a>
+            <a href="/director/accounts">Account Management</a>
+            <a href="/director/memberships">Memberships</a>
+            <a href="/director/dashboard#revenue">Ticket Revenue</a>
+            <a href="/director/membership-revenue">Membership Revenue</a>
+        </nav>
+
+        <!-- LABOR COST REPORT SECTION -->
+        <section class="table-section">
+            <h2>Generate Labor Cost Report</h2>
+
+            <p>
+                Select a reporting period to calculate labor costs
+                based on work assignments within that period.
+            </p>
+
+            <div class="table-controls">
+                <label for="report-start-date">
+                    Start Date:
+                </label>
+
+                <input
+                    type="date"
+                    id="report-start-date"
+                    required
+                >
+
+                <label for="report-end-date">
+                    End Date:
+                </label>
+
+                <input
+                    type="date"
+                    id="report-end-date"
+                    required
+                >
+
+                <button id="generate-labor-report" type="button">
+                    Generate Labor Cost Report
+                </button>
+            </div>
+
+            <p id="labor-report-message"></p>
+
+            <!-- REPORT RESULTS -->
+            <div id="labor-report-results" hidden>
+
+                <h3>Report Summary</h3>
+
+                <table class="personnel-table">
+                    <thead>
+                        <tr>
+                            <th>Total Assignments</th>
+                            <th>Total Employees</th>
+                            <th>Total Hours Worked</th>
+                            <th>Total Labor Cost</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr>
+                            <td id="report-total-assignments">0</td>
+                            <td id="report-total-employees">0</td>
+                            <td id="report-total-hours">0</td>
+                            <td id="report-total-cost">$0.00</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Employee Workload Breakdown</h3>
+
+                <div class="personnel-table-container">
+                    <table class="personnel-table">
+                        <thead>
+                            <tr>
+                                <th>Employee</th>
+                                <th>Position</th>
+                                <th>Work Role</th>
+                                <th>Event</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Hours Worked</th>
+                                <th>Hourly Rate</th>
+                                <th>Labor Cost</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="labor-report-table-body">
+                            <!-- Report assignments will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- EXISTING WORK ASSIGNMENT TABLE -->
+        <section class="table-section">
+            <h2>Work Assignment Management</h2>
+
+            <div class="table-controls">
+                <button id="refresh-work-assignments">
+                    Refresh
+                </button>
+            </div>
+
+            <p id="work-assignments-message"></p>
+
+            <div class="personnel-table-container">
+                <table id="work-assignments-table" class="personnel-table">
+                    <thead>
+                        <tr>
+                            <th>Assignment ID</th>
+                            <th>Event ID</th>
+                            <th>Assigned Workers</th>
+                            <th>Work Role</th>
+                            <th>Hours Worked</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="work-assignments-table-body">
+                        <!-- Work assignments will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="/js/work-assignments.js"></script>
+</body>
+</html>

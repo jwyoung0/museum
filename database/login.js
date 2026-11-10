@@ -1,7 +1,7 @@
 const { sql, getPool } = require("./connection");
 
-async function loginAttempt({ username, password }) {
-    if (typeof username !== "string" || !username.trim()) {
+async function staffLoginAttempt({ email, password }) {
+    if (typeof email !== "string" || !email.trim()) {
         throw new TypeError("username is required");
     }
 
@@ -12,17 +12,17 @@ async function loginAttempt({ username, password }) {
     const pool = await getPool();
 
     const result = await pool.request()
-        .input("username", sql.NVarChar(255), username.trim())
-        .input("password", sql.NVarChar(255), password)
+        .input("email", sql.NVarChar(50), email.trim())
+        .input("password", sql.NVarChar(20), password)
         .query(`
-           SELECT username, role
-           FROM dbo.USER_ACCOUNT
-           WHERE username = @username AND password = @password;            
+           SELECT email, role
+           FROM dbo.STAFF_ACCOUNT
+           WHERE email = @email AND password = @password;            
         `);
 
     return result.recordset[0];
 }
 
 module.exports = {
-    loginAttempt
+    staffLoginAttempt
 }

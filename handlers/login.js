@@ -7,7 +7,7 @@ async function loginHandler(req, res) {
         const body = await readJsonBody(req);
         
         const loginResults = await loginAttempt({
-            username: body.username,
+            email: body.email,
             password: body.password
         });
 
@@ -24,7 +24,7 @@ async function loginHandler(req, res) {
         }
 
         const sessionId = createSession({
-            username: loginResults.username,
+            email: loginResults.email,
             role: loginResults.role
         });
 
@@ -41,7 +41,7 @@ async function loginHandler(req, res) {
         });
 
         res.end(JSON.stringify({
-            username: loginResults.username,
+            email: loginResults.email,
             role: loginResults.role,
             redirectTo: routeByRole[loginResults.role] || "/"        
         }));

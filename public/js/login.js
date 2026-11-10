@@ -7,7 +7,7 @@ loginForm.addEventListener(`submit`, async (event) => {
 
     const formData = new FormData(loginForm);
     const loginData = {
-        username: formData.get('username').trim(),
+        email: formData.get('email').trim(),
         password: formData.get('password')
     };
 
@@ -23,7 +23,7 @@ loginForm.addEventListener(`submit`, async (event) => {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                username: loginData.username,
+                email: loginData.email,
                 password: loginData.password
             })
         });

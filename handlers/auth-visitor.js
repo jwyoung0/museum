@@ -1,15 +1,28 @@
 const { visitorLoginAttempt } = require("../database/auth-visitor");
+const { staffLoginAttempt } = require("../database/login");
 const { readJsonBody } = require("../utils/http");
 const { createSession } = require("../utils/sessions");
+
+async function getAccessByEmail(email, password) {
+    const normalizedEmail = typeof email === "string"
+        ? email.trim().toLowerCase()
+        : "";
+    const isStaff = /^[^@\s]+@museum\.com$/.test(normalizedEmail);
+    const loginAttempt = isStaff ? staffLoginAttempt : visitorLoginAttempt;
+
+    return {
+        isStaff,
+        loginResults: await loginAttempt({ email, password })
+    };
+}
 
 async function authVisitorHandler(req, res) {
     try {
         const body = await readJsonBody(req);
-        
-        const loginResults = await visitorLoginAttempt({
-            email: body.email,
-            password: body.password
-        });
+        const { isStaff, loginResults } = await getAccessByEmail(
+            body.email,
+            body.password
+        );
 
         if (!loginResults) {
             res.writeHead(401, {
@@ -25,14 +38,26 @@ async function authVisitorHandler(req, res) {
 
         const sessionId = createSession({
             email: loginResults.email,
-            userType: loginResults.userType,
-            visitorId: loginResults.visitorId
+            ...(isStaff
+                ? { role: loginResults.role }
+                : {
+                    userType: loginResults.role,
+                    visitorId: loginResults.visitorId
+                })
         });
 
         const routeByUserType = {
             visitor: "/",
             member: "/"
         };
+        const routeByRole = {
+            curator: "/curator/artwork",
+            director: "/director/dashboard",
+            gift_shop_manager: "/gift-shop/products"
+        };
+        const redirectTo = isStaff
+            ? routeByRole[loginResults.role] || "/"
+            : routeByUserType[loginResults.role] || "/";
 
         res.writeHead(200, {
             "Content-Type": "application/json",
@@ -42,8 +67,8 @@ async function authVisitorHandler(req, res) {
 
         res.end(JSON.stringify({
             email: loginResults.email,
-            userType: loginResults.userType,
-            redirectTo: routeByUserType[loginResults.userType] || "/"        
+            role: loginResults.role,
+            redirectTo
         }));
     } catch (error) {
         console.error("Login error:", error);

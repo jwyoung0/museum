@@ -155,6 +155,7 @@
     <main>
         <nav aria-label="Director sections">
             <a href="/director/dashboard" data-tab="personnel">Personnel</a>
+            <a href="/director/work-assignments" data-tab="work-assignments">Work Assignments</a>
             <a href="/director/accounts" data-tab="accounts">Account Management</a>
             <a href="/director/memberships" data-tab="memberships">Memberships</a>
             <a href="/director/dashboard#revenue" data-tab="revenue">Ticket Revenue</a>
@@ -256,6 +257,10 @@
             <div class="personnel-actions">
                 <button type="button" id="show-add-personnel">
                     Add Personnel
+                </button>
+
+                <button type="button" id="show-edit-personnel" disabled>
+                    Edit Personnel
                 </button>
 
                 <button type="button" id="deactivate-personnel">
@@ -361,6 +366,96 @@
                     </button>
                 </form>
             </section>
+
+        <section id="edit-personnel-panel" hidden>
+            <h3>Edit Personnel</h3>
+
+            <form id="edit-personnel-form">
+
+                <div>
+                    <label for="edit-personnel-fname">First Name*</label>
+                    <input type="text" id="edit-personnel-fname"
+                        name="fname" maxlength="50" required>
+                </div>
+
+                <div>
+                    <label for="edit-personnel-mname">Middle Name</label>
+                    <input type="text" id="edit-personnel-mname"
+                        name="mname" maxlength="50">
+                </div>
+
+                <div>
+                    <label for="edit-personnel-lname">Last Name*</label>
+                    <input type="text" id="edit-personnel-lname"
+                        name="lname" maxlength="50" required>
+                </div>
+
+                <div>
+                    <label for="edit-personnel-email">Email*</label>
+                    <input type="email" id="edit-personnel-email"
+                        name="email" maxlength="50" required>
+                </div>
+
+                <div>
+                    <label for="edit-personnel-phone">Phone Number</label>
+                    <input type="tel" id="edit-personnel-phone"
+                        name="phoneNumber" maxlength="10"
+                        pattern="[0-9]{10}" placeholder="10 digits">
+                </div>
+
+                <div>
+                    <label for="edit-personnel-dob">Date of Birth*</label>
+                    <input type="date" id="edit-personnel-dob"
+                        name="dateOfBirth" required>
+                </div>
+
+                <div>
+                    <label for="edit-personnel-start-date">Start Date</label>
+                    <input type="date" id="edit-personnel-start-date"
+                        name="startDate">
+                </div>
+
+                <div>
+                    <label for="edit-personnel-end-date">End Date</label>
+                    <input type="date" id="edit-personnel-end-date"
+                        name="endDate">
+                </div>
+
+                <div>
+                    <label for="edit-personnel-position">Position*</label>
+                    <select
+                        id="edit-personnel-position"
+                        name="positionID"
+                        required
+                    >
+                        <option value="" selected disabled>
+                            Loading positions...
+                        </option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="edit-personnel-status">Employment Status</label>
+                    <select id="edit-personnel-status"
+                        name="employmentStatus" required>
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                    </select>
+                </div>
+
+                <p>
+                    SSN will remain unchanged when editing this record.
+                </p>
+
+                <button type="submit">Save Changes</button>
+
+                <button type="button" id="cancel-edit-personnel">
+                    Cancel
+                </button>
+
+            </form>
+        </section>
+
         </section>
 
         <section id="positions">
@@ -384,7 +479,7 @@
                             <th>Position Name</th>
                             <th>Description</th>
                             <th>Employment Type</th>
-                            <th>Salary</th>
+                            <th>Hourly Rate</th>
                         </tr>
                     </thead>
                     <tbody id="positions-table-body">
@@ -417,9 +512,9 @@
                 </div>
 
                 <div>
-                    <label for="position-salary">Salary</label>
-                    <input type="number" id="position-salary"
-                        name="salary" min="0" max="99999999.99" step="0.01">
+                    <label for="position-hourly-rate">Hourly Rate</label>
+                    <input type="number" id="position-hourly-rate"
+                        name="hourlyRate" min="0" max="99999999.99" step="0.01">
                 </div>
 
                 <button type="submit">Save Position</button>
