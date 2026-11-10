@@ -16,6 +16,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const messageElement = document.getElementById("account-message");
     let selectedEmployeeRow = null;
 
+    function validateStaffEmail() {
+        const email = emailInput.value.trim();
+        const hasMuseumDomain = email.toLowerCase().endsWith("@museum.com");
+
+        emailInput.setCustomValidity(
+            email && !hasMuseumDomain
+                ? "Staff email must end with @museum.com."
+                : ""
+        );
+
+        return hasMuseumDomain;
+    }
+
+    emailInput.addEventListener("input", validateStaffEmail);
+
     function clearSearchResults() {
         employeesTableBody.querySelectorAll(".employee-result").forEach(row => row.remove());
         emptyState.hidden = true;
@@ -95,6 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
         selectedEmployeeRow = employeeRow;
 
         emailInput.value = "";
+        validateStaffEmail();
         passwordInput.value = "";
         roleInput.value = "";
 
@@ -109,6 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
         modal.classList.add("hidden");
 
         form.reset();
+        validateStaffEmail();
 
         personnelIdInput.value = "";
         selectedEmployeeRow = null;
@@ -162,6 +179,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             messageElement.textContent = "";
             messageElement.className = "";
+
+            if (!validateStaffEmail()) {
+                emailInput.reportValidity();
+                return;
+            }
 
             try {
                 const response = await fetch("/api/director/accounts",

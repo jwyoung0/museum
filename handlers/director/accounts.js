@@ -76,9 +76,19 @@ async function createUserAccountHandler(req, res) {
                 : Number.parseInt(body.personnelId, 10);
 
 
-        if (!email || email.length > 20 ||
-            !password || password.length > 12
-        ) {
+        if (!email || email.length > 20) {
+            const error = new Error("Email is required and must not exceed 20 characters");
+            error.statusCode = 400;
+            throw error;
+        }
+
+        if (!email.toLowerCase().endsWith("@museum.com")) {
+            const error = new Error("Staff email must end with @museum.com");
+            error.statusCode = 400;
+            throw error;
+        }
+
+        if (!password || password.length > 12) {
             const error = new Error("Invalid user registration information");
             error.statusCode = 400;
             throw error;

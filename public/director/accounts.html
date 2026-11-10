@@ -274,7 +274,9 @@
                     <label>Email</label>
                     <input
                         id="email"
-                        maxlength="50"
+                        type="email"
+                        maxlength="20"
+                        autocomplete="email"
                         required
                     >
                 </div>
@@ -284,7 +286,7 @@
                     <input
                         id="password"
                         type="password"
-                        maxlength="20"
+                        maxlength="12"
                         required
                     >
                 </div>
@@ -319,7 +321,7 @@
                     Create Account
                 </button>
 
-                <p id="account-message"></p>
+                <p id="account-message" role="status" aria-live="polite"></p>
             </form>
         </div>
     </div>

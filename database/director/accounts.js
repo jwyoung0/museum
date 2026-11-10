@@ -24,7 +24,7 @@ async function searchPersonnelForAccounts(searchTerm) {
                 ON p.PositionID = pos.PositionID
             WHERE NOT EXISTS (
                 SELECT 1
-                FROM dbo.USER_ACCOUNT AS ua
+                FROM dbo.STAFF_ACCOUNT AS ua
                 WHERE ua.personnelID = p.PersonnelID
             )
                 AND (
@@ -89,7 +89,7 @@ async function createUserAccount({
             .input("personnelId", sql.Int, personnelId)
             .query(`
                 SELECT userID
-                FROM dbo.USER_ACCOUNT
+                FROM dbo.STAFF_ACCOUNT
                 WHERE personnelID = @personnelId    
             `);
 
@@ -103,7 +103,7 @@ async function createUserAccount({
             .input("email", sql.NVarChar(20), email)
             .query(`
                SELECT email
-               FROM dbo.USER_ACCOUNT
+               FROM dbo.STAFF_ACCOUNT
                WHERE email = @email  
             `);
 
@@ -114,12 +114,12 @@ async function createUserAccount({
         }
 
         const result = await new sql.Request(transaction)
-            .input("email", sql.NVarChar(20), email)
-            .input("password", sql.NVarChar(12), password)
+            .input("email", sql.NVarChar(50), email)
+            .input("password", sql.NVarChar(20), password)
             .input("role", sql.NVarChar(20), role)
             .input("personnelId", sql.Int, personnelId)
             .query(`
-                INSERT INTO dbo.USER_ACCOUNT
+                INSERT INTO dbo.STAFF_ACCOUNT
                 (
                     email,
                     password,
