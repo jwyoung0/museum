@@ -5,6 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Gift Shop Sales</title>
     <link rel="stylesheet" href="/style">
+
+    <style>
+        #sales-report-form {
+            flex-wrap: wrap;
+            align-items: end;
+        }
+
+        #sales-report-form label {
+            display: grid;
+            gap: 0.25rem;
+        }
+
+        .sales-report-totals {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .sales-report-totals div {
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .sales-report-totals dd {
+            margin: 0.25rem 0 0;
+            font-size: 1.4rem;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <header class="dashboard-header">
@@ -21,39 +51,99 @@
             <a href="/gift-shop/products">Products</a>
             <a href="/gift-shop/inventory">Inventory</a>
             <a href="/gift-shop/sales" aria-current="page">Sales</a>
-            <a href="/gift-shop/sales-report">Sales Report</a>
         </nav>
 
         <section class="artists-workspace">
             <header class="workspace-header">
-                <h2>Sales History</h2>
+                <h2>Sales</h2>
             </header>
 
+            <h3>Generate a Sales Report</h3>
+            <p>Enter both dates. The report includes the entire end date in UTC.</p>
+
+            <form id="sales-report-form" class="workspace-toolbar">
+                <label for="sales-from">
+                    Start date
+                    <input
+                        id="sales-from"
+                        type="date"
+                        min="1000-01-01"
+                        max="9999-12-30"
+                        required
+                    >
+                </label>
+
+                <label for="sales-to">
+                    End date
+                    <input
+                        id="sales-to"
+                        type="date"
+                        min="1000-01-01"
+                        max="9999-12-30"
+                        required
+                    >
+                </label>
+
+                <button type="submit">Generate report</button>
+                <button id="sales-report-reset" type="reset">Reset</button>
+            </form>
+
+            <p id="sales-report-status" role="status"></p>
+
+            <section
+                id="sales-report-summary"
+                aria-labelledby="sales-report-heading"
+                hidden
+            >
+                <h3 id="sales-report-heading">Report Summary</h3>
+                <p id="sales-report-range"></p>
+
+                <dl class="sales-report-totals">
+                    <div>
+                        <dt>Total purchases</dt>
+                        <dd id="sales-purchase-count"></dd>
+                    </div>
+                    <div>
+                        <dt>Units sold</dt>
+                        <dd id="sales-units-sold"></dd>
+                    </div>
+                    <div>
+                        <dt>Sales revenue</dt>
+                        <dd id="sales-revenue"></dd>
+                    </div>
+                </dl>
+            </section>
+
+            <h3 id="sales-transactions-heading">Transaction History</h3>
             <p id="sales-summary" role="status">Loading sales...</p>
 
-            <div class="workspace-toolbar">
-                <input
-                    type="search"
-                    id="sales-search"
-                    placeholder="Search purchase ID, visitor ID, or product..."
-                    aria-label="Search sales"
-                >
+            <div id="sales-history-search" hidden>
+                <div class="workspace-toolbar">
+                    <input
+                        type="search"
+                        id="sales-search"
+                        placeholder="Search purchase ID, visitor ID, or product..."
+                        aria-label="Search sales"
+                    >
+                </div>
             </div>
 
             <div class="artists-table-container">
-                <table class="artists-table">
+                <table
+                    class="artists-table"
+                    aria-labelledby="sales-transactions-heading"
+                >
                     <thead>
                         <tr>
-                            <th>Purchase ID</th>
-                            <th>Date</th>
-                            <th>Visitor ID</th>
-                            <th>Product</th>
-                            <th>Quantity</th>
-                            <th>Unit Price</th>
-                            <th>Line Total</th>
+                            <th scope="col">Purchase ID</th>
+                            <th scope="col">Date (UTC)</th>
+                            <th scope="col">Visitor ID</th>
+                            <th scope="col">Product</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Unit Price</th>
+                            <th scope="col">Line Total</th>
                         </tr>
                     </thead>
-
                     <tbody id="sales-table-body">
                         <tr>
                             <td colspan="7">Loading sales...</td>
@@ -64,6 +154,6 @@
         </section>
     </main>
 
-    <script src="/js/gift-shop-sales.js"></script>
+    <script src="/js/gift-shop-sales.js" defer></script>
 </body>
 </html>

@@ -197,17 +197,12 @@ async function router(req, res) {
             return;
         }
 
-        if (req.method === "GET" && (
-            new URL(req.url, "http://localhost").pathname === "/gift-shop/sales-report"
-        )) {
+        if (req.method === "GET" &&
+            new URL(req.url, "http://localhost").pathname === "/gift-shop/sales-report") {
             if (!requireGiftShopManager(req, res)) return;
-            sendPage(res, path.join("gift-shop", "sales-report.html"), "text/html");
-            return;
-        }
 
-        if (req.method === "GET" && req.url === "/js/gift-shop-sales-report.js") {
-            if (!requireGiftShopManager(req, res)) return;
-            sendPage(res, path.join("js", "gift-shop-sales-report.js"), "application/javascript");
+            res.writeHead(302, { Location: "/gift-shop/sales" });
+            res.end();
             return;
         }
 
