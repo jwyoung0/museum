@@ -1,80 +1,54 @@
 const { getPool, sql } = require("../connection");
 
-async function getSalesReport({ from = null, until = null } = {}) {
+async function getSalesReport({ from, until }) {
     const pool = await getPool();
-
-    const { recordset } = await pool.request()
+    const { recordsets: [totals, details] } = await pool.request()
         .input("FromDate", sql.Date, from)
         .input("UntilDate", sql.Date, until)
         .query(`
+            SET NOCOUNT ON;
+
+            -- Capture the exact purchase lines used by both parts of the report.
             SELECT
-                -- 1 identifies the grand total; 0 identifies a product row.
-                GROUPING(product.ProductID) AS IsSummary,
+                purchase.PURCHASEID AS PurchaseID,
+                purchase.VISITORID AS VisitorID,
+                purchase.[DateTime] AS PurchaseDate,
                 product.ProductID,
                 product.ProductName,
-
-                -- Count each purchase once, even if it contains multiple items.
-                COUNT_BIG(DISTINCT purchase.PURCHASEID) AS PurchaseCount,
-
-                -- Add up the quantities sold. Use 0 if there are no sales.
-                COALESCE(SUM(CONVERT(bigint, detail.Quantity)), 0) AS UnitsSold,
-
-                -- Use the unit price recorded at checkout to calculate revenue.
-                COALESCE(SUM(detail.Quantity * detail.UnitPrice), 0) AS Revenue
-
-            -- Join purchases to their line items and get each product's name.
+                detail.Quantity,
+                detail.UnitPrice,
+                detail.Quantity * detail.UnitPrice AS LineTotal
+            INTO #ReportLines
             FROM dbo.SHOP_PURCHASE AS purchase
             INNER JOIN dbo.SHOP_PURCHASE_DETAILS AS detail
                 ON detail.PURCHASEID = purchase.PURCHASEID
             INNER JOIN dbo.PRODUCTS AS product
                 ON product.ProductID = detail.PRODUCTID
+            WHERE purchase.[DateTime] >= @FromDate
+              AND purchase.[DateTime] < @UntilDate;
 
-            -- A NULL date leaves that side of the range unrestricted.
-            -- UntilDate is midnight after the selected end date.
-            WHERE (@FromDate IS NULL OR purchase.[DateTime] >= @FromDate)
-              AND (@UntilDate IS NULL OR purchase.[DateTime] < @UntilDate)
+            -- Summarize the same purchase lines shown below the totals.
+            SELECT
+                COUNT_BIG(DISTINCT PurchaseID) AS PurchaseCount,
+                COALESCE(SUM(CONVERT(bigint, Quantity)), 0) AS UnitsSold,
+                COALESCE(SUM(LineTotal), 0) AS Revenue
+            FROM #ReportLines;
 
-            -- Return one row per product and one grand-total row.
-            -- The empty grouping () produces the grand total.
-            GROUP BY GROUPING SETS (
-                (product.ProductID, product.ProductName),
-                ()
-            )
-
-            -- Put the grand total first, then rank products by revenue.
-            ORDER BY
-                IsSummary DESC,
-                Revenue DESC,
-                product.ProductName,
-                product.ProductID;
+            -- Return the same lines to the manager below the summary.
+            SELECT PurchaseID, PurchaseDate, VisitorID, ProductID, ProductName,
+                   Quantity, UnitPrice, LineTotal
+            FROM #ReportLines
+            ORDER BY PurchaseDate DESC, PurchaseID DESC, ProductID;
         `);
 
-    // If the query returns no rows, show zero totals and an empty product list.
-    const [summary = {
-        PurchaseCount: 0,
-        UnitsSold: 0,
-        Revenue: 0
-    }, ...products] = recordset;
-
+    const [grandTotal] = totals;
     return {
         summary: {
-            PurchaseCount: summary.PurchaseCount,
-            UnitsSold: summary.UnitsSold,
-            Revenue: summary.Revenue
+            PurchaseCount: grandTotal?.PurchaseCount ?? 0,
+            UnitsSold: grandTotal?.UnitsSold ?? 0,
+            Revenue: grandTotal?.Revenue ?? 0
         },
-        products: products.map(({
-            ProductID,
-            ProductName,
-            PurchaseCount,
-            UnitsSold,
-            Revenue
-        }) => ({
-            ProductID,
-            ProductName,
-            PurchaseCount,
-            UnitsSold,
-            Revenue
-        }))
+        details
     };
 }
 

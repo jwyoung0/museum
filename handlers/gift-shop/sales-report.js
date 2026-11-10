@@ -1,8 +1,7 @@
 const { getSalesReport } = require("../../database/gift-shop/sales-report");
 
 function parseDate(value) {
-    if (value === null || value === "") return null;
-    if (!/^[1-9]\d{3}-\d{2}-\d{2}$/.test(value)) return undefined;
+    if (value === null || !/^[1-9]\d{3}-\d{2}-\d{2}$/.test(value)) return undefined;
 
     const date = new Date(`${value}T00:00:00.000Z`);
 
@@ -24,16 +23,15 @@ async function salesReportHandler(req, res) {
         "Cache-Control": "no-store"
     };
 
-    if (from === undefined || to === undefined ||
-        (from && to && from > to) ||
+    if (!from || !to || from > to ||
         searchParams.get("to") === "9999-12-31") {
         res.writeHead(400, headers);
-        res.end(JSON.stringify({ error: "Enter a valid date range." }));
+        res.end(JSON.stringify({ error: "Enter a valid start and end date." }));
         return;
     }
 
     // Include the entire end date by stopping at midnight the next day.
-    const until = to ? new Date(to.getTime() + 86400000) : null;
+    const until = new Date(to.getTime() + 86400000);
     const report = await getSalesReport({ from, until });
 
     res.writeHead(200, headers);

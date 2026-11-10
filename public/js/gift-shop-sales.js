@@ -1,121 +1,151 @@
+const form = document.getElementById("sales-report-form");
+const from = document.getElementById("sales-from");
+const to = document.getElementById("sales-to");
+const reportStatus = document.getElementById("sales-report-status");
+const reportSummary = document.getElementById("sales-report-summary");
+const historySearch = document.getElementById("sales-history-search");
+const search = document.getElementById("sales-search");
+const transactionsHeading = document.getElementById("sales-transactions-heading");
+const transactionStatus = document.getElementById("sales-summary");
+const tbody = document.getElementById("sales-table-body");
+const controls = form.querySelectorAll("button, input");
+
+const number = new Intl.NumberFormat("en-US");
+const currency = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+const timestamp = new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "UTC"
+});
+
 let allSales = [];
 
-const currency = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD"
-});
-
-document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("sales-search")
-        .addEventListener("input", filterSales);
-
-    loadSales();
-});
-
-async function loadSales() {
-    try {
-        const response = await fetch("/api/gift-shop/sales");
-
-        if (response.redirected) {
-            window.location.href = "/auth-staff";
-            return;
-        }
-
-        if (!response.ok) {
-            throw new Error("Unable to load sales.");
-        }
-
-        allSales = await response.json();
-        filterSales();
-    } catch (error) {
-        console.error(error);
-
-        document.getElementById("sales-summary").textContent =
-            "Unable to load sales.";
-
-        showSalesMessage("Please refresh and try again.");
-    }
+function setBusy(busy) {
+    controls.forEach(control => { control.disabled = busy; });
 }
 
-function filterSales() {
-    const search = document.getElementById("sales-search")
-        .value.trim().toLowerCase();
-
-    const matches = allSales.filter(sale =>
-        String(sale.PurchaseID).includes(search) ||
-        String(sale.VisitorID).includes(search) ||
-        sale.ProductName.toLowerCase().includes(search)
-    );
-
-    displaySales(matches);
-    updateSalesSummary(matches);
+function addRow(values) {
+    const row = tbody.insertRow();
+    for (const value of values) row.insertCell().textContent = value;
 }
 
-function updateSalesSummary(sales) {
-    const purchaseCount = new Set(
-        sales.map(sale => sale.PurchaseID)
-    ).size;
-
-    const unitsSold = sales.reduce(
-        (total, sale) => total + Number(sale.Quantity),
-        0
-    );
-
-    const revenue = sales.reduce(
-        (total, sale) => total + Number(sale.LineTotal),
-        0
-    );
-
-    document.getElementById("sales-summary").textContent =
-        `Matching results: ${purchaseCount} purchases, ` +
-        `${unitsSold} units sold, ` +
-        `${currency.format(revenue)} in sales.`;
-}
-
-function displaySales(sales) {
-    const tbody = document.getElementById("sales-table-body");
-    tbody.replaceChildren();
-
-    if (sales.length === 0) {
-        showSalesMessage(
-            allSales.length === 0
-                ? "No sales recorded yet."
-                : "No sales match your search."
-        );
-        return;
-    }
-
-    for (const sale of sales) {
-        const row = document.createElement("tr");
-
-        const values = [
-            sale.PurchaseID,
-            new Date(sale.PurchaseDate).toLocaleString(),
-            sale.VisitorID,
-            sale.ProductName,
-            sale.Quantity,
-            currency.format(Number(sale.UnitPrice)),
-            currency.format(Number(sale.LineTotal))
-        ];
-
-        for (const value of values) {
-            const cell = document.createElement("td");
-            cell.textContent = value;
-            row.appendChild(cell);
-        }
-
-        tbody.appendChild(row);
-    }
-}
-
-function showSalesMessage(message) {
-    const tbody = document.getElementById("sales-table-body");
-    const row = document.createElement("tr");
-    const cell = document.createElement("td");
-
+function showTableMessage(message) {
+    const cell = tbody.insertRow().insertCell();
     cell.colSpan = 7;
     cell.textContent = message;
-
-    row.appendChild(cell);
-    tbody.replaceChildren(row);
 }
+
+function renderSales(lines, emptyMessage) {
+    tbody.replaceChildren();
+    for (const line of lines) {
+        addRow([
+            line.PurchaseID,
+            timestamp.format(new Date(line.PurchaseDate)),
+            line.VisitorID ?? "Guest",
+            line.ProductName,
+            number.format(line.Quantity),
+            currency.format(line.UnitPrice),
+            currency.format(line.LineTotal)
+        ]);
+    }
+
+    if (!lines.length) showTableMessage(emptyMessage);
+    transactionStatus.textContent = lines.length
+        ? `${number.format(lines.length)} transaction line(s).`
+        : "";
+}
+
+async function fetchSales(url) {
+    const response = await fetch(url);
+    if (response.redirected || response.status === 401) {
+        window.location.href = "/auth-staff";
+        return null;
+    }
+    if (!response.ok) throw new Error(`Sales request failed: ${response.status}`);
+    return response.json();
+}
+
+function filterHistory() {
+    if (!reportSummary.hidden) return;
+
+    const term = search.value.trim().toLowerCase();
+    const matches = allSales.filter(line =>
+        [line.PurchaseID, line.VisitorID ?? "Guest", line.ProductName]
+            .some(value => String(value).toLowerCase().includes(term))
+    );
+
+    renderSales(matches, term ? "No transactions match your search." : "No sales recorded yet.");
+}
+
+async function loadHistory() {
+    setBusy(true);
+    reportSummary.hidden = true;
+    historySearch.hidden = true;
+    transactionsHeading.textContent = "Transaction History";
+    transactionStatus.textContent = "Loading sales...";
+    tbody.replaceChildren();
+
+    try {
+        const lines = await fetchSales("/api/gift-shop/sales");
+        if (!lines) return;
+        allSales = lines;
+        historySearch.hidden = false;
+        filterHistory();
+    } catch (error) {
+        console.error(error);
+        transactionStatus.textContent = "Unable to load sales history.";
+    } finally {
+        setBusy(false);
+    }
+}
+
+async function generateReport() {
+    const params = new URLSearchParams({ from: from.value, to: to.value });
+    setBusy(true);
+    reportStatus.textContent = "Generating sales report...";
+
+    try {
+        const report = await fetchSales(`/api/gift-shop/sales-report?${params}`);
+        if (!report) return;
+
+        document.getElementById("sales-report-range").textContent =
+            `${params.get("from")} through ${params.get("to")} (UTC)`;
+        document.getElementById("sales-purchase-count").textContent =
+            number.format(report.summary.PurchaseCount);
+        document.getElementById("sales-units-sold").textContent =
+            number.format(report.summary.UnitsSold);
+        document.getElementById("sales-revenue").textContent =
+            currency.format(report.summary.Revenue);
+
+        historySearch.hidden = true;
+        transactionsHeading.textContent = "Report Transactions";
+        renderSales(report.details, "No transactions in this date range.");
+        reportSummary.hidden = false;
+        reportStatus.textContent = "Sales report generated.";
+    } catch (error) {
+        console.error(error);
+        reportStatus.textContent = "Unable to generate the report. Please try again.";
+    } finally {
+        setBusy(false);
+    }
+}
+
+search.addEventListener("input", filterHistory);
+
+form.addEventListener("submit", event => {
+    event.preventDefault();
+    if (!form.reportValidity()) return;
+    if (from.value > to.value) {
+        reportStatus.textContent = "The end date must be on or after the start date.";
+        return;
+    }
+    generateReport();
+});
+
+form.addEventListener("reset", () => {
+    reportStatus.textContent = "";
+    search.value = "";
+    loadHistory();
+});
+
+loadHistory();
