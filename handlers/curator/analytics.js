@@ -6,7 +6,8 @@ const {
     getSessionEngagement,
     getTopSessions,
     getTiersForReport,
-    getLookupValues
+    getLookupValues,
+    getEngagementRecords
 } = require("../../database/curator/analytics");
 
 function getFilters(req) {
@@ -114,6 +115,16 @@ async function getLookupValuesHandler(req, res) {
     res.end(JSON.stringify(values));
 }
 
+async function getEngagementRecordsHandler(req, res) {
+    const filters = getFilters(req);
+
+    await sendJson(
+        res,
+        getEngagementRecords,
+        filters
+    );
+}
+
 module.exports = {
     getArtworkInterestByTierHandler,
     getArtistInterestByTierHandler,
@@ -122,5 +133,6 @@ module.exports = {
     getSessionEngagementHandler,
     getTopSessionsHandler,
     getTiersForReportHandler,
-    getLookupValuesHandler
+    getLookupValuesHandler,
+    getEngagementRecordsHandler
 };

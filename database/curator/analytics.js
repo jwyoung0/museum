@@ -401,6 +401,36 @@ async function getLookupValues(type) {
     }
 }
 
+async function getEngagementRecords(filters = {}) {
+    validateAnalyzeBy(filters);
+
+    const pool = await getPool();
+
+    const result =
+        await applyCommonFilters(
+            pool.request(),
+            filters
+        ).query(`
+            SELECT
+                ViewDate,
+                TierName,
+                SessionID,
+                ArtistName,
+                ArtistSex,
+                ArtworkTitle,
+                StyleName,
+                PeriodName,
+                CollectionName,
+                ExhibitionName
+            FROM dbo.vw_ArtworkEngagement
+            ${commonWhere}
+            ${entityWhere}
+            ORDER BY ViewDate DESC;
+        `);
+
+    return result.recordset;
+}
+
 module.exports = {
     getArtworkInterestByTier,
     getArtistInterestByTier,
@@ -409,5 +439,6 @@ module.exports = {
     getSessionEngagement,
     getTopSessions,
     getTiersForReport, 
-    getLookupValues
+    getLookupValues,
+    getEngagementRecords
 };

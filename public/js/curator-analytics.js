@@ -77,7 +77,17 @@ async function loadReport() {
         const data = await response.json();
 
         renderChart(data, reportType);
-        renderTable(data);
+        // renderTable(data);
+        const recordsResponse =
+            await fetch(
+                `/api/curator/analytics/records?${params}`
+            );
+
+        const records =
+            await recordsResponse.json();
+
+        renderEngagementRecords(records);
+
     } catch (error) {
         console.error("Failed to load analytics report", error);
         showReportError("Unable to load analytics report.");
@@ -491,4 +501,44 @@ async function loadEntityValues() {
     } catch (error) {
         console.error("Failed loading values", error);
     }
+}
+
+function renderEngagementRecords(records) {
+
+    const thead =
+        document.querySelector(
+            ".analytics-table thead"
+        );
+
+    const tbody =
+        document.querySelector(
+            ".analytics-table tbody"
+        );
+
+    thead.innerHTML = `
+        <tr>
+            <th>View Date</th>
+            <th>Tier</th>
+            <th>Artist</th>
+            <th>Artwork</th>
+            <th>Style</th>
+            <th>Period</th>
+            <th>Collection</th>
+            <th>Exhibition</th>
+        </tr>
+    `;
+
+    tbody.innerHTML =
+        records.map(record => `
+            <tr>
+                <td>${record.ViewDate}</td>
+                <td>${record.TierName ?? ""}</td>
+                <td>${record.ArtistName ?? ""}</td>
+                <td>${record.ArtworkTitle ?? ""}</td>
+                <td>${record.StyleName ?? ""}</td>
+                <td>${record.PeriodName ?? ""}</td>
+                <td>${record.CollectionName ?? ""}</td>
+                <td>${record.ExhibitionName ?? ""}</td>
+            </tr>
+        `).join("");
 }

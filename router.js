@@ -114,7 +114,8 @@ const {
     getSessionEngagementHandler,
     getTopSessionsHandler,
     getTiersForReportHandler,
-    getLookupValuesHandler
+    getLookupValuesHandler,
+    getEngagementRecordsHandler
 } = require("./handlers/curator/analytics");
 async function router(req, res) {
     try {
@@ -862,6 +863,11 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
         if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/lookup/")) {
             if(!requireCurator(req, res)) return;
             return getLookupValuesHandler(req, res);
+        }
+
+        if (req.method === "GET" && req.url.startsWith("/api/curator/analytics/records")) {
+            if(!requireCurator(req, res)) return;
+            return getEngagementRecordsHandler(req, res);
         }
 
         const artistMatch = pathname.match(/^\/api\/curator\/artists\/(\d+)$/);
