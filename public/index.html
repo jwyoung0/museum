@@ -100,33 +100,76 @@
         }
 
         .site-banner {
+            display: flex;
+            align-items: stretch;
+            gap: 1.5rem;
             max-width: 1100px;
             margin: 1.5rem auto 0;
-            padding: 1rem 1.5rem;
+            overflow: hidden;
+            border: 1px solid #bfdbfe;
             border-left: 5px solid #2563eb;
             border-radius: 8px;
-            background: #eff6ff;
+            background: linear-gradient(110deg, #eff6ff, #ffffff);
+            box-shadow: 0 8px 24px rgba(37, 99, 235, 0.1);
         }
 
         .site-banner[hidden] {
             display: none;
         }
 
-        .site-banner h2 {
-            margin: 0 0 0.35rem;
+        .site-banner-image {
+            width: 220px;
+            min-height: 170px;
+            flex: 0 0 220px;
+            object-fit: cover;
         }
 
-        .site-banner p {
-            margin: 0;
+        .site-banner-content {
+            align-self: center;
+            padding: 1.25rem 1.5rem 1.25rem 0;
         }
 
         .site-banner a {
+            display: flex;
+            min-width: 0;
+            flex: 1;
+            align-items: stretch;
+            gap: 1.5rem;
             color: inherit;
             text-decoration: none;
         }
 
         .site-banner a:hover h2 {
             text-decoration: underline;
+        }
+
+        .site-banner h2 {
+            margin: 0 0 0.5rem;
+            color: #1e3a8a;
+            font-size: 1.4rem;
+        }
+
+        .site-banner p {
+            margin: 0;
+            color: #334155;
+        }
+
+        @media (max-width: 600px) {
+            .site-banner a {
+                flex-direction: column;
+                gap: 0;
+            }
+
+            .site-banner-image {
+                width: 100%;
+                min-height: 180px;
+                max-height: 240px;
+                flex-basis: auto;
+            }
+
+            .site-banner-content {
+                padding: 1rem 1.25rem 1.25rem;
+            }
         }
     </style>
 </head>
@@ -147,8 +190,11 @@
     <main>
         <section id="site-banner" class="site-banner" aria-live="polite" hidden>
             <a id="site-banner-link">
-                <h2 id="site-banner-title"></h2>
-                <p id="site-banner-text"></p>
+                <img id="site-banner-image" class="site-banner-image" alt="" hidden>
+                <div class="site-banner-content">
+                    <h2 id="site-banner-title"></h2>
+                    <p id="site-banner-text"></p>
+                </div>
             </a>
         </section>
         <section class="hero-carousel">

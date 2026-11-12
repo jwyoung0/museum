@@ -263,14 +263,69 @@ async function removeArtworkFromExhibition(exhibitionId, accessionId) {
         .input("exhibitionId", sql.Int, exhibitionId)
         .input("accessionId", sql.Int, accessionId)
         .query(`
-            DELETE FROM dbo.EXHIBITION_ARTWORK
-            WHERE exhibitionId = @exhibitionId
-            AND accessionId = @accessionId;
+            BEGIN TRY
+                BEGIN TRANSACTION;
 
-            SELECT @@ROWCOUNT AS rowsDeleted;
+                DECLARE @rowsDeleted int;
+
+                UPDATE e
+                SET representativeArtwork = NULL
+                FROM dbo.EXHIBITIONS e
+                WHERE e.exhibitionId = @exhibitionId
+                  AND e.representativeArtwork = @accessionId
+                  AND EXISTS (
+                      SELECT 1
+                      FROM dbo.EXHIBITION_ARTWORK ea
+                      WHERE ea.exhibitionId = e.exhibitionId
+                        AND ea.accessionId = @accessionId
+                  );
+
+                DELETE FROM dbo.EXHIBITION_ARTWORK
+                WHERE exhibitionId = @exhibitionId
+                  AND accessionId = @accessionId;
+
+                SET @rowsDeleted = @@ROWCOUNT;
+
+                COMMIT TRANSACTION;
+
+                SELECT @rowsDeleted AS rowsDeleted;
+            END TRY
+            BEGIN CATCH
+                IF @@TRANCOUNT > 0
+                    ROLLBACK TRANSACTION;
+
+                THROW;
+            END CATCH;
         `);
 
-        return result.recordset[0].rowsDeleted > 0;
+    return result.recordset[0].rowsDeleted > 0;
+}
+
+async function setRepresentativeArtwork(exhibitionId, accessionId) {
+    const pool = await getPool();
+
+    const result = await pool.request()
+        .input("exhibitionId", sql.Int, exhibitionId)
+        .input("accessionId", sql.Int, accessionId)
+        .query(`
+            UPDATE e
+            SET representativeArtwork = @accessionId
+            FROM dbo.EXHIBITIONS e
+            WHERE e.exhibitionId = @exhibitionId
+                AND EXISTS (
+                    SELECT 1
+                    FROM dbo.EXHIBITION_ARTWORK ea
+                    WHERE ea.exhibitionId = e.exhibitionId
+                        AND ea.accessionId = @accessionId
+                );
+
+            SELECT *
+            FROM dbo.EXHIBITIONS
+            WHERE exhibitionId = @exhibitionId
+                AND representativeArtwork = @accessionId;
+        `);
+
+    return result.recordset[0] || null;
 }
 
 module.exports = {
@@ -283,5 +338,6 @@ module.exports = {
     deleteExhibition,
     listExhibitionArtworks,
     addArtworkToExhibition,
-    removeArtworkFromExhibition
+    removeArtworkFromExhibition,
+    setRepresentativeArtwork
 };

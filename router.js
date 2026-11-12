@@ -69,7 +69,9 @@ const { createExhibitionHandler,
     deleteExhibitionHandler,
     listExhibitionArtworksHandler,
     addArtworkToExhibitionHandler,
-    removeArtworkFromExhibitionHandler
+    removeArtworkFromExhibitionHandler,
+    setRepresentativeArtworkHandler:
+        setExhibitionRepresentativeArtworkHandler
 } = require("./handlers/exhibitions");
 const { registerVisitorHandler } = require("./handlers/register-visitor");
 const { purchaseMembershipHandler } = require("./handlers/membership-purchase");
@@ -880,6 +882,9 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
         const exhibitionArtworkMatch = pathname.match(
             /^\/api\/curator\/exhibitions\/(\d+)\/artworks\/(\d+)$/
         );
+        const exhibitionRepresentativeMatch = pathname.match(
+            /^\/api\/curator\/exhibitions\/(\d+)\/representative-artwork$/
+        );
         const artworkMatchVisitor = pathname.match(/^\/api\/artwork-detail\/(\d+)$/);
         const visitorExhibitionMatch =
             pathname.match(/^\/api\/exhibitions\/(\d+)$/);
@@ -922,6 +927,15 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             };
             if (!requireCurator(req, res)) return;
             await removeArtworkFromExhibitionHandler(req, res);
+            return;
+        }
+        if (
+            exhibitionRepresentativeMatch &&
+            req.method === "POST"
+        ) {
+            if (!requireCurator(req, res)) return;
+            req.params = { id: exhibitionRepresentativeMatch[1] };
+            await setExhibitionRepresentativeArtworkHandler(req, res);
             return;
         }
         const tierMatch = pathname.match(/^\/api\/director\/memberships\/tiers\/(\d+)$/);

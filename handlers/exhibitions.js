@@ -8,7 +8,8 @@ const {
     deleteExhibition,
     listExhibitionArtworks,
     addArtworkToExhibition,
-    removeArtworkFromExhibition
+    removeArtworkFromExhibition,
+    setRepresentativeArtwork
 } = require("../database/exhibitions");
 
 const { readJsonBody } = require("../utils/http");
@@ -267,6 +268,50 @@ async function removeArtworkFromExhibitionHandler(req, res) {
     res.end();
 }
 
+async function setRepresentativeArtworkHandler(req, res) {
+    const exhibitionId = Number(req.params.id);
+    const body = await readJsonBody(req);
+    const accessionId = Number(body?.accessionId);
+
+    if (
+        !Number.isSafeInteger(exhibitionId) ||
+        exhibitionId <= 0 ||
+        exhibitionId > 2147483647 ||
+        !Number.isSafeInteger(accessionId) ||
+        accessionId <= 0 ||
+        accessionId > 2147483647
+    ) {
+        res.writeHead(400, {
+            "Content-Type": "application/json"
+        });
+
+        return res.end(JSON.stringify({
+            error: "A valid artwork accession ID is required"
+        }));
+    }
+
+    const exhibition = await setRepresentativeArtwork(
+        exhibitionId,
+        accessionId
+    );
+
+    if (!exhibition) {
+        res.writeHead(404, {
+            "Content-Type": "application/json"
+        });
+
+        return res.end(JSON.stringify({
+            error: "Exhibition or artwork not assigned to exhibition"
+        }));
+    }
+
+    res.writeHead(200, {
+        "Content-Type": "application/json"
+    });
+
+    res.end(JSON.stringify(exhibition));
+}
+
 module.exports = {
     createExhibitionHandler,
     listExhibitionsForCuratorHandler,
@@ -277,5 +322,6 @@ module.exports = {
     deleteExhibitionHandler,
     listExhibitionArtworksHandler,
     addArtworkToExhibitionHandler,
-    removeArtworkFromExhibitionHandler
+    removeArtworkFromExhibitionHandler,
+    setRepresentativeArtworkHandler
 };

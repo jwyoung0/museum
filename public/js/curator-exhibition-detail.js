@@ -2,9 +2,26 @@ let currentExhibition = null;
 let exhibitionId;
 let allArtwork = [];
 let assignedArtworkIds = new Set();
+let artworkRequestId = 0;
+let currentModalArtwork = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
     exhibitionId = window.location.pathname.split("/").pop();
+    const artworkModal = document.getElementById("artwork-detail-modal");
+
+    document
+        .getElementById("exhibition-artworks-table-body")
+        .addEventListener("click", handleArtworkView);
+    document
+        .getElementById("close-artwork-modal")
+        .addEventListener("click", () => artworkModal.close());
+    artworkModal.addEventListener("close", () => {
+        artworkRequestId += 1;
+        currentModalArtwork = null;
+    });
+    document
+        .getElementById("set-representative-artwork")
+        .addEventListener("click", setRepresentativeArtwork);
 
     try {
         const response = await fetch(
@@ -167,6 +184,12 @@ function renderExhibitionArtworks(artworks) {
         const actionsCell =
             document.createElement("td");
 
+        const viewButton = document.createElement("button");
+        viewButton.type = "button";
+        viewButton.textContent = "View";
+        viewButton.dataset.artworkView = "";
+        viewButton.dataset.artworkId = artwork.accessionId;
+
         const removeButton =
             document.createElement("button");
 
@@ -183,7 +206,7 @@ function renderExhibitionArtworks(artworks) {
                 )
         );
 
-        actionsCell.appendChild(removeButton);
+        actionsCell.append(viewButton, removeButton);
 
         row.appendChild(actionsCell);
 
@@ -359,6 +382,13 @@ async function removeArtwork(
             );
         }
 
+        if (
+            String(currentExhibition?.representativeArtwork) ===
+            String(accessionId)
+        ) {
+            currentExhibition.representativeArtwork = null;
+        }
+
         await loadExhibitionArtworks();
     } catch (error) {
         console.error(
@@ -372,6 +402,163 @@ async function removeArtwork(
         );
     } finally {
         removeButton.disabled = false;
+    }
+}
+
+async function handleArtworkView(event) {
+    const viewButton = event.target.closest("button[data-artwork-view]");
+    if (!viewButton) {
+        return;
+    }
+
+    const requestId = ++artworkRequestId;
+    const artworkId = viewButton.dataset.artworkId;
+    const artworkModal = document.getElementById("artwork-detail-modal");
+    const loading = document.getElementById("modal-artwork-loading");
+    const error = document.getElementById("modal-artwork-error");
+    const content = document.getElementById("modal-artwork-content");
+
+    currentModalArtwork = null;
+    loading.hidden = false;
+    error.hidden = true;
+    content.hidden = true;
+    resetRepresentativeArtworkMessages();
+    artworkModal.showModal();
+
+    try {
+        const response = await fetch(`/api/curator/artwork/${artworkId}`);
+        if (!response.ok) {
+            throw new Error(`Failed to load artwork: ${response.status}`);
+        }
+
+        const artwork = await response.json();
+        if (requestId !== artworkRequestId) {
+            return;
+        }
+
+        displayArtworkDetails(artwork);
+        currentModalArtwork = artwork;
+        updateRepresentativeArtworkButton();
+        loading.hidden = true;
+        content.hidden = false;
+    } catch (loadError) {
+        if (requestId !== artworkRequestId) {
+            return;
+        }
+
+        console.error("Unable to load artwork details:", loadError);
+        loading.hidden = true;
+        error.hidden = false;
+    }
+}
+
+async function setRepresentativeArtwork() {
+    if (!currentExhibition || !currentModalArtwork) {
+        return;
+    }
+
+    const artwork = currentModalArtwork;
+    const button = document.getElementById("set-representative-artwork");
+    const status = document.getElementById("representative-artwork-status");
+    const error = document.getElementById("representative-artwork-error");
+
+    button.disabled = true;
+    status.hidden = true;
+    error.hidden = true;
+
+    try {
+        const response = await fetch(
+            `/api/curator/exhibitions/${currentExhibition.exhibitionId}/representative-artwork`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    accessionId: artwork.accessionId
+                })
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                `Unable to set representative artwork: ${response.status}`
+            );
+        }
+
+        const updatedExhibition = await response.json();
+        currentExhibition = {
+            ...currentExhibition,
+            ...updatedExhibition
+        };
+
+        if (currentModalArtwork?.accessionId === artwork.accessionId) {
+            updateRepresentativeArtworkButton();
+            status.textContent =
+                `${artwork.title} is now the representative artwork.`;
+            status.hidden = false;
+        }
+    } catch (requestError) {
+        console.error("Unable to set representative artwork:", requestError);
+        if (currentModalArtwork?.accessionId === artwork.accessionId) {
+            error.textContent =
+                "Unable to set representative artwork. Please try again.";
+            error.hidden = false;
+        }
+    } finally {
+        if (currentModalArtwork?.accessionId === artwork.accessionId) {
+            updateRepresentativeArtworkButton();
+        }
+    }
+}
+
+function updateRepresentativeArtworkButton() {
+    const button = document.getElementById("set-representative-artwork");
+    const isRepresentative =
+        currentExhibition?.representativeArtwork ===
+        currentModalArtwork?.accessionId;
+
+    button.disabled = isRepresentative;
+    button.textContent = isRepresentative
+        ? "Representative Artwork"
+        : "Make Representative Artwork";
+}
+
+function resetRepresentativeArtworkMessages() {
+    document.getElementById("representative-artwork-status").hidden = true;
+    document.getElementById("representative-artwork-error").hidden = true;
+}
+
+function displayArtworkDetails(artwork) {
+    document.getElementById("modal-artwork-title").textContent =
+        artwork.title || "Artwork Details";
+
+    const fields = {
+        "modal-artwork-name": artwork.title,
+        "modal-artwork-artist": artwork.artist,
+        "modal-artwork-creation-date": artwork.creationDate,
+        "modal-artwork-category": artwork.category,
+        "modal-artwork-medium": artwork.medium,
+        "modal-artwork-dimensions": artwork.dimensions,
+        "modal-artwork-collection": artwork.collection,
+        "modal-artwork-style": artwork.style,
+        "modal-artwork-period": artwork.period,
+        "modal-artwork-image-url": artwork.imageURL
+    };
+
+    for (const [id, value] of Object.entries(fields)) {
+        document.getElementById(id).textContent = value ?? "";
+    }
+
+    const image = document.getElementById("modal-artwork-image");
+    if (artwork.imageURL) {
+        image.src = artwork.imageURL;
+        image.alt = artwork.title || "Artwork";
+        image.hidden = false;
+    } else {
+        image.removeAttribute("src");
+        image.alt = "";
+        image.hidden = true;
     }
 }
 
