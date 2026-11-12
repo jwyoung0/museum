@@ -17,6 +17,7 @@ async function salesReportHandler(req, res) {
     const { searchParams } = new URL(req.url, "http://localhost");
     const from = parseDate(searchParams.get("from"));
     const to = parseDate(searchParams.get("to"));
+    const product = searchParams.get("product")?.trim() || null;
 
     const headers = {
         "Content-Type": "application/json",
@@ -30,9 +31,15 @@ async function salesReportHandler(req, res) {
         return;
     }
 
+    if (product && product.length > 100) {
+        res.writeHead(400, headers);
+        res.end(JSON.stringify({ error: "Enter a product name of 100 characters or fewer." }));
+        return;
+    }
+
     // Include the entire end date by stopping at midnight the next day.
     const until = new Date(to.getTime() + 86400000);
-    const report = await getSalesReport({ from, until });
+    const report = await getSalesReport({ from, until, product });
 
     res.writeHead(200, headers);
     res.end(JSON.stringify(report));
