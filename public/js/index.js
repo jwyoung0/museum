@@ -1,4 +1,30 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const banner = document.getElementById("site-banner");
+    const bannerLink = document.getElementById("site-banner-link");
+    const bannerTitle = document.getElementById("site-banner-title");
+    const bannerText = document.getElementById("site-banner-text");
+
+    if (banner && bannerLink && bannerTitle && bannerText) {
+        fetch("/api/site-banner")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Unable to load site banner");
+                }
+                return response.json();
+            })
+            .then(siteBanner => {
+                if (!siteBanner) {
+                    return;
+                }
+
+                bannerTitle.textContent = siteBanner.BannerTitle || "";
+                bannerText.textContent = siteBanner.BannerText || "";
+                bannerLink.href = `/exhibition-detail/${encodeURIComponent(siteBanner.ExhibitionID)}`;
+                banner.hidden = false;
+            })
+            .catch(error => console.error("Site banner error:", error));
+    }
+
     const slides = document.querySelectorAll(".slide");
 
     if (!slides.length) {

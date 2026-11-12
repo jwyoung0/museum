@@ -274,7 +274,9 @@
                     <label>Email</label>
                     <input
                         id="email"
+                        type="email"
                         maxlength="50"
+                        autocomplete="email"
                         required
                     >
                 </div>
@@ -319,7 +321,7 @@
                     Create Account
                 </button>
 
-                <p id="account-message"></p>
+                <p id="account-message" role="status" aria-live="polite"></p>
             </form>
         </div>
     </div>

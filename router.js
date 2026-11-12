@@ -73,6 +73,7 @@ const { createExhibitionHandler,
 } = require("./handlers/exhibitions");
 const { registerVisitorHandler } = require("./handlers/register-visitor");
 const { purchaseMembershipHandler } = require("./handlers/membership-purchase");
+const { getActiveSiteBannerHandler } = require("./handlers/site-banner");
 //Director-Personnel
 const {
     listPersonnelHandler,
@@ -320,6 +321,10 @@ if (req.method === "GET" && req.url === "/js/gift-shop-sales.js") {
 }
 if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             sendVisitorPage(req, res, "index.html");
+            return;
+        }
+        if (req.method === "GET" && req.url === "/api/site-banner") {
+            await getActiveSiteBannerHandler(req, res);
             return;
         }
         if (req.method === "GET" && req.url === "/artwork") {
