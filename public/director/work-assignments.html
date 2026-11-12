@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +5,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Work Assignment Management</title>
     <link rel="stylesheet" href="/style">
+
+    <style>
+
+        #work-sessions-table th:nth-child(2),
+        #work-sessions-table th:nth-child(6),
+        #work-sessions-table td:nth-child(2),
+        #work-sessions-table td:nth-child(6) {
+            white-space: nowrap;
+        }
+
+        #work-sessions-table th:nth-child(6),
+        #work-sessions-table td:nth-child(6) {
+            min-width: 120px;
+            text-align: center;
+        }
+
+        #work-assignments-table th:nth-child(4),
+        #work-assignments-table th:nth-child(5),
+        #work-assignments-table th:nth-child(7),
+        #work-assignments-table td:nth-child(4),
+        #work-assignments-table td:nth-child(5),
+        #work-assignments-table td:nth-child(7) {
+            white-space: nowrap;
+        }
+
+        #work-assignments-table th:nth-child(7),
+        #work-assignments-table td:nth-child(7) {
+            min-width: 100px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
     <header class="dashboard-header">
@@ -31,83 +61,105 @@
             <h2>Generate Labor Cost Report</h2>
 
             <p>
-                Select a reporting period to calculate labor costs
-                based on work assignments within that period.
+                Select a reporting period and optionally filter by employee
+                or position. Labor costs are calculated using recorded work
+                sessions and their applicable hourly rates.
             </p>
 
+            <!-- REPORT FILTERS -->
             <div class="table-controls">
-                <label for="report-start-date">
-                    Start Date:
-                </label>
 
+                <label for="report-start-date">Start Date:</label>
                 <input
                     type="date"
                     id="report-start-date"
                     required
                 >
 
-                <label for="report-end-date">
-                    End Date:
-                </label>
-
+                <label for="report-end-date">End Date:</label>
                 <input
                     type="date"
                     id="report-end-date"
                     required
                 >
 
+                <label for="report-personnel">
+                    Employee:
+                </label>
+                <select id="report-personnel">
+                    <option value="">All Employees</option>
+                </select>
+
+                <label for="report-position">
+                    Position:
+                </label>
+                <select id="report-position">
+                    <option value="">All Positions</option>
+                </select>
+
                 <button id="generate-labor-report" type="button">
                     Generate Labor Cost Report
                 </button>
+
             </div>
 
-            <p id="labor-report-message"></p>
+            <p id="labor-report-message" role="status"></p>
 
             <!-- REPORT RESULTS -->
             <div id="labor-report-results" hidden>
 
                 <h3>Report Summary</h3>
 
-                <table class="personnel-table">
-                    <thead>
-                        <tr>
-                            <th>Total Assignments</th>
-                            <th>Total Employees</th>
-                            <th>Total Hours Worked</th>
-                            <th>Total Labor Cost</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        <tr>
-                            <td id="report-total-assignments">0</td>
-                            <td id="report-total-employees">0</td>
-                            <td id="report-total-hours">0</td>
-                            <td id="report-total-cost">$0.00</td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <h3>Employee Workload Breakdown</h3>
-
                 <div class="personnel-table-container">
                     <table class="personnel-table">
                         <thead>
                             <tr>
+                                <th>Total Assignments</th>
+                                <th>Total Employees</th>
+                                <th>Total Work Sessions</th>
+                                <th>Total Hours Worked</th>
+                                <th>Total Labor Cost</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <td id="report-total-assignments">0</td>
+                                <td id="report-total-employees">0</td>
+                                <td id="report-total-sessions">0</td>
+                                <td id="report-total-hours">0.00</td>
+                                <td id="report-total-cost">$0.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Employee Workload Breakdown</h3>
+
+                <p>
+                    Each row summarizes an employee's recorded work sessions
+                    for a particular Work Assignment during the selected period.
+                </p>
+
+                <div class="personnel-table-container">
+                    <table id="labor-report-table" class="personnel-table">
+                        <thead>
+                            <tr>
                                 <th>Employee</th>
                                 <th>Position</th>
+                                <th>Work Assignment</th>
                                 <th>Work Role</th>
-                                <th>Event</th>
-                                <th>Start Date</th>
-                                <th>End Date</th>
-                                <th>Hours Worked</th>
+                                <th>First Work Date</th>
+                                <th>Last Work Date</th>
+                                <th>Sessions</th>
+                                <th>Total Hours</th>
                                 <th>Hourly Rate</th>
                                 <th>Labor Cost</th>
                             </tr>
                         </thead>
 
                         <tbody id="labor-report-table-body">
-                            <!-- Report assignments will be loaded here -->
+                            <!-- Report results will be loaded here -->
                         </tbody>
                     </table>
                 </div>
@@ -115,14 +167,65 @@
             </div>
         </section>
 
-        <!-- EXISTING WORK ASSIGNMENT TABLE -->
+
+        <!-- WORK ASSIGNMENT TABLE -->
         <section class="table-section">
             <h2>Work Assignment Management</h2>
 
             <div class="table-controls">
-                <button id="refresh-work-assignments">
+                <button id="show-add-assignment" type="button">
+                    Add Assignment
+                </button>
+
+                <button id="refresh-work-assignments" type="button">
                     Refresh
                 </button>
+            </div>
+
+            <!-- ADD ASSIGNMENT FORM -->
+            <div id="add-assignment-panel" hidden>
+                <h3 id="assignment-form-title">Create Work Assignment</h3>
+
+                <form id="assignment-form">
+
+                    <label for="assignment-name">Assignment Name:</label>
+                    <input
+                        type="text"
+                        id="assignment-name"
+                        maxlength="100"
+                        required
+                    >
+
+                    <label for="assignment-description">Description:</label>
+                    <textarea
+                        id="assignment-description"
+                        maxlength="500"
+                        rows="3"
+                    ></textarea>
+
+                    <label for="assignment-start-date">Start Date:</label>
+                    <input
+                        type="date"
+                        id="assignment-start-date"
+                    >
+
+                    <label for="assignment-end-date">End Date:</label>
+                    <input
+                        type="date"
+                        id="assignment-end-date"
+                    >
+
+                    <div class="table-controls">
+                        <button type="submit" id="save-assignment">
+                            Save Assignment
+                        </button>
+
+                        <button type="button" id="cancel-add-assignment">
+                            Cancel
+                        </button>
+                    </div>
+
+                </form>
             </div>
 
             <p id="work-assignments-message"></p>
@@ -132,12 +235,12 @@
                     <thead>
                         <tr>
                             <th>Assignment ID</th>
-                            <th>Event ID</th>
-                            <th>Assigned Workers</th>
-                            <th>Work Role</th>
-                            <th>Hours Worked</th>
+                            <th>Assignment Name</th>
+                            <th>Description</th>
                             <th>Start Date</th>
                             <th>End Date</th>
+                            <th>Employees Assigned</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
 
@@ -147,6 +250,182 @@
                 </table>
             </div>
         </section>
+
+        <!-- ASSIGN PERSONNEL PANEL -->
+        <section id="assign-personnel-panel" class="table-section" hidden>
+            <h2 id="assign-personnel-title">Assigned Personnel</h2>
+            <p id="assign-personnel-message" role="status"></p>
+
+            <div class="personnel-table-container">
+                <table class="personnel-table">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            <th>Work Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assigned-personnel-table-body"></tbody>
+                </table>
+            </div>
+
+            <h3>Add Employee to Assignment</h3>
+            <form id="assign-personnel-form">
+                <label for="assign-personnel-select">Employee:</label>
+                <select id="assign-personnel-select" required>
+                    <option value="">Select an employee</option>
+                </select>
+
+                <label for="assign-work-role">Work Role:</label>
+                <input
+                    type="text"
+                    id="assign-work-role"
+                    maxlength="100"
+                    placeholder="e.g. Exhibition Coordinator"
+                    required
+                >
+
+                <div class="table-controls">
+                    <button type="submit" id="save-assigned-personnel">
+                        Assign Employee
+                    </button>
+
+                    <button type="button" id="close-assign-personnel">
+                        Close
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- WORK SESSION HISTORY PANEL -->
+        <section id="work-sessions-panel" class="table-section" hidden>
+
+            <h2 id="work-sessions-title">Work Session History</h2>
+
+            <p id="work-sessions-message" role="status"></p>
+
+            <div class="table-controls">
+                <button type="button" id="show-add-work-session">
+                    Add Work Session
+                </button>
+
+                <button type="button" id="refresh-work-sessions">
+                    Refresh Sessions
+                </button>
+
+                <button type="button" id="close-work-sessions">
+                    Close
+                </button>
+            </div>
+
+            <!-- ADD / EDIT WORK SESSION FORM -->
+            <div id="work-session-form-panel" hidden>
+
+                <h3 id="work-session-form-title">
+                    Record Work Session
+                </h3>
+
+                <form id="work-session-form">
+
+                    <label for="work-session-date">
+                        Work Date:
+                    </label>
+
+                    <input
+                        type="date"
+                        id="work-session-date"
+                        required
+                    >
+
+                    <label for="work-session-hours">
+                        Hours Worked:
+                    </label>
+
+                    <input
+                        type="number"
+                        id="work-session-hours"
+                        min="0.01"
+                        max="999.99"
+                        step="0.01"
+                        placeholder="e.g. 6.50"
+                        required
+                    >
+
+                    <label for="work-session-rate">
+                        Hourly Rate at Time:
+                    </label>
+
+                    <input
+                        type="number"
+                        id="work-session-rate"
+                        min="0"
+                        max="99999999.99"
+                        step="0.01"
+                        placeholder="e.g. 18.00"
+                    >
+
+                    <div class="table-controls">
+
+                        <button type="submit" id="save-work-session">
+                            Save Work Session
+                        </button>
+
+                        <button type="button" id="cancel-work-session">
+                            Cancel
+                        </button>
+
+                    </div>
+
+                </form>
+            </div>
+
+            <!-- WORK SESSION HISTORY TABLE -->
+            <div class="personnel-table-container">
+
+                <table id="work-sessions-table" class="personnel-table">
+
+                    <thead>
+                        <tr>
+                            <th>Session ID</th>
+                            <th>Work Date</th>
+                            <th>Hours Worked</th>
+                            <th>Hourly Rate</th>
+                            <th>Labor Cost</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="work-sessions-table-body">
+                        <!-- Sessions will be loaded here -->
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <!-- SESSION TOTALS -->
+            <h3>Employee Session Summary</h3>
+
+            <table class="personnel-table">
+                <thead>
+                    <tr>
+                        <th>Total Sessions</th>
+                        <th>Total Hours Worked</th>
+                        <th>Total Known Labor Cost</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td id="work-session-total-count">0</td>
+                        <td id="work-session-total-hours">0.00</td>
+                        <td id="work-session-total-cost">$0.00</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </section>
+
 
     </main>
 
