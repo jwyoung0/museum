@@ -650,11 +650,21 @@ if (
     // Refresh personnel records.
     refreshPersonnelButton.addEventListener("click", loadPersonnel);
 
+
     // Show the Add Personnel form.
-    addPersonnelButton.addEventListener("click", () => {
+    addPersonnelButton.addEventListener("click", async () => {
+        await loadPositionOptions();
+
+        if (positionSelect.disabled) {
+            personnelMessage.textContent =
+                "Unable to add personnel because positions could not be loaded.";
+            return;
+        }
+
         addPersonnelPanel.hidden = false;
         addPersonnelButton.hidden = true;
     });
+
 
     // Cancel adding personnel.
     cancelAddPersonnelButton.addEventListener("click", () => {
