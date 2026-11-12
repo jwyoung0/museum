@@ -18,28 +18,26 @@ async function searchPersonnelForAccounts(searchTerm) {
                 p.Mname,
                 p.Lname,
                 pos.PositionName,
-                p.StartDate
+                p.StartDate,
+                CASE WHEN ua.personnelID IS NULL THEN 0 ELSE 1 END AS AccountExists,
+                ua.email AS AccountEmail,
+                ua.role AS AccountRole
             FROM dbo.Personnel AS p
             LEFT JOIN dbo.POSITION AS pos
                 ON p.PositionID = pos.PositionID
-            WHERE NOT EXISTS (
-                SELECT 1
-                FROM dbo.STAFF_ACCOUNT AS ua
-                WHERE ua.personnelID = p.PersonnelID
-            )
-                AND (
-                    @searchTerm = N''
-                    OR p.Fname LIKE @searchPattern
-                    OR p.Mname LIKE @searchPattern
-                    OR p.Lname LIKE @searchPattern
-                    OR CONCAT(
-                        p.Fname,
-                        N' ',
-                        COALESCE(p.Mname + N' ', N''),
-                        p.Lname
-                    ) LIKE @searchPattern
-                    OR CONVERT(NVARCHAR(20), p.PersonnelID) LIKE @searchPattern
-                )
+            LEFT JOIN dbo.STAFF_ACCOUNT AS ua
+                ON ua.personnelID = p.PersonnelID
+            WHERE @searchTerm = N''
+                OR p.Fname LIKE @searchPattern
+                OR p.Mname LIKE @searchPattern
+                OR p.Lname LIKE @searchPattern
+                OR CONCAT(
+                    p.Fname,
+                    N' ',
+                    COALESCE(p.Mname + N' ', N''),
+                    p.Lname
+                ) LIKE @searchPattern
+                OR CONVERT(NVARCHAR(20), p.PersonnelID) LIKE @searchPattern
             ORDER BY p.Lname, p.Fname;
         `);
 
@@ -149,7 +147,90 @@ async function createUserAccount({
     }
 }
 
+async function updateUserAccount({
+    email,
+    password,
+    role,
+    personnelId
+}) {
+    if (typeof email !== "string" || !email.trim()) {
+        throw new TypeError("email is required");
+    }
+    if (typeof role !== "string" || !role.trim()) {
+        throw new TypeError("role is required");
+    }
+    if (password !== null && typeof password !== "string") {
+        throw new TypeError("password must be a string or null");
+    }
+    if (!Number.isInteger(personnelId)) {
+        throw new TypeError("personnelId is required and must be an integer");
+    }
+
+    const pool = await getPool();
+    const emailCheck = await pool.request()
+        .input("email", sql.NVarChar(50), email.trim())
+        .input("personnelId", sql.Int, personnelId)
+        .query(`
+            SELECT personnelID
+            FROM dbo.STAFF_ACCOUNT
+            WHERE email = @email AND personnelID <> @personnelId
+        `);
+
+    if (emailCheck.recordset.length > 0) {
+        const error = new Error("Email already exists.");
+        error.statusCode = 409;
+        throw error;
+    }
+
+    const result = await pool.request()
+        .input("email", sql.NVarChar(50), email.trim())
+        .input("password", sql.NVarChar(20), password)
+        .input("role", sql.NVarChar(20), role)
+        .input("personnelId", sql.Int, personnelId)
+        .query(`
+            UPDATE dbo.STAFF_ACCOUNT
+            SET email = @email,
+                password = COALESCE(@password, password),
+                role = @role
+            OUTPUT INSERTED.personnelID
+            WHERE personnelID = @personnelId
+        `);
+
+    if (result.recordset.length === 0) {
+        const error = new Error("Account not found");
+        error.statusCode = 404;
+        throw error;
+    }
+
+    return { success: true };
+}
+
+async function deleteUserAccount(personnelId) {
+    if (!Number.isInteger(personnelId)) {
+        throw new TypeError("personnelId is required and must be an integer");
+    }
+
+    const pool = await getPool();
+    const result = await pool.request()
+        .input("personnelId", sql.Int, personnelId)
+        .query(`
+            DELETE FROM dbo.STAFF_ACCOUNT
+            OUTPUT DELETED.personnelID
+            WHERE personnelID = @personnelId
+        `);
+
+    if (result.recordset.length === 0) {
+        const error = new Error("Account not found");
+        error.statusCode = 404;
+        throw error;
+    }
+
+    return { success: true };
+}
+
 module.exports = {
     searchPersonnelForAccounts,
-    createUserAccount
-}
+    createUserAccount,
+    updateUserAccount,
+    deleteUserAccount
+};

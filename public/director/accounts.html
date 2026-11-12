@@ -52,8 +52,9 @@
             white-space: nowrap;
         }
 
-        .create-account-button {
+        .account-action-button {
             padding: 8px 14px;
+            margin-right: 6px;
         }
 
         .hidden {
@@ -190,10 +191,11 @@
     <main>
         <nav aria-label="Director sections">
             <a href="/director/dashboard">Personnel</a>
+            <a href="/director/work-assignments" data-tab="work-assignments">Work Assignments</a>
             <a href="/director/accounts" aria-current="page">Account Management</a>
             <a href="/director/memberships">Memberships</a>
-            <a href="/director/dashboard#revenue">Ticket Revenue</a>
-            <a href="/director/membership-revenue">Membership Revenue</a>
+            <!-- <a href="/director/dashboard#revenue">Ticket Revenue</a>
+            <a href="/director/membership-revenue">Membership Revenue</a> -->
         </nav>
 
     <section class="account-workspace">
@@ -261,7 +263,7 @@
                 ×
             </button>
 
-            <h3>Create Account</h3>
+            <h3 id="account-modal-title">Add Account</h3>
 
             <form id="create-account-form">
                 <input id="personnel-id" type="hidden">
@@ -287,7 +289,6 @@
                         id="password"
                         type="password"
                         maxlength="20"
-                        required
                     >
                 </div>
 
@@ -317,8 +318,8 @@
                     </select>
                 </div>
 
-                <button type="submit">
-                    Create Account
+                <button type="submit" id="account-submit-button">
+                    Add Account
                 </button>
 
                 <p id="account-message" role="status" aria-live="polite"></p>

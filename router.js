@@ -98,7 +98,9 @@ const {
 //Director-User Accounts
 const {
     searchPersonnelForAccountsHandler,
-    createUserAccountHandler
+    createUserAccountHandler,
+    updateUserAccountHandler,
+    deleteUserAccountHandler
 } = require("./handlers/director/accounts");
 //Director-Membership Tiers
 const {
@@ -166,7 +168,23 @@ async function router(req, res) {
             if (!requireDirector(req, res)) return;
             await createUserAccountHandler(req, res);
             return;
-        }        
+        }
+
+        const accountPersonnelMatch = new URL(req.url, "http://localhost")
+            .pathname.match(/^\/api\/director\/accounts\/(\d+)\/?$/);
+
+        if (req.method === "PUT" && accountPersonnelMatch) {
+            if (!requireDirector(req, res)) return;
+            await updateUserAccountHandler(req, res, Number(accountPersonnelMatch[1]));
+            return;
+        }
+
+        if (req.method === "DELETE" && accountPersonnelMatch) {
+            if (!requireDirector(req, res)) return;
+            await deleteUserAccountHandler(req, res, Number(accountPersonnelMatch[1]));
+            return;
+        }
+
         if (req.method === "POST" && req.url === "/api/director/memberships/tiers") {
             if (!requireDirector(req, res)) return;
             await createTierHandler(req, res);
