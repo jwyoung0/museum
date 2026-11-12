@@ -86,7 +86,7 @@ async function loadReport() {
         const records =
             await recordsResponse.json();
 
-        renderEngagementRecords(records);
+        renderEngagementRecords(records, analyzeBy);
 
     } catch (error) {
         console.error("Failed to load analytics report", error);
@@ -503,8 +503,7 @@ async function loadEntityValues() {
     }
 }
 
-function renderEngagementRecords(records) {
-
+function renderEngagementRecords(records, analyzeBy) {
     const thead =
         document.querySelector(
             ".analytics-table thead"
@@ -515,30 +514,46 @@ function renderEngagementRecords(records) {
             ".analytics-table tbody"
         );
 
-    thead.innerHTML = `
-        <tr>
-            <th>View Date</th>
-            <th>Tier</th>
-            <th>Artist</th>
-            <th>Artwork</th>
-            <th>Style</th>
-            <th>Period</th>
-            <th>Collection</th>
-            <th>Exhibition</th>
-        </tr>
-    `;
+    const selectedAnalyzeBy =
+        document.querySelector("#analyze-by")
+            .selectedOptions[0]?.textContent.trim() || "Analyze By";
 
-    tbody.innerHTML =
-        records.map(record => `
-            <tr>
-                <td>${record.ViewDate}</td>
-                <td>${record.TierName ?? ""}</td>
-                <td>${record.ArtistName ?? ""}</td>
-                <td>${record.ArtworkTitle ?? ""}</td>
-                <td>${record.StyleName ?? ""}</td>
-                <td>${record.PeriodName ?? ""}</td>
-                <td>${record.CollectionName ?? ""}</td>
-                <td>${record.ExhibitionName ?? ""}</td>
-            </tr>
-        `).join("");
+    const analyzeByFields = {
+        artists: "ArtistName",
+        "artist-sex": "ArtistSex",
+        artworks: "ArtworkTitle",
+        styles: "StyleName",
+        periods: "PeriodName",
+        collections: "CollectionName",
+        exhibitions: "ExhibitionName"
+    };
+    const analyzeByField = analyzeByFields[analyzeBy];
+    const columns = [
+        ["View Date", "ViewDate"],
+        ["Session ID", "SessionID"],
+        ["Membership Tier", "TierName"],
+        ["Artwork Title", "ArtworkTitle"],
+        [selectedAnalyzeBy, analyzeByField]
+    ];
+
+    document.getElementById("analytics-record-count").textContent =
+        `Showing ${records.length} records`;
+
+    thead.replaceChildren();
+    const headerRow = thead.insertRow();
+    columns.forEach(([label]) => {
+        const header = document.createElement("th");
+        header.textContent = label;
+        headerRow.appendChild(header);
+    });
+
+    tbody.replaceChildren();
+    records.forEach(record => {
+        const row = tbody.insertRow();
+        columns.forEach(([, field]) => {
+            const cell = row.insertCell();
+            const value = field ? record[field] : "";
+            cell.textContent = value == null ? "" : String(value);
+        });
+    });
 }
