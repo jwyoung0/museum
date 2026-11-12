@@ -14,6 +14,7 @@ async function listInventoryAlerts() {
         INNER JOIN dbo.PRODUCTS AS product
             ON product.ProductID = alert.ProductID
         WHERE alert.ResolvedAt IS NULL
+          AND product.IsArchived = 0
         ORDER BY
             alert.QuantityInStock,
             product.ProductName;

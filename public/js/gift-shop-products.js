@@ -14,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             resetProductForm();
             document.getElementById("product-form-container").hidden = false;
-            document.getElementById("product-id").focus();
+            document.getElementById("product-name").focus();
         });
 
     document.getElementById("cancel-product-button")
@@ -105,7 +105,13 @@ function displayProducts(products) {
             openEditProduct(product);
         });
 
-        actionsCell.appendChild(editButton);
+        const archiveButton = document.createElement("button");
+        archiveButton.type = "button";
+        archiveButton.textContent = "Archive";
+        archiveButton.setAttribute("aria-label", `Archive ${product.ProductName}`);
+        archiveButton.addEventListener("click", () => archiveProduct(product, archiveButton));
+
+        actionsCell.append(editButton, " ", archiveButton);
         row.appendChild(actionsCell);
         tbody.appendChild(row);
     }
@@ -128,7 +134,6 @@ function resetProductForm() {
     editingProductId = null;
 
     document.getElementById("product-form").reset();
-    document.getElementById("product-id").readOnly = false;
     document.getElementById("product-form-title").textContent = "Add Product";
     document.getElementById("save-product-button").textContent = "Save Product";
     document.getElementById("product-form-message").textContent = "";
@@ -140,8 +145,6 @@ function openEditProduct(product) {
     resetProductForm();
     editingProductId = product.ProductID;
 
-    document.getElementById("product-id").value = product.ProductID;
-    document.getElementById("product-id").readOnly = true;
     document.getElementById("product-name").value = product.ProductName;
     document.getElementById("product-category").value = product.Category;
     document.getElementById("product-price").value = product.Price;
@@ -171,9 +174,6 @@ async function submitProduct(event) {
     const isEditing = editingProductId !== null;
 
     const product = {
-        ProductID: isEditing
-            ? editingProductId
-            : Number(data.get("ProductID")),
         ProductName: data.get("ProductName").trim(),
         Category: data.get("Category").trim(),
         Price: Number(data.get("Price")),
@@ -220,5 +220,44 @@ async function submitProduct(event) {
         isSaving = false;
         saveButton.disabled = false;
         cancelButton.disabled = false;
+    }
+}
+
+async function archiveProduct(product, button) {
+    if (isSaving || !window.confirm(`Archive "${product.ProductName}"? It will be hidden from Inventory and the shop. Past sales will be kept.`)) return;
+
+    const message = document.getElementById("product-action-message");
+    isSaving = true;
+    button.disabled = true;
+    message.textContent = "Archiving product...";
+
+    try {
+        const response = await fetch(`/api/gift-shop/products/${product.ProductID}`, {
+            method: "DELETE"
+        });
+
+        if (response.redirected) {
+            window.location.href = "/auth-staff";
+            return;
+        }
+        if (!response.ok) {
+            const result = await response.json().catch(() => ({}));
+            throw new Error(result.error || "Unable to archive product.");
+        }
+
+        if (editingProductId === product.ProductID) {
+            resetProductForm();
+            document.getElementById("product-form-container").hidden = true;
+        }
+
+        allProducts = allProducts.filter(item => item.ProductID !== product.ProductID);
+        filterProducts();
+        document.getElementById("product-search").focus();
+        message.textContent = `${product.ProductName} was archived.`;
+    } catch (error) {
+        message.textContent = error.message;
+    } finally {
+        isSaving = false;
+        button.disabled = false;
     }
 }
