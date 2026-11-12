@@ -1,10 +1,11 @@
 const { getPool, sql } = require("../connection");
 
-async function getSalesReport({ from, until }) {
+async function getSalesReport({ from, until, product = null }) {
     const pool = await getPool();
     const { recordsets: [totals, details] } = await pool.request()
         .input("FromDate", sql.Date, from)
         .input("UntilDate", sql.Date, until)
+        .input("Product", sql.NVarChar(100), product)
         .query(`
             SET NOCOUNT ON;
 
@@ -25,7 +26,8 @@ async function getSalesReport({ from, until }) {
             INNER JOIN dbo.PRODUCTS AS product
                 ON product.ProductID = detail.PRODUCTID
             WHERE purchase.[DateTime] >= @FromDate
-              AND purchase.[DateTime] < @UntilDate;
+              AND purchase.[DateTime] < @UntilDate
+              AND (@Product IS NULL OR CHARINDEX(LOWER(@Product), LOWER(product.ProductName)) > 0);
 
             -- Summarize the same purchase lines shown below the totals.
             SELECT

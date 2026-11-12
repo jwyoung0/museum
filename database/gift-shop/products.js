@@ -12,29 +12,31 @@ async function listProducts() {
             QuantityInStock,
             ImageURL
         FROM dbo.PRODUCTS
+        WHERE IsArchived = 0
         ORDER BY ProductName;
     `);
 
     return result.recordset;
 }
 
+function validateProductId(productId) {
+    if (
+        !Number.isInteger(productId) ||
+        productId < 1 ||
+        productId > 2147483647
+    ) {
+        throw new TypeError("Product ID must be a positive whole number.");
+    }
+}
+
 function validateProduct(product) {
     const {
-        ProductID,
         ProductName,
         Category,
         Price,
         QuantityInStock,
         ImageURL
     } = product;
-
-    if (
-        !Number.isInteger(ProductID) ||
-        ProductID < 1 ||
-        ProductID > 2147483647
-    ) {
-        throw new TypeError("Product ID must be a positive whole number.");
-    }
 
     if (
         typeof ProductName !== "string" ||
@@ -102,7 +104,6 @@ async function createProduct(product) {
     validateProduct(product);
 
     const {
-        ProductID,
         ProductName,
         Category,
         Price,
@@ -112,66 +113,51 @@ async function createProduct(product) {
 
     const pool = await getPool();
 
-    try {
-        const result = await pool.request()
-            .input("ProductID", sql.Int, ProductID)
-            .input("ProductName", sql.NVarChar(100), ProductName.trim())
-            .input("Category", sql.NVarChar(50), Category.trim())
-            .input("Price", sql.Decimal(10, 2), Price)
-            .input("QuantityInStock", sql.Int, QuantityInStock)
-            .input("ImageURL", sql.NVarChar(500), ImageURL?.trim() || null)
-            .query(`
-                DECLARE @createdProducts TABLE (
-                    ProductID int
-                );
-
-                INSERT INTO dbo.PRODUCTS (
-                    ProductID,
-                    ProductName,
-                    Category,
-                    Price,
-                    QuantityInStock,
-                    ImageURL
-                )
-                OUTPUT INSERTED.ProductID
-                    INTO @createdProducts (ProductID)
-                VALUES (
-                    @ProductID,
-                    @ProductName,
-                    @Category,
-                    @Price,
-                    @QuantityInStock,
-                    @ImageURL
-                );
-
-                SELECT
-                    p.ProductID,
-                    p.ProductName,
-                    p.Category,
-                    p.Price,
-                    p.QuantityInStock,
-                    p.ImageURL
-                FROM dbo.PRODUCTS AS p
-                INNER JOIN @createdProducts AS c
-                    ON c.ProductID = p.ProductID;
-            `);
-
-        return result.recordset[0];
-    } catch (error) {
-        if (error.number === 2627 || error.number === 2601) {
-            const duplicateError = new Error(
-                "That Product ID already exists. Choose a different ID."
+    const result = await pool.request()
+        .input("ProductName", sql.NVarChar(100), ProductName.trim())
+        .input("Category", sql.NVarChar(50), Category.trim())
+        .input("Price", sql.Decimal(10, 2), Price)
+        .input("QuantityInStock", sql.Int, QuantityInStock)
+        .input("ImageURL", sql.NVarChar(500), ImageURL?.trim() || null)
+        .query(`
+            DECLARE @createdProducts TABLE (
+                ProductID int
             );
 
-            duplicateError.statusCode = 409;
-            throw duplicateError;
-        }
+            INSERT INTO dbo.PRODUCTS (
+                ProductName,
+                Category,
+                Price,
+                QuantityInStock,
+                ImageURL
+            )
+            OUTPUT INSERTED.ProductID
+                INTO @createdProducts (ProductID)
+            VALUES (
+                @ProductName,
+                @Category,
+                @Price,
+                @QuantityInStock,
+                @ImageURL
+            );
 
-        throw error;
-    }
+            SELECT
+                p.ProductID,
+                p.ProductName,
+                p.Category,
+                p.Price,
+                p.QuantityInStock,
+                p.ImageURL
+            FROM dbo.PRODUCTS AS p
+            INNER JOIN @createdProducts AS c
+                ON c.ProductID = p.ProductID;
+        `);
+
+    return result.recordset[0];
 }
 
 async function updateProduct(product) {
+    validateProductId(product.ProductID);
     validateProduct(product);
 
     const {
@@ -206,7 +192,7 @@ async function updateProduct(product) {
                 ImageURL = @ImageURL
             OUTPUT INSERTED.ProductID
                 INTO @updatedProducts (ProductID)
-            WHERE ProductID = @ProductID;
+            WHERE ProductID = @ProductID AND IsArchived = 0;
 
             SELECT
                 p.ProductID,
@@ -223,8 +209,28 @@ async function updateProduct(product) {
     return result.recordset[0] || null;
 }
 
+async function archiveProduct(productId) {
+    validateProductId(productId);
+    const pool = await getPool();
+    const result = await pool.request()
+        .input("ProductID", sql.Int, productId)
+        .query(`
+            DECLARE @archivedProducts TABLE (ProductID int);
+
+            UPDATE dbo.PRODUCTS
+            SET IsArchived = 1
+            OUTPUT INSERTED.ProductID INTO @archivedProducts (ProductID)
+            WHERE ProductID = @ProductID AND IsArchived = 0;
+
+            SELECT ProductID FROM @archivedProducts;
+        `);
+
+    return result.recordset.length > 0;
+}
+
 module.exports = {
     listProducts,
     createProduct,
-    updateProduct
+    updateProduct,
+    archiveProduct
 };

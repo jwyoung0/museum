@@ -1,7 +1,8 @@
 const {
     listProducts,
     createProduct,
-    updateProduct
+    updateProduct,
+    archiveProduct
 } = require("../../database/gift-shop/products");
 
 const { readJsonBody } = require("../../utils/http");
@@ -20,7 +21,6 @@ async function createProductHandler(req, res) {
     const body = await readJsonBody(req);
 
     const product = await createProduct({
-        ProductID: body.ProductID,
         ProductName: body.ProductName,
         Category: body.Category,
         Price: body.Price,
@@ -65,8 +65,21 @@ async function updateProductHandler(req, res) {
     res.end(JSON.stringify(product));
 }
 
+async function archiveProductHandler(req, res) {
+    const archived = await archiveProduct(Number(req.params.id));
+    if (!archived) {
+        res.writeHead(404, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ error: "Active product not found." }));
+        return;
+    }
+
+    res.writeHead(204);
+    res.end();
+}
+
 module.exports = {
     listProductsHandler,
     createProductHandler,
-    updateProductHandler
+    updateProductHandler,
+    archiveProductHandler
 };

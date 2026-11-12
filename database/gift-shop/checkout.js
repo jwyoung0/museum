@@ -70,6 +70,7 @@ async function purchaseProduct({ productId, quantity, visitorId }) {
                     INSERTED.Price
                 INTO @PurchasedProduct
                 WHERE ProductID = @productId
+                  AND IsArchived = 0
                   AND QuantityInStock >= @quantity;
 
                 IF NOT EXISTS (SELECT 1 FROM @PurchasedProduct)

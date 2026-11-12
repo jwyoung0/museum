@@ -32,7 +32,8 @@ const {
 const {
     listProductsHandler,
     createProductHandler,
-    updateProductHandler
+    updateProductHandler,
+    archiveProductHandler
 } = require("./handlers/gift-shop/products");
 const { logoutHandler } = require("./handlers/logout");
 const { listArtworkForVisitorHandler,
@@ -259,14 +260,18 @@ if (req.method === "POST" && req.url === "/api/gift-shop/products") {
     await createProductHandler(req, res);
     return;
 }
-const productUpdateMatch = new URL(req.url, "http://localhost")
+const productMatch = new URL(req.url, "http://localhost")
     .pathname.match(/^\/api\/gift-shop\/products\/(\d+)$/);
-if (req.method === "PUT" && productUpdateMatch) {
+if (productMatch && (req.method === "PUT" || req.method === "DELETE")) {
     if (!requireGiftShopManager(req, res)) return;
     req.params = {
-        id: productUpdateMatch[1]
+        id: productMatch[1]
     };
-    await updateProductHandler(req, res);
+    if (req.method === "DELETE") {
+        await archiveProductHandler(req, res);
+    } else {
+        await updateProductHandler(req, res);
+    }
     return;
 }
 if (req.method === "GET" && req.url === "/gift-shop/inventory") {

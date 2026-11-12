@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Gift Shop Sales</title>
     <link rel="stylesheet" href="/style">
-
     <style>
         #sales-report-form {
             flex-wrap: wrap;
@@ -59,58 +58,34 @@
             </header>
 
             <h3>Generate a Sales Report</h3>
-            <p>Enter both dates. The report includes the entire end date in UTC.</p>
+            <p>Enter both dates to summarize sales. Leave the product blank to include all products.
+                Dates include the full end date in UTC.</p>
 
             <form id="sales-report-form" class="workspace-toolbar">
                 <label for="sales-from">
                     Start date
-                    <input
-                        id="sales-from"
-                        type="date"
-                        min="1000-01-01"
-                        max="9999-12-30"
-                        required
-                    >
+                    <input id="sales-from" type="date" required min="1000-01-01" max="9999-12-30">
                 </label>
-
                 <label for="sales-to">
                     End date
-                    <input
-                        id="sales-to"
-                        type="date"
-                        min="1000-01-01"
-                        max="9999-12-30"
-                        required
-                    >
+                    <input id="sales-to" type="date" required min="1000-01-01" max="9999-12-30">
                 </label>
-
+                <label for="sales-report-product">
+                    Product name (optional)
+                    <input id="sales-report-product" type="search" maxlength="100" placeholder="e.g. mug">
+                </label>
                 <button type="submit">Generate report</button>
                 <button id="sales-report-reset" type="reset">Reset</button>
             </form>
 
             <p id="sales-report-status" role="status"></p>
-
-            <section
-                id="sales-report-summary"
-                aria-labelledby="sales-report-heading"
-                hidden
-            >
+            <section id="sales-report-summary" aria-labelledby="sales-report-heading" hidden>
                 <h3 id="sales-report-heading">Report Summary</h3>
                 <p id="sales-report-range"></p>
-
                 <dl class="sales-report-totals">
-                    <div>
-                        <dt>Total purchases</dt>
-                        <dd id="sales-purchase-count"></dd>
-                    </div>
-                    <div>
-                        <dt>Units sold</dt>
-                        <dd id="sales-units-sold"></dd>
-                    </div>
-                    <div>
-                        <dt>Sales revenue</dt>
-                        <dd id="sales-revenue"></dd>
-                    </div>
+                    <div><dt>Total purchases</dt><dd id="sales-purchase-count"></dd></div>
+                    <div><dt>Units sold</dt><dd id="sales-units-sold"></dd></div>
+                    <div><dt>Sales revenue</dt><dd id="sales-revenue"></dd></div>
                 </dl>
             </section>
 
@@ -129,19 +104,16 @@
             </div>
 
             <div class="artists-table-container">
-                <table
-                    class="artists-table"
-                    aria-labelledby="sales-transactions-heading"
-                >
+                <table class="artists-table" aria-labelledby="sales-transactions-heading">
                     <thead>
                         <tr>
-                            <th scope="col">Purchase ID</th>
-                            <th scope="col">Date (UTC)</th>
-                            <th scope="col">Visitor ID</th>
-                            <th scope="col">Product</th>
-                            <th scope="col">Quantity</th>
-                            <th scope="col">Unit Price</th>
-                            <th scope="col">Line Total</th>
+                            <th>Purchase ID</th>
+                            <th>Date (UTC)</th>
+                            <th>Visitor ID</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Line Total</th>
                         </tr>
                     </thead>
                     <tbody id="sales-table-body">
