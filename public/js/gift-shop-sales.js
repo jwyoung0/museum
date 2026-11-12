@@ -1,6 +1,7 @@
 const form = document.getElementById("sales-report-form");
 const from = document.getElementById("sales-from");
 const to = document.getElementById("sales-to");
+const product = document.getElementById("sales-report-product");
 const reportStatus = document.getElementById("sales-report-status");
 const reportSummary = document.getElementById("sales-report-summary");
 const historySearch = document.getElementById("sales-history-search");
@@ -101,6 +102,8 @@ async function loadHistory() {
 
 async function generateReport() {
     const params = new URLSearchParams({ from: from.value, to: to.value });
+    const productTerm = product.value.trim();
+    if (productTerm) params.set("product", productTerm);
     setBusy(true);
     reportStatus.textContent = "Generating sales report...";
 
@@ -108,8 +111,9 @@ async function generateReport() {
         const report = await fetchSales(`/api/gift-shop/sales-report?${params}`);
         if (!report) return;
 
+        const productFilter = productTerm ? `Product name contains “${productTerm}”` : "All products";
         document.getElementById("sales-report-range").textContent =
-            `${params.get("from")} through ${params.get("to")} (UTC)`;
+            `${params.get("from")} through ${params.get("to")} (UTC) · ${productFilter}`;
         document.getElementById("sales-purchase-count").textContent =
             number.format(report.summary.PurchaseCount);
         document.getElementById("sales-units-sold").textContent =
@@ -119,7 +123,7 @@ async function generateReport() {
 
         historySearch.hidden = true;
         transactionsHeading.textContent = "Report Transactions";
-        renderSales(report.details, "No transactions in this date range.");
+        renderSales(report.details, "No transactions match the report filters.");
         reportSummary.hidden = false;
         reportStatus.textContent = "Sales report generated.";
     } catch (error) {
