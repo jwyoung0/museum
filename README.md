@@ -2,30 +2,37 @@
 
 ---
 
+## Project Files
+
+- `server.js` starts the web server.
+- `router.js` routes requests to the appropriate handlers.
+- `public/` contains the website pages, styles, scripts, and images.
+- `handlers/` processes web requests.
+- `database/` contains database access code and SQL query files.
+- `utils/` contains shared server utilities.
+- `package.json` and `package-lock.json` list and lock the Node.js dependencies.
+
+---
+
 ## Installation
 
-In the command terminal, run:
+1. Install Node.js.
+2. Clone or download this project and open a terminal in the project folder.
+3. Install dependencies:
 
 ```bash
-npm init -y
-npm install dotenv mssql
+npm install
 ```
-
-Make sure this is removed from [`package.json`](package.json) (unless tests are added).    
-```json
-"test": "echo \"Error: no test specified\" && exit 1"
-```
-
 ---
 
 ## Environment Configuration
 
-Create a file named `.env` in the root directory and add your database credentials. Make sure `.env` is added to your `.gitignore` file.
+Create a file named `.env` in the root directory and add your SQL Server database credentials. Make sure `.env` is added to your `.gitignore` file.
 
 ```env
 DB_USER     = your_database_username
 DB_PASSWORD = your_database_password
-DB_SERVER   = cloud_server_address.database.windows.net
+DB_SERVER   = your_database_server
 DB_NAME     = your_database_name
 ```
 
@@ -39,5 +46,13 @@ DB_NAME     = your_database_name
 To run a local instance, run the following in the terminal:
 
 ```bash
+npm start
+```
+
+or
+
+```bash
 node server.js
 ```
+
+Open `http://localhost:3000` in your browser.

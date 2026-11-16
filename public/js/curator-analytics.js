@@ -36,6 +36,19 @@ async function loadReport() {
     const endDate =
         document.getElementById("end-date").value;
 
+    const dateError =
+        document.getElementById("analytics-date-error");
+
+    if (startDate && endDate && startDate > endDate) {
+        dateError.textContent =
+            "The start date cannot be later than the end date.";
+        dateError.hidden = false;
+        return;
+    }
+
+    dateError.textContent = "";
+    dateError.hidden = true;
+
     const tier =
         document.getElementById("tier").value;
 
