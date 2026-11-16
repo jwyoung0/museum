@@ -85,11 +85,21 @@ const {
     deactivatePersonnelHandler,
     reactivatePersonnelHandler
 } = require("./handlers/director/personnel");
+
 //Director-Work Assignments
 const {
     listWorkAssignmentsHandler,
+    createWorkAssignmentHandler,
+    updateWorkAssignmentHandler,
+    listAssignedPersonnelHandler,
+    assignPersonnelHandler,
+    listWorkSessionsHandler,
+    createWorkSessionHandler,
+    updateWorkSessionHandler,
+    deleteWorkSessionHandler,
     generateLaborCostReportHandler
 } = require("./handlers/director/work-assignments");
+
 //Director-Positions
 const {
     listPositionsHandler,
@@ -705,22 +715,117 @@ if (req.method === "GET" && (req.url === "/" || req.url === "/home")) {
             return;
         }
 
+        // Add Work Assignment
+
+        if (req.method === "POST" && req.url === "/api/director/work-assignments") {
+            if (!requireDirector(req, res)) return;
+            await createWorkAssignmentHandler(req, res);
+            return;
+        }
+
+        // Update Work Assignment
+
+        const workAssignmentUpdateMatch = new URL(req.url, "http://localhost")
+            .pathname.match(/^\/api\/director\/work-assignments\/(\d+)$/);
+
+        if (req.method === "PUT" && workAssignmentUpdateMatch) {
+            if (!requireDirector(req, res)) return;
+            await updateWorkAssignmentHandler(req, res);
+            return;
+        }
+
+
+
+        // List Personnel assigned to a Work Assignment
+
+        const assignedPersonnelMatch = new URL(req.url, "http://localhost")
+            .pathname.match(/^\/api\/director\/work-assignments\/(\d+)\/personnel$/);
+
+        if (req.method === "GET" && assignedPersonnelMatch) {
+            if (!requireDirector(req, res)) return;
+            await listAssignedPersonnelHandler(req, res);
+            return;
+        }
+
+        // Assign Personnel to a Work Assignment
+
+        if (req.method === "POST" && assignedPersonnelMatch) {
+            if (!requireDirector(req, res)) return;
+            await assignPersonnelHandler(req, res);
+            return;
+        }
+
+
+        // WORK SESSION ROUTES
+
+        const workSessionPath = new URL(req.url, "http://localhost").pathname;
+
+
+        // Match Work Session History and Create routes
+
+        const workSessionMatch = workSessionPath.match(
+            /^\/api\/director\/work-assignments\/(\d+)\/personnel\/(\d+)\/sessions$/
+        );
+
+
+        // Match individual Work Session Edit and Delete routes
+
+        const individualWorkSessionMatch = workSessionPath.match(
+            /^\/api\/director\/work-assignments\/(\d+)\/personnel\/(\d+)\/sessions\/(\d+)$/
+        );
+
+
+        // View Work Session History
+
+        if (req.method === "GET" && workSessionMatch) {
+            if (!requireDirector(req, res)) return;
+
+            await listWorkSessionsHandler(req, res);
+            return;
+        }
+
+
+        // Record New Work Session
+
+        if (req.method === "POST" && workSessionMatch) {
+            if (!requireDirector(req, res)) return;
+
+            await createWorkSessionHandler(req, res);
+            return;
+        }
+
+
+        // Edit Existing Work Session
+
+        if (req.method === "PUT" && individualWorkSessionMatch) {
+            if (!requireDirector(req, res)) return;
+
+            await updateWorkSessionHandler(req, res);
+            return;
+        }
+
+
+        // Delete Existing Work Session
+
+        if (req.method === "DELETE" && individualWorkSessionMatch) {
+            if (!requireDirector(req, res)) return;
+
+            await deleteWorkSessionHandler(req, res);
+            return;
+        }
+
+
+
+
         // Generate Labor Cost Report
-        if (
-            req.method === "GET" &&
-            new URL(req.url, "http://localhost").pathname ===
-                "/api/director/work-assignments/labor-cost-report"
-        ) {
+        if ( req.method === "GET" && new URL(req.url, "http://localhost").pathname === "/api/director/work-assignments/labor-cost-report"){
             if (!requireDirector(req, res)) return;
             await generateLaborCostReportHandler(req, res);
             return;
         }
 
 
-        if (
-            req.method === "GET" &&
-            /^\/api\/director\/accounts\/search(?:\?|$)/.test(req.url)
-        ) {
+        if (req.method === "GET" && /^\/api\/director\/accounts\/search(?:\?|$)/.test(req.url)){
             if (!requireDirector(req, res)) return;
             await searchPersonnelForAccountsHandler(req, res);
             return;
