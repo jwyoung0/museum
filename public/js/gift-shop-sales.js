@@ -9,10 +9,13 @@ const search = document.getElementById("sales-search");
 const transactionsHeading = document.getElementById("sales-transactions-heading");
 const transactionStatus = document.getElementById("sales-summary");
 const tbody = document.getElementById("sales-table-body");
-const controls = form.querySelectorAll("button, input");
+const controls = form.querySelectorAll("button, input, select");
 
 const number = new Intl.NumberFormat("en-US");
-const currency = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+const currency = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD"
+});
 const timestamp = new Intl.DateTimeFormat("en-US", {
     dateStyle: "medium",
     timeStyle: "short",
@@ -22,12 +25,16 @@ const timestamp = new Intl.DateTimeFormat("en-US", {
 let allSales = [];
 
 function setBusy(busy) {
-    controls.forEach(control => { control.disabled = busy; });
+    controls.forEach(control => {
+        control.disabled = busy;
+    });
 }
 
 function addRow(values) {
     const row = tbody.insertRow();
-    for (const value of values) row.insertCell().textContent = value;
+    for (const value of values) {
+        row.insertCell().textContent = value;
+    }
 }
 
 function showTableMessage(message) {
@@ -38,6 +45,7 @@ function showTableMessage(message) {
 
 function renderSales(lines, emptyMessage) {
     tbody.replaceChildren();
+
     for (const line of lines) {
         addRow([
             line.PurchaseID,
@@ -58,11 +66,16 @@ function renderSales(lines, emptyMessage) {
 
 async function fetchSales(url) {
     const response = await fetch(url);
+
     if (response.redirected || response.status === 401) {
         window.location.href = "/auth-staff";
         return null;
     }
-    if (!response.ok) throw new Error(`Sales request failed: ${response.status}`);
+
+    if (!response.ok) {
+        throw new Error(`Sales request failed: ${response.status}`);
+    }
+
     return response.json();
 }
 
@@ -75,7 +88,10 @@ function filterHistory() {
             .some(value => String(value).toLowerCase().includes(term))
     );
 
-    renderSales(matches, term ? "No transactions match your search." : "No sales recorded yet.");
+    renderSales(
+        matches,
+        term ? "No transactions match your search." : "No sales recorded yet."
+    );
 }
 
 async function loadHistory() {
@@ -89,7 +105,25 @@ async function loadHistory() {
     try {
         const lines = await fetchSales("/api/gift-shop/sales");
         if (!lines) return;
+
         allSales = lines;
+
+        const products = new Map(
+            lines.map(line => [line.ProductID, line.ProductName])
+        );
+
+        const sortedProducts = [...products].sort(
+            ([idA, nameA], [idB, nameB]) =>
+                nameA.localeCompare(nameB) || idA - idB
+        );
+
+        product.replaceChildren(
+            new Option("All products", ""),
+            ...sortedProducts.map(
+                ([id, name]) => new Option(`${name} (#${id})`, id)
+            )
+        );
+
         historySearch.hidden = false;
         filterHistory();
     } catch (error) {
@@ -101,9 +135,18 @@ async function loadHistory() {
 }
 
 async function generateReport() {
-    const params = new URLSearchParams({ from: from.value, to: to.value });
-    const productTerm = product.value.trim();
-    if (productTerm) params.set("product", productTerm);
+    const params = new URLSearchParams({
+        from: from.value,
+        to: to.value
+    });
+
+    const productFilter =
+        product.selectedOptions[0]?.textContent ?? "All products";
+
+    if (product.value) {
+        params.set("productId", product.value);
+    }
+
     setBusy(true);
     reportStatus.textContent = "Generating sales report...";
 
@@ -111,13 +154,15 @@ async function generateReport() {
         const report = await fetchSales(`/api/gift-shop/sales-report?${params}`);
         if (!report) return;
 
-        const productFilter = productTerm ? `Product name contains “${productTerm}”` : "All products";
         document.getElementById("sales-report-range").textContent =
             `${params.get("from")} through ${params.get("to")} (UTC) · ${productFilter}`;
+
         document.getElementById("sales-purchase-count").textContent =
             number.format(report.summary.PurchaseCount);
+
         document.getElementById("sales-units-sold").textContent =
             number.format(report.summary.UnitsSold);
+
         document.getElementById("sales-revenue").textContent =
             currency.format(report.summary.Revenue);
 
@@ -138,11 +183,14 @@ search.addEventListener("input", filterHistory);
 
 form.addEventListener("submit", event => {
     event.preventDefault();
+
     if (!form.reportValidity()) return;
+
     if (from.value > to.value) {
         reportStatus.textContent = "The end date must be on or after the start date.";
         return;
     }
+
     generateReport();
 });
 
