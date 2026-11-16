@@ -1,7 +1,9 @@
 const { getSalesReport } = require("../../database/gift-shop/sales-report");
 
 function parseDate(value) {
-    if (value === null || !/^[1-9]\d{3}-\d{2}-\d{2}$/.test(value)) return undefined;
+    if (value === null || !/^[1-9]\d{3}-\d{2}-\d{2}$/.test(value)) {
+        return undefined;
+    }
 
     const date = new Date(`${value}T00:00:00.000Z`);
 
@@ -17,29 +19,33 @@ async function salesReportHandler(req, res) {
     const { searchParams } = new URL(req.url, "http://localhost");
     const from = parseDate(searchParams.get("from"));
     const to = parseDate(searchParams.get("to"));
-    const product = searchParams.get("product")?.trim() || null;
+
+    const rawProductId = searchParams.get("productId");
+    const productId = rawProductId === null || rawProductId === ""
+        ? null
+        : Number(rawProductId);
 
     const headers = {
         "Content-Type": "application/json",
         "Cache-Control": "no-store"
     };
 
-    if (!from || !to || from > to ||
-        searchParams.get("to") === "9999-12-31") {
+    if (!from || !to || from > to || searchParams.get("to") === "9999-12-31") {
         res.writeHead(400, headers);
         res.end(JSON.stringify({ error: "Enter a valid start and end date." }));
         return;
     }
 
-    if (product && product.length > 100) {
+    if (productId !== null &&
+        (!/^[1-9]\d*$/.test(rawProductId) || productId > 2147483647)) {
         res.writeHead(400, headers);
-        res.end(JSON.stringify({ error: "Enter a product name of 100 characters or fewer." }));
+        res.end(JSON.stringify({ error: "Select a valid product." }));
         return;
     }
 
-    // Include the entire end date by stopping at midnight the next day.
+    // Include the full end date by using midnight the next day as the cutoff.
     const until = new Date(to.getTime() + 86400000);
-    const report = await getSalesReport({ from, until, product });
+    const report = await getSalesReport({ from, until, productId });
 
     res.writeHead(200, headers);
     res.end(JSON.stringify(report));

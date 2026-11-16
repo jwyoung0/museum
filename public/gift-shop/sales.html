@@ -58,27 +58,35 @@
             </header>
 
             <h3>Generate a Sales Report</h3>
-            <p>Enter both dates to summarize sales. Leave the product blank to include all products.
-                Dates include the full end date in UTC.</p>
+            <p>
+                Enter both dates. Choose a product or leave “All products” selected.
+                The report includes the full end date in UTC.
+            </p>
 
             <form id="sales-report-form" class="workspace-toolbar">
                 <label for="sales-from">
                     Start date
                     <input id="sales-from" type="date" required min="1000-01-01" max="9999-12-30">
                 </label>
+
                 <label for="sales-to">
                     End date
                     <input id="sales-to" type="date" required min="1000-01-01" max="9999-12-30">
                 </label>
+
                 <label for="sales-report-product">
-                    Product name (optional)
-                    <input id="sales-report-product" type="search" maxlength="100" placeholder="e.g. mug">
+                    Product
+                    <select id="sales-report-product">
+                        <option value="">All products</option>
+                    </select>
                 </label>
+
                 <button type="submit">Generate report</button>
                 <button id="sales-report-reset" type="reset">Reset</button>
             </form>
 
             <p id="sales-report-status" role="status"></p>
+
             <section id="sales-report-summary" aria-labelledby="sales-report-heading" hidden>
                 <h3 id="sales-report-heading">Report Summary</h3>
                 <p id="sales-report-range"></p>
@@ -107,19 +115,17 @@
                 <table class="artists-table" aria-labelledby="sales-transactions-heading">
                     <thead>
                         <tr>
-                            <th>Purchase ID</th>
-                            <th>Date (UTC)</th>
-                            <th>Visitor ID</th>
-                            <th>Product</th>
-                            <th>Quantity</th>
-                            <th>Unit Price</th>
-                            <th>Line Total</th>
+                            <th scope="col">Purchase ID</th>
+                            <th scope="col">Date (UTC)</th>
+                            <th scope="col">Visitor ID</th>
+                            <th scope="col">Product</th>
+                            <th scope="col">Quantity</th>
+                            <th scope="col">Unit Price</th>
+                            <th scope="col">Line Total</th>
                         </tr>
                     </thead>
                     <tbody id="sales-table-body">
-                        <tr>
-                            <td colspan="7">Loading sales...</td>
-                        </tr>
+                        <tr><td colspan="7">Loading sales...</td></tr>
                     </tbody>
                 </table>
             </div>
